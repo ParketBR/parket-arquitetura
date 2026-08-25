@@ -17,7 +17,13 @@ const POR_CATEGORIA: Record<string, string> = {
   forros:  `${BASE}/forros/`,
   paineis: `${BASE}/paineis/`,
   escadas: `${BASE}/escadas/`,
-  // portas — sem catálogo publicado
+  /* Portas não tem catálogo próprio: elas moram dentro do de Marcenarias,
+     em `#produto-portas`. Verificado em 25/08/2026 contra o hub de catálogos
+     e a lista de repositórios do ParketBR — não existe Catalogo-Portas.
+     Cuidado ao checar esse tipo de URL: parket.com.br/catalogo/ devolve 200
+     para qualquer caminho, inclusive inventado. Comparar o conteúdo, não o
+     código de status. */
+  portas:  `${BASE}/marcenarias/#produto-portas`,
 };
 
 /** Chave = `${categoria}--${slug da coleção}`, igual ao id em catalogo.json. */
@@ -40,5 +46,10 @@ export const CATALOGOS_AVULSOS = [
 export const catalogoDaCategoria = (id: string): string | null => POR_CATEGORIA[id] ?? null;
 export const catalogoDaColecao  = (id: string): string | null => POR_COLECAO[id] ?? null;
 
-export const totalDeCatalogos =
-  Object.keys(POR_CATEGORIA).length + Object.keys(POR_COLECAO).length + CATALOGOS_AVULSOS.length;
+/* Portas e Marcenarias apontam para o mesmo catálogo, então a soma crua
+   contaria esse arquivo duas vezes. O total é de catálogos distintos. */
+export const totalDeCatalogos = new Set([
+  ...Object.values(POR_CATEGORIA).map((u) => u.split('#')[0]),
+  ...Object.values(POR_COLECAO),
+  ...CATALOGOS_AVULSOS.map((c) => c.href),
+]).size;
