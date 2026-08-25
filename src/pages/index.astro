@@ -73,9 +73,21 @@ const numeros = [
    nome de quem escreveu. Nada de texto adaptado, resumido ou atribuído sem
    confirmação — nem para caber no layout. Se não couber, muda o layout.
 
-   Estas três cobrem ângulos distintos: velocidade e recompra (Torino),
-   escala e solução completa (Tolentino), e o vocabulário de quem especifica
-   (Oliveira). */
+   Os nove cobrem ângulos distintos: velocidade e recompra (Torino), escala e
+   solução completa (Tolentino), vocabulário de quem especifica (Oliveira),
+   obra fora de São Paulo (Bley), prazo cumprido (Lenkaitis), comunicação
+   durante a obra (Bueno), pós-venda (Nogueira), durabilidade (Oliveira) e a
+   voz técnica do segmento (Marinel).
+
+   Ficaram de fora, de propósito: as avaliações de quem trabalha na empresa
+   (não são prova social de cliente), a única negativa, uma que aparece com
+   texto idêntico em dois perfis diferentes, as que o Google trunca em "…Mais"
+   — não dá para citar o que não se leu inteiro — e a do Estúdio Vértices, que
+   cita a casa do Paulo Mendes da Rocha e precisa de autorização antes de ir
+   para o ar.
+
+   Só a caixa alta dos nomes foi normalizada: alguns perfis escrevem tudo em
+   maiúscula. O texto das falas não se toca. */
 const depoimentos = [
   { texto: 'Fiz o piso do meu apartamento em SP com a Parket, material lindo, instalação hiper rápida e sem sujeira, em 3 dias fizeram os 90m², é a segunda vez que faço obra com eles, Arrasam sempre!',
     autor: 'Marina Torino' },
@@ -83,6 +95,18 @@ const depoimentos = [
     autor: 'Claudio Tolentino' },
   { texto: 'A Parket é definição do que tem de melhor hoje em soluções de madeira para projetos de alto nível. O atendimento é personalizado pelos vendedores que possuem pleno conhecimento sobre o produto e tiram todas as dúvidas, bem como o material e instalação impecável. Nada igual no mercado.',
     autor: 'Larissa Oliveira' },
+  { texto: 'Fiz minha casa de praia com eles de Trancoso e ficou perfeita!! O Douglas me atendeu com muito profissionalismo e segurança. Fizeram em tempo recorde e do jeito que queríamos. Qualidade ímpar!! Estamos apaixonados e indicamos de olhos fechados!!!',
+    autor: 'Aline Bley' },
+  { texto: 'Melhor impossível. Alta qualidade! Cumpriu os prazos de entrega com primazia! Aguentou o tranco! Recomendo fortemente!!!',
+    autor: 'Maurício Narloch Lenkaitis' },
+  { texto: 'Simplesmente maravilhosa minha experiência com a Parket!!! O produto é mais incrível do que vocês imaginam! O tempo de entrega, a instalação, a comunicação, tudo foi muito muito bom!!! Recomendo a todo mundo!',
+    autor: 'Fernanda Bueno' },
+  { texto: 'Gostaria de ressaltar a qualidade do material, resultando um bom acabamento na hora da instalação e resultado final. E o excelente atendimento de pós venda.',
+    autor: 'Raphael Nogueira' },
+  { texto: 'Excelente empresa de pisos de madeira! Atendimento impecável e produtos de alta qualidade. O acabamento e a durabilidade dos pisos são incríveis, transformando qualquer ambiente com muita elegância. Super recomendo!',
+    autor: 'Marcia Oliveira' },
+  { texto: 'Os produtos fabricados pela Parket Pisos possuem um padrão de qualidade de excelência, uma das melhores empresas no segmento de Floorings and deckings do Brasil.',
+    autor: 'Rafael Marinel' },
 ];
 
 /* O acervo é o que tira atrito de quem especifica: os três itens são o que o
@@ -287,7 +311,6 @@ const schema = {
           <li class="depo">
             <blockquote><p>{d.texto}</p></blockquote>
             <p class="depo-autor">{d.autor}</p>
-            <p class="caption">Avaliação no Google</p>
           </li>
         ))}
       </ul>
