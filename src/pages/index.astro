@@ -175,13 +175,23 @@ const schema = {
     <div class="cats">
       {cats.map((c, n) => (
         <article class="cat" style={`--span:${c.span}`}>
-          <div class="cat-media">
+          {/* A foto vira o mesmo alvo do link de baixo: quem clica na imagem
+              espera abrir o catálogo, e antes não abria nada.
+
+              aria-hidden + tabindex=-1 de propósito: é atalho de mouse, não um
+              segundo link. Sem isso o leitor de tela anunciaria "Decks" duas
+              vezes e o teclado pararia duas vezes no mesmo destino — quem
+              navega assim usa o "Catálogo ↗" logo abaixo, que tem texto. */}
+          <a class="cat-media" href={c.catalogo ?? '/contato'}
+             aria-hidden="true" tabindex="-1"
+             rel={c.catalogo ? 'noopener noreferrer' : undefined}
+             target={c.catalogo ? '_blank' : undefined}>
             {c.capa && <Foto src={c.capa} alt={`${c.nome} em madeira nobre Parket`} width={1600}
                              sizes={c.span >= 4 ? '(max-width: 900px) 100vw, 92vw'
                                   : c.span === 3 ? '(max-width: 900px) 100vw, 46vw'
                                                  : '(max-width: 900px) 50vw, 31vw'}
                              ratio={c.ratio} eager={n === 0} />}
-          </div>
+          </a>
           <div class="cat-corpo">
             <div>
               <h3 class="cat-nome">{c.nome}</h3>
@@ -371,7 +381,7 @@ const schema = {
   /* ─── Superfícies · composição editorial, não grade de cards iguais ─── */
   .cats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s-6) var(--s-3); }
   .cat { grid-column: span var(--span, 2); }
-  .cat-media { overflow: hidden; background: var(--surface); border-radius: var(--radius-media); }
+  .cat-media { display: block; overflow: hidden; background: var(--surface); border-radius: var(--radius-media); }
   .cat-media :global(.foto) { transition: transform 1.1s var(--ease); }
   .cat:hover .cat-media :global(.foto) { transform: scale(1.03); }
   .cat-corpo {
