@@ -293,6 +293,29 @@ const schema = {
   />
 </Base>
 
+<script>
+  /* Região que rola precisa ser alcançável pelo teclado — mas só quando ela
+     de fato rola. Um tabindex fixo criaria uma parada de tabulação inútil no
+     desktop, onde os quatro números aparecem lado a lado sem corte. */
+  const faixa = document.querySelector<HTMLElement>('.numeros');
+  if (faixa) {
+    const estreito = matchMedia('(max-width: 640px)');
+    const ajustar = () => {
+      if (estreito.matches) {
+        faixa.tabIndex = 0;
+        faixa.setAttribute('role', 'group');
+        faixa.setAttribute('aria-label', 'Números da Parket — role para os lados');
+      } else {
+        faixa.removeAttribute('tabindex');
+        faixa.removeAttribute('role');
+        faixa.removeAttribute('aria-label');
+      }
+    };
+    ajustar();
+    estreito.addEventListener('change', ajustar);
+  }
+</script>
+
 <style>
   /* ─── Hero ─── */
   .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; padding-bottom: var(--s-12); }
@@ -425,6 +448,36 @@ const schema = {
     .acervo-itens { grid-template-columns: 1fr; gap: var(--s-4); }
     .fim-in { grid-template-columns: 1fr; gap: var(--s-6); }
   }
+  /* ─── Números viram carrossel no celular ───
+     Em duas colunas de ~156px o rótulo mais longo ("Cadeia produtiva própria
+     com FSC") quebrava em duas linhas e a faixa ficava apertada. Um por vez,
+     em 62% da largura, cada número respira e a borda do seguinte avisa que há
+     mais — mesma lógica de affordance da régua de texturas.
+
+     Vem depois do bloco de 900px de propósito: precisa desfazer o
+     grid-template-columns de duas colunas que ele define. */
+  @media (max-width: 640px) {
+    .numeros {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 62%;
+      gap: var(--s-3);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      /* Sangra até a borda da tela. O scroll-padding é obrigatório: sem ele o
+         snap encosta o item na borda do content box, rola o padding para fora,
+         e o primeiro número desalinha da margem do resto da página. */
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      scroll-padding-inline: var(--gutter);
+    }
+    .numeros::-webkit-scrollbar { display: none; }
+    .numeros > li { scroll-snap-align: start; min-width: 0; }
+    .num-rot { max-width: none; }
+  }
+
   @media (max-width: 560px) {
     .cats { grid-template-columns: 1fr; }
     .cat, .cat:last-child { grid-column: span 1; }
