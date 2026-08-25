@@ -49,7 +49,7 @@ const primeira = especies[0];
 const total = String(especies.length).padStart(2, '0');
 ---
 
-<section id="madeiras" class="section tom-areia wrap reveal tex-sec">
+<section id="madeiras" class="section wrap reveal tex-sec">
   <header class="sec-cab">
     <div>
       <span class="badge">Revestimentos</span>
@@ -112,6 +112,13 @@ const total = String(especies.length).padStart(2, '0');
 </section>
 
 <style>
+  /* Sem tom próprio, esta seção continua o mesmo campo de papel da anterior.
+     A regra global `.tom-papel + .section` abre um --section de padding-top
+     supondo que o bloco de cima seja visualmente distinto — aqui ele não é, e
+     os dois paddings somavam 258px de vão sem nenhuma costura que os
+     justificasse. É o "dobro do vão" que o tokens.css avisa para evitar. */
+  .tex-sec { padding-top: 0; }
+
   .tex-palco-geral {
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
@@ -188,9 +195,10 @@ const total = String(especies.length).padStart(2, '0');
     fill: none; stroke: currentColor; stroke-width: 1.4;
     stroke-linecap: round; stroke-linejoin: round;
   }
-  /* --surface-2 e não --surface: a seção inteira é areia, e o hover precisa
-     de um degrau abaixo dela para aparecer. */
-  .tex-seta:hover { color: var(--ink); border-color: var(--wood); background: var(--surface-2); }
+  /* Um degrau abaixo do fundo da seção, que voltou a ser papel. Com
+     --surface-2 aqui o hover ficava escuro demais e a seta pesava mais que a
+     régua ao lado. */
+  .tex-seta:hover { color: var(--ink); border-color: var(--wood); background: var(--surface); }
   .tex-seta[disabled] { opacity: .28; cursor: default; pointer-events: none; }
 
   .tex-regua {
