@@ -47,6 +47,9 @@
   --s-1: 8px;   --s-2: 16px;  --s-3: 24px;  --s-4: 32px;
   --s-6: 48px;  --s-8: 64px;  --s-12: 96px; --s-16: 128px;
   --section: clamp(64px, 8vw, 132px);
+  /* Quanto uma imagem avança para dentro da seção de baixo. Vive aqui porque
+     dois lados precisam do mesmo número: quem invade e quem abre espaço. */
+  --invasao: clamp(40px, 8vw, 132px);
 
   /* ─── Grade ─── */
   --container: 1440px;
@@ -140,7 +143,6 @@ a { color: inherit; text-decoration: none; }
   content: ''; width: 5px; height: 5px; flex: none;
   background: var(--wood);
 }
-.badge--dark { background: transparent; border-color: rgb(232 228 223 / .22); color: var(--on-dark-muted); }
 
 .num { font-variant-numeric: tabular-nums; }
 .measure { max-width: var(--measure); }
@@ -155,6 +157,45 @@ a { color: inherit; text-decoration: none; }
    próprio (manifesto, acervo, cta) mantêm os dois lados: ali o padding é
    preenchimento do bloco, não vão entre seções. */
 .section + .section { padding-top: 0; }
+
+/* ═══ Tons de seção ═══════════════════════════════════════════════
+   A página é uma partitura de três tons, e nenhum deles é decoração: o tom
+   diz que tipo de bloco você está lendo.
+
+     papel   → o que se navega: catálogo, acervo, quem assina.
+     areia   → o que se opera: a régua de texturas e o formulário. Um degrau
+               abaixo do papel, o suficiente para o campo e a moldura da foto
+               existirem sem precisar de caixa.
+     escuro  → o que se contempla: manifesto, a família, a obra pronta. É a
+               pontuação da página, e não o fundo padrão de nada.
+
+   A regra que sustenta o ritmo: dois vizinhos nunca repetem o tom. Ao mexer
+   na ordem das seções, confira a sequência inteira antes de dar por pronto.
+
+   Tom próprio faz da seção um bloco: o padding passa a ser preenchimento
+   dele, e não vão entre seções, então os dois lados ficam. É por isso que as
+   duas regras abaixo desfazem o `padding-top: 0` da linha de cima. */
+.tom-papel  { background: var(--paper); }
+.tom-areia  { background: var(--surface); }
+.tom-escuro { background: var(--ground); color: var(--on-dark); }
+
+.section.tom-papel, .section.tom-areia, .section.tom-escuro { padding-top: var(--section); }
+.tom-papel + .section, .tom-areia + .section, .tom-escuro + .section { padding-top: var(--section); }
+
+/* No escuro a escala de cinzas inverte. Fica aqui, e não em cada seção, para
+   que trocar o tom de um bloco seja mudar uma classe — e não caçar sete
+   declarações de cor espalhadas pelos componentes. */
+.tom-escuro h1, .tom-escuro h2, .tom-escuro h3,
+.tom-escuro h4, .tom-escuro h5, .tom-escuro h6 { color: var(--on-dark); }
+.tom-escuro .caption,
+.tom-escuro .label { color: var(--on-dark-muted); }
+.tom-escuro .badge {
+  background: transparent; border-color: rgb(232 228 223 / .22); color: var(--on-dark-muted);
+}
+.tom-escuro .link-action { color: var(--on-dark); }
+.tom-escuro .link-action:hover { color: var(--wood); }
+.tom-escuro .btn { background: var(--on-dark); color: var(--ground); border-color: var(--on-dark); }
+.tom-escuro .btn:hover { background: transparent; color: var(--on-dark); }
 .stack > * + * { margin-top: var(--flow, var(--s-3)); }
 
 /* ═══ Cabeçalho de seção ═══ */
@@ -173,6 +214,8 @@ a { color: inherit; text-decoration: none; }
 
 /* Quebra de linha que só existe da tablet para cima. No celular a linha corre
    e quebra sozinha, onde couber. */
+/* Sempre escreva `{' '}` antes de um <br class="so-desk">: escondido, o <br>
+   some sem deixar espaço e as duas palavras grudam ("superfícieconta"). */
 .so-desk { display: none; }
 @media (min-width: 700px) { .so-desk { display: inline; } }
 

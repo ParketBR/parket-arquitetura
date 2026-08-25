@@ -3,9 +3,9 @@
  * A segunda e última página do site.
  *
  * Existe por um motivo só: receber o pedido. Não tem navegação de conteúdo,
- * não tem seção de venda — quem chega aqui já foi convencido pela home. O que
- * pode aparecer acima do formulário é o que reduz a desistência: prazo de
- * resposta, canais diretos e onde ficam os showrooms.
+ * não tem seção de venda — quem chega aqui já foi convencido pela home. É uma
+ * seção única: o convite, o que reduz a desistência (prazo de resposta,
+ * canais diretos, showrooms) e o formulário, tudo junto.
  *
  * Quando a pessoa chega de um nome clicado na home, a referência vem em `?ref=`
  * e o formulário mostra o campo já preenchido.
@@ -31,56 +31,43 @@ const canais = [
 ---
 
 <Base {titulo} {descricao} {schema}>
-  <!-- O formulário abre a página. Quem chega aqui já clicou em "falar com um
-       especialista" na home — não precisa ser convencido de novo antes de
-       poder pedir. O contexto (prazo, canais diretos, showrooms) desceu para
-       depois: serve a quem hesita, não a quem já decidiu. -->
+  <!-- Uma seção só, como na home. Antes o formulário abria a página e o bloco
+       "Vamos conversar sobre o seu projeto" vinha depois, repetindo o convite
+       que o título do formulário já faz — e empurrando os canais diretos para
+       o fim da página, longe de quem hesita no primeiro campo.
+
+       Sobreviveu o h1 do formulário, que é o que a busca indexa; o parágrafo
+       do bloco de baixo, mais concreto sobre o que a equipe responde, tomou o
+       lugar do subtítulo antigo. -->
   <Formulario
     comoH1
+    rotulo="Contato"
     titulo="Falar com um especialista."
-    subtitulo="Cinco perguntas rápidas. Se você chegou de uma referência, ela vem junto e adianta a conversa."
+    subtitulo="Conte o que está projetando. A equipe técnica responde com espécie, bitola, acabamento, prazo e método de instalação — não com um catálogo genérico. Se você chegou de uma referência, ela vem junto e adianta a conversa."
     acao="Falar com um especialista"
-  />
-
-  <header class="topo">
-    <div class="wrap topo-in">
-      <div>
-        <span class="badge">Contato</span>
-        <h2 class="h2 topo-tit">Vamos conversar<br class="so-desk" />sobre o seu projeto.</h2>
-        <p class="lead measure topo-txt">
-          Conte o que está projetando. A equipe técnica responde com espécie,
-          bitola, acabamento, prazo e método de instalação — não com um catálogo
-          genérico.
-        </p>
-      </div>
-
-      <ul class="canais">
-        {canais.map((c) => (
-          <li class="canal">
-            <span class="label">{c.rotulo}</span>
-            <a
-              class="canal-valor"
-              href={c.href}
-              rel={c.externo ? 'noopener noreferrer' : undefined}
-              target={c.externo ? '_blank' : undefined}
-            >{c.valor}</a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </header>
+  >
+    <ul class="canais" slot="lado">
+      {canais.map((c) => (
+        <li class="canal">
+          <span class="label">{c.rotulo}</span>
+          <a
+            class="canal-valor"
+            href={c.href}
+            rel={c.externo ? 'noopener noreferrer' : undefined}
+            target={c.externo ? '_blank' : undefined}
+          >{c.valor}</a>
+        </li>
+      ))}
+    </ul>
+  </Formulario>
 </Base>
 
 <style>
-  .topo { padding-block: var(--s-8) var(--s-12); }
-  .topo-in {
-    display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    gap: var(--s-8); align-items: end;
-  }
-  .topo-tit { margin: var(--s-3) 0 var(--s-4); }
-  .topo-txt { color: var(--muted); }
-
-  .canais { border-top: 1px solid var(--ink); }
+  /* Os canais entram no slot "lado" do formulário, logo abaixo de Resposta e
+     Showrooms. Filete de --ink no topo para a lista não virar continuação da
+     <dl> de cima, que usa --line: são duas listas com o mesmo desenho e uma
+     precisa começar. */
+  .canais { margin-top: var(--s-4); border-top: 1px solid var(--ink); }
   .canal {
     display: flex; align-items: baseline; justify-content: space-between;
     gap: var(--s-3); padding: 13px 0; border-bottom: 1px solid var(--line-soft);
@@ -88,8 +75,4 @@ const canais = [
   .canal-valor { font-size: var(--fs-small); color: var(--ink); transition: color var(--d-fast) var(--ease); }
   .canal-valor:hover { color: var(--wood-text); }
 
-  @media (max-width: 900px) {
-    .topo-in { grid-template-columns: 1fr; gap: var(--s-6); }
-    .topo { padding-block: var(--s-6) var(--s-8); }
-  }
 </style>

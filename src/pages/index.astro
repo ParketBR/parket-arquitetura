@@ -3,9 +3,13 @@
  * A one page.
  *
  * O site inteiro é esta página mais /contato. A ordem das seções é um funil e
- * não um índice: promessa → prova → posicionamento → o que existe →
- * matéria-prima → obra pronta → quem assina → o que remove atrito
- * (catálogo, textura, amostra) → pedido.
+ * não um índice: promessa → prova → posicionamento → quem somos → o que
+ * existe → matéria-prima → obra pronta → quem assina → contato (o convite e
+ * o formulário na mesma seção) → o que remove atrito (catálogo, textura,
+ * amostra).
+ *
+ * O acervo fecha a página, depois do formulário: ele serve a quem não pediu
+ * orçamento agora e vai precisar do catálogo antes de voltar.
  *
  * Toda a página converge para uma ação só: falar com um especialista. Os
  * outros links ou são âncora dentro da página, ou vão para /contato já
@@ -13,6 +17,7 @@
  */
 import Base from '../layouts/Base.astro';
 import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
 import HeroVideo from '../components/HeroVideo.astro';
 import GaleriaArco from '../components/GaleriaArco.astro';
 import Texturas from '../components/Texturas.astro';
@@ -121,7 +126,7 @@ const schema = {
     <div class="wrap hero-in">
       <h1 class="display hero-tit">Madeira para<br>arquitetura.</h1>
       <p class="lead hero-sub">
-        Superfícies naturais desenvolvidas para projetos<br class="so-desk" />
+        Superfícies naturais desenvolvidas para projetos{' '}<br class="so-desk" />
         que atravessam o tempo.
       </p>
       <div class="hero-acoes">
@@ -132,7 +137,7 @@ const schema = {
   </section>
 
   <!-- ─── Prova, antes de qualquer argumento ─── -->
-  <section class="provas">
+  <section class="provas tom-papel">
     <ul class="wrap numeros">
       {numeros.map((n) => (
         <li>
@@ -144,9 +149,9 @@ const schema = {
   </section>
 
   <!-- ─── Manifesto ─── -->
-  <section class="manifesto">
+  <section class="manifesto tom-escuro">
     <div class="wrap">
-      <p class="mani-badge"><span class="badge badge--dark">Manifesto</span></p>
+      <p class="mani-badge"><span class="badge">Manifesto</span></p>
       <p class="mani-txt">
         Não vendemos madeira.<br />
         Criamos superfícies que completam a arquitetura.
@@ -159,53 +164,92 @@ const schema = {
     </div>
   </section>
 
+  <!-- ─── Sobre · quem está por trás do manifesto ───
+       Entra logo depois do manifesto de propósito: a frase acima é uma
+       promessa, e esta seção é a única prova que sustenta uma promessa dessas
+       — meio século e a família que assina. A foto fecha o bloco em largura
+       total, sem corte de rosto. -->
+  <section id="sobre" class="sobre section tom-escuro reveal">
+    <div class="wrap">
+      <div class="sobre-texto">
+        <div class="sobre-tit">
+          <span class="badge">Sobre a Parket</span>
+          <h2 class="h2 sobre-h2">Meio século transformando{' '}<br class="so-desk" />madeira em legado.</h2>
+        </div>
+        <div class="sobre-corpo">
+          <p class="lead sobre-lead">
+            A Parket nasce da convicção de que a madeira é a linguagem mais
+            autêntica da arquitetura brasileira. Cada projeto que realizamos é
+            uma tradução precisa entre o desejo do arquiteto e a natureza do
+            material.
+          </p>
+          <p class="sobre-sub">
+            Trabalhamos com madeiras de manejo sustentável, processos
+            industriais de altíssima precisão e uma equipe técnica que entende
+            que cada milímetro importa. Nosso compromisso é entregar
+            superfícies que envelhecem com beleza — e que resistem ao tempo com
+            a mesma elegância do primeiro dia.
+          </p>
+        </div>
+      </div>
+
+      <figure class="sobre-foto">
+        <Foto src="https://parket.com.br/FAMILIA.png"
+              alt="As três gerações da família fundadora da Parket"
+              width={1280} height={711} ratio="1280/711" sizes="(max-width: 900px) 100vw, 92vw" />
+      </figure>
+    </div>
+  </section>
+
   <!-- ─── Superfícies ─── -->
-  <section id="superficies" class="section wrap reveal">
-    <header class="sec-cab">
-      <div>
-        <span class="badge">Superfícies</span>
-        <h2 class="h2 sec-tit">Cada superfície<br class="so-desk" />conta uma história.</h2>
-      </div>
-      <div class="sec-acoes">
-        <a class="link-action" href="#acervo">Abrir os catálogos</a>
-        <a class="link-action" href="/contato">Falar com um especialista</a>
-      </div>
-    </header>
+  <section id="superficies" class="superficies section tom-papel reveal">
+    <div class="wrap">
+      <header class="sec-cab">
+        <div>
+          <span class="badge">Superfícies</span>
+          <h2 class="h2 sec-tit">Cada superfície{' '}<br class="so-desk" />conta uma história.</h2>
+        </div>
+        <div class="sec-acoes">
+          <a class="link-action" href="#acervo">Abrir os catálogos</a>
+          <a class="link-action" href="/contato">Falar com um especialista</a>
+        </div>
+      </header>
 
-    <div class="cats">
-      {cats.map((c, n) => (
-        <article class="cat" style={`--span:${c.span}`}>
-          {/* A foto vira o mesmo alvo do link de baixo: quem clica na imagem
-              espera abrir o catálogo, e antes não abria nada.
+      <div class="cats">
+        {cats.map((c, n) => (
+          <article class="cat" style={`--span:${c.span}`}>
+            {/* A foto vira o mesmo alvo do link de baixo: quem clica na imagem
+                espera abrir o catálogo, e antes não abria nada.
 
-              aria-hidden + tabindex=-1 de propósito: é atalho de mouse, não um
-              segundo link. Sem isso o leitor de tela anunciaria "Decks" duas
-              vezes e o teclado pararia duas vezes no mesmo destino — quem
-              navega assim usa o "Catálogo ↗" logo abaixo, que tem texto. */}
-          <a class="cat-media" href={c.catalogo ?? '/contato'}
-             aria-hidden="true" tabindex="-1"
-             rel={c.catalogo ? 'noopener noreferrer' : undefined}
-             target={c.catalogo ? '_blank' : undefined}>
-            {c.capa && <Foto src={c.capa} alt={`${c.nome} em madeira nobre Parket`} width={1600}
-                             sizes={c.span >= 4 ? '(max-width: 900px) 100vw, 92vw'
-                                  : c.span === 3 ? '(max-width: 900px) 100vw, 46vw'
-                                                 : '(max-width: 900px) 50vw, 31vw'}
-                             ratio={c.ratio} eager={n === 0} />}
-          </a>
-          <div class="cat-corpo">
-            <div>
-              <h3 class="cat-nome">{c.nome}</h3>
-              <p class="caption cat-qtd num">{c.qtd} referências</p>
+                aria-hidden + tabindex=-1 de propósito: é atalho de mouse, não um
+                segundo link. Sem isso o leitor de tela anunciaria "Decks" duas
+                vezes e o teclado pararia duas vezes no mesmo destino — quem
+                navega assim usa o "Catálogo ↗" logo abaixo, que tem texto. */}
+            <a class="cat-media" href={c.catalogo ?? '/contato'}
+               aria-hidden="true" tabindex="-1"
+               rel={c.catalogo ? 'noopener noreferrer' : undefined}
+               target={c.catalogo ? '_blank' : undefined}>
+              {c.capa && <Foto src={c.capa} alt={`${c.nome} em madeira nobre Parket`} width={1600}
+                               sizes={c.span >= 4 ? '(max-width: 900px) 100vw, 92vw'
+                                    : c.span === 3 ? '(max-width: 900px) 100vw, 46vw'
+                                                   : '(max-width: 900px) 50vw, 31vw'}
+                               ratio={c.ratio} eager={n === 0} />}
+            </a>
+            <div class="cat-corpo">
+              <div>
+                <h3 class="cat-nome">{c.nome}</h3>
+                <p class="caption cat-qtd num">{c.qtd} referências</p>
+              </div>
+              {c.catalogo
+                ? <a class="cat-acao" href={c.catalogo} rel="noopener noreferrer" target="_blank">
+                    Catálogo<span class="cat-seta" aria-hidden="true">↗</span>
+                    <span class="sr-only">— abre em outra aba</span>
+                  </a>
+                : <a class="cat-acao" href="/contato">Especificar<span class="cat-seta" aria-hidden="true">→</span></a>}
             </div>
-            {c.catalogo
-              ? <a class="cat-acao" href={c.catalogo} rel="noopener noreferrer" target="_blank">
-                  Catálogo<span class="cat-seta" aria-hidden="true">↗</span>
-                  <span class="sr-only">— abre em outra aba</span>
-                </a>
-              : <a class="cat-acao" href="/contato">Especificar<span class="cat-seta" aria-hidden="true">→</span></a>}
-          </div>
-        </article>
-      ))}
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -213,11 +257,11 @@ const schema = {
   <Texturas />
 
   <!-- ─── Aplicações em arco ─── -->
-  <section id="projetos" class="section reveal">
+  <section id="projetos" class="projetos section tom-escuro reveal">
     <header class="sec-cab sec-cab--centro wrap">
       <div>
         <span class="badge">Projetos</span>
-        <h2 class="h2 sec-tit">A madeira<br class="so-desk" />no mundo real.</h2>
+        <h2 class="h2 sec-tit">A madeira{' '}<br class="so-desk" />no mundo real.</h2>
       </div>
     </header>
     <GaleriaArco itens={arco} />
@@ -225,7 +269,7 @@ const schema = {
   </section>
 
   <!-- ─── Quem assina ─── -->
-  <section class="depos-sec reveal">
+  <section class="depos-sec section tom-papel reveal">
     <div class="wrap">
       <header class="sec-cab sec-cab--centro">
         <div>
@@ -234,7 +278,10 @@ const schema = {
           <p class="depos-nota">4,9 ★ em 125 avaliações no Google</p>
         </div>
       </header>
-      <ul class="depos">
+      {/* Todos os depoimentos vão para o HTML. Sem JS a seção é uma lista
+          longa e completa, que é o comportamento honesto; é o script que a
+          dobra em páginas e faz o rodízio. */}
+      <ul class="depos" data-depos>
         {depoimentos.map((d) => (
           <li class="depo">
             <blockquote><p>{d.texto}</p></blockquote>
@@ -243,15 +290,54 @@ const schema = {
           </li>
         ))}
       </ul>
+
+      {/* Nasce escondida: com uma página só de depoimentos não há o que
+          navegar, e o script só a revela quando existe rodízio de verdade. */}
+      <div class="depos-nav" data-depos-nav hidden>
+        <button type="button" class="depos-pt" data-depos-ir="-1" aria-label="Depoimentos anteriores">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" /></svg>
+        </button>
+        <p class="caption num depos-conta" aria-live="polite">
+          <span data-depos-atual>1</span><span class="depos-sep">/</span><span data-depos-total>1</span>
+        </p>
+        <button type="button" class="depos-pt" data-depos-ir="1" aria-label="Próximos depoimentos">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
+        </button>
+      </div>
     </div>
   </section>
 
+  <!-- ─── Contato · o convite e o formulário na mesma seção ───
+       Eram dois blocos: um escuro dizendo "vamos conversar" com um botão que
+       rolava para o formulário, e o formulário logo abaixo. Duas seções para
+       o mesmo assunto, e um botão cujo único trabalho era descer 100px — quem
+       já estava lendo o convite tinha o formulário à direita, na mesma tela.
+
+       O texto editorial virou a coluna da esquerda; o telefone e o e-mail
+       continuam ali para quem não quer preencher nada. -->
+  <Formulario
+    ancora="pedido"
+    rotulo="Contato"
+    titulo="Vamos conversar sobre o seu projeto."
+    subtitulo="Nossa equipe técnica entende as necessidades do projeto e recomenda a solução em madeira — com dimensões, prazo e método de instalação. Cinco perguntas rápidas e no fim abrimos o WhatsApp com o seu pedido já escrito."
+    acao="Pedir orçamento"
+  >
+    <div class="contato-direto" slot="lado">
+      <a href="tel:+5511999600222">
+        <Icone nome="telefone" class="icone--detalhe" />+55 11 99960-0222
+      </a>
+      <a href="mailto:contato@parket.com.br">
+        <Icone nome="email" class="icone--detalhe" />contato@parket.com.br
+      </a>
+    </div>
+  </Formulario>
+
   <!-- ─── Acervo · o que remove atrito de quem especifica ─── -->
-  <section id="acervo" class="section wrap reveal">
+  <section id="acervo" class="section tom-papel wrap reveal">
     <header class="sec-cab">
       <div>
         <span class="badge">Para arquitetos</span>
-        <h2 class="h2 sec-tit">Catálogos e o banco<br class="so-desk" />de texturas 3D.</h2>
+        <h2 class="h2 sec-tit">Catálogos e o banco{' '}<br class="so-desk" />de texturas 3D.</h2>
         <p class="acervo-txt measure">
           Tudo o que o projeto pede antes da especificação, sem cadastro e sem
           espera — e a amostra física quando a decisão precisa da peça na mão.
@@ -269,41 +355,106 @@ const schema = {
       ))}
     </ul>
   </section>
-
-  <!-- ─── Pedido ─── -->
-  <section class="fim reveal">
-    <div class="wrap fim-in">
-      <div>
-        <p class="fim-badge"><span class="badge badge--dark">Contato</span></p>
-        <h2 class="h2 fim-tit">Vamos conversar<br class="so-desk" />sobre o seu projeto.</h2>
-        <p class="fim-txt measure">
-          Nossa equipe técnica entende as necessidades do projeto e recomenda a
-          solução em madeira — com dimensões, prazo e método de instalação.
-          Resposta em até um dia útil.
-        </p>
-      </div>
-      <div class="fim-acoes">
-        <a class="btn btn-on-dark" href="#pedido">Pedir o orçamento</a>
-        <a class="fim-direto" href="tel:+5511999600222">+55 11 99960-0222</a>
-        <a class="fim-direto" href="mailto:contato@parket.com.br">contato@parket.com.br</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── O pedido, na própria home ───
-       O bloco escuro acima é o fecho editorial; este é onde a conversa começa
-       de fato. Quem rolou a página inteira não precisa mudar de página para
-       pedir — e quem clicou num nome lá em cima continua indo para /contato,
-       que é onde a referência chega pela querystring. -->
-  <Formulario
-    ancora="pedido"
-    titulo="Peça o orçamento."
-    subtitulo="Cinco perguntas rápidas — metragem, superfícies e contato. No fim abrimos o WhatsApp com o seu pedido já escrito."
-    acao="Pedir orçamento"
-  />
 </Base>
 
 <script>
+  /* ─── Rodízio dos depoimentos ───
+     Os itens já estão todos no HTML; aqui eles viram páginas do tamanho do
+     que cabe numa fileira do grid — três no desktop, um no celular. A conta
+     sai do próprio grid computado, e não de um número escrito à mão, para
+     não desencontrar do CSS quando alguém mexer no breakpoint.
+
+     Com uma página só (hoje, com três depoimentos) o script não faz nada e a
+     navegação continua escondida: a seção fica exatamente como era. */
+  const listaDepos = document.querySelector<HTMLElement>('[data-depos]');
+  const navDepos = document.querySelector<HTMLElement>('[data-depos-nav]');
+
+  if (listaDepos && navDepos) {
+    const itens = [...listaDepos.querySelectorAll<HTMLElement>('.depo')];
+    const saidaAtual = navDepos.querySelector<HTMLElement>('[data-depos-atual]')!;
+    const saidaTotal = navDepos.querySelector<HTMLElement>('[data-depos-total]')!;
+    const calmo = matchMedia('(prefers-reduced-motion: reduce)');
+
+    let porPagina = 1;
+    let pagina = 0;
+    let relogio: ReturnType<typeof setInterval> | 0 = 0;
+
+    const paginas = () => Math.ceil(itens.length / porPagina);
+
+    const pintar = () => {
+      const inicio = pagina * porPagina;
+      itens.forEach((li, n) => { li.hidden = n < inicio || n >= inicio + porPagina; });
+      saidaAtual.textContent = String(pagina + 1);
+      saidaTotal.textContent = String(paginas());
+    };
+
+    /* O fade acontece na lista inteira: apaga, troca quem está visível com a
+       tela já em opacidade 0, acende. Sem o timer o leitor veria a troca. */
+    const irPara = (n: number) => {
+      const total = paginas();
+      pagina = (n + total) % total;
+      if (calmo.matches) { pintar(); return; }
+      listaDepos.dataset.trocando = '';
+      setTimeout(() => { pintar(); delete listaDepos.dataset.trocando; }, 420);
+    };
+
+    const parar = () => { clearInterval(relogio); relogio = 0; };
+    const andar = () => {
+      parar();
+      /* Sem rodízio automático para quem pediu menos movimento, e nenhum
+         timer rodando quando não há segunda página. */
+      if (paginas() < 2 || calmo.matches) return;
+      relogio = setInterval(() => irPara(pagina + 1), 7000);
+    };
+
+    /* Depoimento não tem tamanho fixo, e uma página mais curta que a outra
+       encolheria a seção no meio do rodízio — a página inteira daria um pulo
+       para cima. Então a lista reserva de antemão a altura da maior página.
+       Mede com tudo visível, uma vez por medida, e volta a esconder logo em
+       seguida: é o único jeito de saber a altura de quem está com hidden. */
+    const reservarAltura = () => {
+      listaDepos.style.minHeight = '';
+      itens.forEach((li) => { li.hidden = false; });
+      const alturas = itens.map((li) => li.offsetHeight);
+      let maior = 0;
+      for (let i = 0; i < itens.length; i += porPagina) {
+        maior = Math.max(maior, ...alturas.slice(i, i + porPagina));
+      }
+      listaDepos.style.minHeight = `${maior}px`;
+    };
+
+    /* Quantos cabem numa fileira: conta as colunas que o CSS resolveu. */
+    const medir = () => {
+      const colunas = getComputedStyle(listaDepos).gridTemplateColumns.split(' ').length;
+      const antes = porPagina;
+      porPagina = Math.max(1, colunas);
+      if (porPagina !== antes) pagina = 0;
+      navDepos.hidden = paginas() < 2;
+      if (paginas() > 1) reservarAltura();
+      pintar();
+      andar();
+    };
+
+    navDepos.querySelectorAll<HTMLButtonElement>('[data-depos-ir]').forEach((b) => {
+      b.addEventListener('click', () => {
+        irPara(pagina + Number(b.dataset.deposIr));
+        andar();   /* recomeça a contagem: quem navegou não quer troca em 1s */
+      });
+    });
+
+    /* Ler um depoimento leva mais de 7s. Enquanto o ponteiro ou o teclado
+       estiverem dentro da lista, nada se move. */
+    listaDepos.addEventListener('pointerenter', parar);
+    listaDepos.addEventListener('pointerleave', andar);
+    listaDepos.addEventListener('focusin', parar);
+    listaDepos.addEventListener('focusout', andar);
+    document.addEventListener('visibilitychange', () => (document.hidden ? parar() : andar()));
+
+    addEventListener('resize', medir);
+    calmo.addEventListener('change', medir);
+    medir();
+  }
+
   /* Região que rola precisa ser alcançável pelo teclado — mas só quando ela
      de fato rola. Um tabindex fixo criaria uma parada de tabulação inútil no
      desktop, onde os quatro números aparecem lado a lado sem corte. */
@@ -350,7 +501,7 @@ const schema = {
   .hero-link:hover { color: var(--wood); }
 
   /* ─── Prova ─── */
-  .provas { background: var(--paper); border-bottom: 1px solid var(--line); }
+  .provas { border-bottom: 1px solid var(--line); }
   /* Centralizada, e não pendurada na espinha esquerda como o resto da página:
      com quatro itens curtos em colunas largas, o alinhamento à esquerda
      deixava a sobra de cada coluna acumulada na direita — a última virava um
@@ -369,14 +520,77 @@ const schema = {
   .num-rot { display: block; margin-top: var(--s-1); }
 
   /* ─── Manifesto ─── */
-  .manifesto { background: var(--ground); color: var(--on-dark); padding-block: var(--section); }
+  .manifesto { padding-block: var(--section); }
   .mani-badge { margin-bottom: var(--s-4); }
   .mani-txt {
     font-size: clamp(1.75rem, 3.6vw, 3rem); font-weight: 200;
-    line-height: 1.18; letter-spacing: -.02em; color: var(--on-dark);
+    line-height: 1.18; letter-spacing: -.02em;
     max-width: 22ch;
   }
   .mani-sub { color: var(--on-dark-muted); margin-top: var(--s-4); font-size: var(--fs-small); }
+
+  /* O acervo agora vem depois do formulário, que tem fundo próprio. Sem isto
+     o `.section + .section` do tokens.css zera o topo dele e o badge "Para
+     arquitetos" encosta na borda do bloco cinza de cima. */
+  :global(.form-sec) + .section { padding-top: var(--section); }
+
+  /* ─── Sobre ─── */
+  /* Mesmo --ground do manifesto, de propósito: os dois deixam de ser duas
+     seções escuras seguidas e viram um bloco só — a frase de posicionamento e
+     a família que a sustenta. Por isso o padding de cima é zero: com ele, o
+     vão entre os dois textos virava dois --section dentro do mesmo preto. */
+  /* Três classes para vencer o `.tom-escuro + .section` do tokens.css: aqui
+     o padding de cima tem de continuar zerado, porque manifesto e sobre são
+     um bloco escuro só. */
+  .section.sobre.tom-escuro { padding-top: 0; padding-bottom: 0; }
+  /* 5/12 para o título, 7/12 para o texto — a mesma proporção do site atual.
+     O título fica pendurado no topo da coluna e o corpo desce um pouco, para
+     a primeira linha do lead alinhar com a segunda linha do título. */
+  .sobre-texto { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s-6) var(--s-12); align-items: start; }
+  .sobre-h2 { margin-top: var(--s-3); }
+  .sobre-corpo { display: flex; flex-direction: column; gap: var(--s-3); max-width: 640px; padding-top: var(--s-6); }
+  .sobre-lead { color: var(--on-dark); }
+  .sobre-sub { color: var(--on-dark-muted); font-size: var(--fs-small); line-height: 1.65; }
+
+  /* ─── A foto que invade a seção de baixo ───
+     O preto termina --invasao acima da borda da foto, e o pedaço que sobra
+     cai dentro da faixa de Superfícies. É o que costura os dois blocos: a
+     mesma imagem pertence ao escuro e ao claro ao mesmo tempo, e a emenda
+     deixa de ser uma linha reta atravessando a página.
+
+     A margem negativa é o que faz o truque — ela encurta o bloco escuro sem
+     mexer na foto, então a seção seguinte sobe por baixo dela. O z-index é
+     obrigatório: sem ele o fundo de Superfícies pinta por cima do pedaço
+     invasor. */
+  .sobre-foto {
+    position: relative; z-index: 1;
+    margin: var(--s-12) 0 calc(var(--invasao) * -1);
+    /* line-height 0 mata o vão de baseline embaixo da <img>: sem ele a sombra
+       nasce 4px abaixo da foto e lê como uma segunda borda.
+
+       A sombra é longa e quase transparente de propósito — some contra o
+       preto da metade de cima e só aparece no pedaço que cai no papel, que é
+       onde ela tem trabalho a fazer: separar a foto do fundo claro. Um valor
+       mais forte viraria um card com elevação, e a Parket não tem cards. */
+    line-height: 0;
+    box-shadow: 0 28px 64px -28px rgb(13 13 13 / .26);
+  }
+
+  /* ─── Superfícies ─── */
+  /* A faixa que quebra o papel. Entre o manifesto escuro e os depoimentos, a
+     página corria quatro seções seguidas no mesmo --paper e lia como uma
+     mancha clara só. --surface está 1,7 de ΔL* abaixo do papel: o olho separa
+     os dois, e a borda da faixa dá começo e fim a esta seção sem precisar de
+     filete. Sobre o cinza, a moldura de cada foto também passa a existir.
+
+     O filete no topo é o encontro com o bloco Sobre, que é papel: dois claros
+     vizinhos sem linha deixam a emenda borrada. */
+  /* Papel: é a seção que se navega, e ela vem logo depois do bloco escuro —
+     o contraste já separa as duas sem precisar de filete.
+
+     O padding de cima soma --invasao: sem isso o badge "Superfícies" começa
+     debaixo do pedaço da foto que desce do bloco escuro. */
+  .section.superficies.tom-papel { padding-top: calc(var(--section) + var(--invasao)); }
 
   /* ─── Superfícies · composição editorial, não grade de cards iguais ─── */
   .cats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s-6) var(--s-3); }
@@ -409,7 +623,6 @@ const schema = {
   .arco-cta { text-align: center; margin-top: var(--s-4); }
 
   /* ─── Depoimentos ─── */
-  .depos-sec { background: var(--surface); padding-block: var(--section); }
   /* A nota do Google é a credencial da seção: sem ela as três falas são
      texto solto; com ela, são a amostra de um agregado verificável. */
   .depos-nota {
@@ -427,6 +640,27 @@ const schema = {
   .depo blockquote p { font-size: var(--fs-small); line-height: 1.65; color: var(--text); }
   .depo-autor { padding-top: var(--s-3); font-size: var(--fs-small); color: var(--ink); }
 
+  /* ─── Rodízio ───
+     A troca é um fade e nada mais: depoimento é texto, e texto que desliza
+     obriga o olho a perseguir a linha em vez de ler. O .depo já é o item do
+     grid, então basta apagar e acender o conteúdo no mesmo lugar. */
+  .depo { transition: opacity var(--d-base) var(--ease); }
+  .depos[data-trocando] .depo { opacity: 0; }
+
+  .depos-nav { display: flex; align-items: center; justify-content: center; gap: var(--s-3); margin-top: var(--s-6); }
+  .depos-conta { color: var(--muted); }
+  .depos-sep { margin: 0 4px; color: var(--line); }
+  /* Mesma seta e mesmo alvo de 44px da régua de texturas — é o mesmo gesto
+     na mesma página, não pode ter dois desenhos. */
+  .depos-pt {
+    flex: none; width: 44px; height: 44px; display: grid; place-items: center;
+    border: 1px solid var(--line); background: transparent; color: var(--muted);
+    cursor: pointer;
+    transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+  }
+  .depos-pt svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .depos-pt:hover { color: var(--ink); border-color: var(--wood); }
+
   /* ─── Acervo ─── */
   .acervo-txt { color: var(--muted); margin-top: var(--s-3); font-size: var(--fs-small); }
   .acervo-itens {
@@ -437,17 +671,20 @@ const schema = {
   .acervo-item-txt { margin-top: var(--s-1); font-size: var(--fs-small); color: var(--muted); }
 
   /* ─── Pedido ─── */
-  .fim { background: var(--ground); color: var(--on-dark); padding-block: var(--section); }
-  .fim-in { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--s-8); align-items: end; }
-  .fim-badge { margin-bottom: var(--s-2); }
-  .fim-tit { color: var(--on-dark); margin-top: var(--s-2); }
-  .fim-txt { color: var(--on-dark-muted); margin-top: var(--s-3); font-size: var(--fs-small); }
-  .fim-acoes { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-2); }
-  .fim-direto {
-    font-size: var(--fs-small); color: var(--on-dark-muted);
+  /* Canais diretos dentro do formulário (slot "lado"). Vivem aqui, e não no
+     Formulario.astro, porque só a home passa este slot — e o estilo escopado
+     do Astro acompanha o markup de quem preenche o slot, não o de quem o
+     declara.
+
+     Cor de texto --muted e não --wood: aqui o telefone e o e-mail estão sobre
+     fundo claro e são conteúdo, não enfeite. Só o glifo usa a cor de detalhe. */
+  .contato-direto { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-2); margin-top: var(--s-4); }
+  .contato-direto a {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: var(--fs-small); color: var(--muted);
     transition: color var(--d-fast) var(--ease);
   }
-  .fim-direto:hover { color: var(--wood); }
+  .contato-direto a:hover { color: var(--ink); }
 
   @media (max-width: 900px) {
     .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -456,7 +693,9 @@ const schema = {
     .numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-3); }
     .depos { grid-template-columns: 1fr; gap: var(--s-4); }
     .acervo-itens { grid-template-columns: 1fr; gap: var(--s-4); }
-    .fim-in { grid-template-columns: 1fr; gap: var(--s-6); }
+    .sobre-texto { grid-template-columns: 1fr; gap: var(--s-4); }
+    .sobre-corpo { padding-top: 0; }
+    .sobre-foto { margin-top: var(--s-8); }
   }
   /* ─── Números viram carrossel no celular ───
      Em duas colunas de ~156px o rótulo mais longo ("Cadeia produtiva própria

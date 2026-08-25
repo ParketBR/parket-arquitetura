@@ -72,6 +72,10 @@ const pose = (i: number) => {
     overflow: hidden; border-radius: var(--radius-media);
     background: var(--surface);
   }
+  /* Em seção escura o placeholder claro pisca um retângulo branco antes de a
+     foto carregar. Um véu sobre o preto faz o mesmo trabalho sem o susto. */
+  :global(.tom-escuro) .arco-media { background: rgb(232 228 223 / .06); }
+  :global(.tom-escuro) .arco-item:hover .arco-legenda { color: var(--on-dark); }
   .arco-media :global(.foto) {
     transform: scale(1);
     transition: transform var(--d-base) var(--ease);

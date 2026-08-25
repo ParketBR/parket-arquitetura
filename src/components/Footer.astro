@@ -7,6 +7,7 @@
  * o rodapé antigo apontava para /arquitetos/texturas e /arquitetos/fichas,
  * que não existem mais.
  */
+import Icone from './Icone.astro';
 import { categoriasOrdenadas } from '../lib/catalogo';
 import { catalogoDaCategoria, CATALOGOS_AVULSOS } from '../lib/catalogos';
 
@@ -79,8 +80,14 @@ const ano = new Date().getFullYear();
       <div class="rod-show">
         <p class="label">Contato</p>
         <address>
-          <span><a href="mailto:contato@parket.com.br">contato@parket.com.br</a></span>
-          <span><a href="tel:+5511999600222">+55 11 99960-0222</a></span>
+          <span class="rod-contato">
+            <Icone nome="email" class="icone--detalhe" />
+            <a href="mailto:contato@parket.com.br">contato@parket.com.br</a>
+          </span>
+          <span class="rod-contato">
+            <Icone nome="telefone" class="icone--detalhe" />
+            <a href="tel:+5511999600222">+55 11 99960-0222</a>
+          </span>
         </address>
       </div>
     </div>
@@ -127,6 +134,15 @@ const ano = new Date().getFullYear();
   }
   .rod-show address { font-style: normal; font-size: var(--fs-small); line-height: 1.6; color: var(--on-dark-muted); }
   .rod-show address span { display: block; }
+  /* Alinhado pelo topo com um empurrão de 3px: o glifo é uma caixa de 16px e
+     o texto tem line-height 1.6 — centralizar pelo eixo deixaria o glifo
+     abaixo da primeira letra. */
+  /* Precisa repetir `.rod-show address` na frente: escopado, o seletor de
+     cima vira `.rod-show address span[data-astro-cid]` e ganha de um
+     `.rod-contato[data-astro-cid]` sozinho — o glifo caía numa linha
+     própria, acima do endereço. */
+  .rod-show address span.rod-contato { display: flex; align-items: flex-start; gap: 10px; }
+  .rod-contato :global(.icone) { margin-top: 3px; }
 
   .rod-base { color: var(--on-dark-muted); padding-top: var(--s-4); border-top: 1px solid rgb(232 228 223 / .14); }
 

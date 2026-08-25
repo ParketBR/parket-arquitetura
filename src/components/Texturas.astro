@@ -48,7 +48,7 @@ const primeira = especies[0];
 const total = String(especies.length).padStart(2, '0');
 ---
 
-<section id="madeiras" class="section wrap reveal tex-sec">
+<section id="madeiras" class="section tom-areia wrap reveal tex-sec">
   <header class="sec-cab">
     <div>
       <span class="badge">Revestimentos</span>
@@ -187,7 +187,9 @@ const total = String(especies.length).padStart(2, '0');
     fill: none; stroke: currentColor; stroke-width: 1.4;
     stroke-linecap: round; stroke-linejoin: round;
   }
-  .tex-seta:hover { color: var(--ink); border-color: var(--wood); background: var(--surface); }
+  /* --surface-2 e não --surface: a seção inteira é areia, e o hover precisa
+     de um degrau abaixo dela para aparecer. */
+  .tex-seta:hover { color: var(--ink); border-color: var(--wood); background: var(--surface-2); }
   .tex-seta[disabled] { opacity: .28; cursor: default; pointer-events: none; }
 
   .tex-regua {

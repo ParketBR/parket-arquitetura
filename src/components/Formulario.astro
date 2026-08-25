@@ -24,11 +24,14 @@ interface Props {
   acao: string;
   /** id da seção, para o CTA da home poder rolar até aqui. */
   ancora?: string;
+  /** Rótulo da coluna da esquerda. Na home esta seção também é o bloco de
+      contato do fim da página, então lá ele vira "Contato". */
+  rotulo?: string;
   /** Em /contato o formulário abre a página, então o título dele é o h1.
       Na home o h1 é o do hero e este continua sendo h2. */
   comoH1?: boolean;
 }
-const { titulo, subtitulo, acao, ancora, comoH1 = false } = Astro.props;
+const { titulo, subtitulo, acao, ancora, rotulo = 'Pedido', comoH1 = false } = Astro.props;
 const Titulo = comoH1 ? 'h1' : 'h2';
 
 /* Mesmo número do BotaoWhatsApp, do rodapé e do JSON-LD. Quatro cópias no
@@ -68,18 +71,26 @@ const escopos = [
 const PASSOS = 5;
 ---
 
-<section class="form-sec section" id={ancora}>
+<section class="form-sec section tom-areia" id={ancora}>
   <div class="wrap form-in">
     <div class="form-lado">
-      <p class="label">Pedido</p>
-      <Titulo class:list={[comoH1 ? 'h1' : 'h2', 'form-tit']}>{titulo}</Titulo>
-      <p class="form-sub measure">{subtitulo}</p>
+      <div class="form-copy">
+        <p class="label">{rotulo}</p>
+        <Titulo class:list={[comoH1 ? 'h1' : 'h2', 'form-tit']}>{titulo}</Titulo>
+        <p class="form-sub measure">{subtitulo}</p>
+      </div>
 
-      <dl class="form-meta">
-        <div><dt>Resposta</dt><dd>Em até um dia útil</dd></div>
-        <div><dt>Showrooms</dt><dd>São Paulo · Brasília</dd></div>
-        <div><dt>Direto</dt><dd><a href="mailto:contato@parket.com.br">contato@parket.com.br</a></dd></div>
-      </dl>
+      <div class="form-apoio">
+        <dl class="form-meta">
+          <div><dt>Resposta</dt><dd>Em até um dia útil</dd></div>
+          <div><dt>Showrooms</dt><dd>São Paulo · Brasília</dd></div>
+        </dl>
+
+        {/* Canais diretos, para quem não quer preencher nada. Vêm por slot
+            porque só a home precisa deles aqui: em /contato a mesma informação
+            já está na lista de canais logo abaixo do formulário. */}
+        <slot name="lado" />
+      </div>
     </div>
 
     <form class="form" novalidate data-form data-acao={acao} data-zap={WHATSAPP}>
@@ -265,12 +276,26 @@ const PASSOS = 5;
 </section>
 
 <style>
-  .form-sec { background: var(--surface); }
-  .form-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s-8); align-items: start; }
+  /* Texto e formulário empilhados, não lado a lado: o convite deitou numa
+     faixa horizontal no topo e o formulário ficou com a largura inteira.
+     Cinco passos que aparecem um por vez são baixos — numa coluna estreita
+     sobrava um vazio à esquerda do mesmo tamanho do formulário. */
+  .form-in { display: grid; gap: var(--s-8); }
+
+  /* A faixa: discurso à esquerda, dados de apoio à direita. A proporção é a
+     mesma do resto da página (texto largo, coluna de apoio estreita), e o
+     filete embaixo separa o convite do formulário sem precisar de outra cor. */
+  .form-lado {
+    display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--s-6) var(--s-8); align-items: start;
+    padding-bottom: var(--s-6); border-bottom: 1px solid var(--line);
+  }
   .form-tit { margin: var(--s-2) 0 var(--s-3); }
   .form-sub { color: var(--muted); font-size: var(--fs-small); }
 
-  .form-meta { margin-top: var(--s-6); border-top: 1px solid var(--line); }
+  /* Sem margem no topo: na faixa a lista começa alinhada com o rótulo da
+     esquerda, e não empurrada para baixo como quando era uma coluna só. */
+  .form-meta { border-top: 1px solid var(--line); }
   .form-meta > div { display: flex; justify-content: space-between; gap: var(--s-2); padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
   .form-meta dt { font-size: var(--fs-caption); color: var(--muted); }
   .form-meta dd { margin: 0; font-size: var(--fs-caption); color: var(--ink); text-align: right; }
@@ -386,7 +411,15 @@ const PASSOS = 5;
   .resumo-lista :global(dd) { margin: 0; font-size: var(--fs-caption); color: var(--ink); text-align: right; }
 
   /* ─── Navegação ─── */
-  .form-fim { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-top: var(--s-2); }
+  /* A ação de avançar mora na direita, no fim da linha de leitura do passo —
+     é para onde a mão vai depois de preencher o último campo. O "← Voltar"
+     fica preso na esquerda pelo margin-right: auto, e quando ele não existe
+     (passo 1) o justify-content sozinho segura o avançar na direita. */
+  .form-fim {
+    display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: flex-end; gap: var(--s-3); margin-top: var(--s-2);
+  }
+  .nav-voltar { margin-right: auto; }
   .form-nota { max-width: 34ch; }
   .form-ok { grid-column: 1 / -1; padding: var(--s-3); background: var(--paper); border-left: 2px solid var(--wood); }
   .form-ok-tit { font-size: var(--fs-body); color: var(--ink); margin-bottom: 4px; }
@@ -400,7 +433,10 @@ const PASSOS = 5;
   }
   .ref-limpar:hover { color: var(--ink); }
 
-  @media (max-width: 900px) { .form-in { grid-template-columns: 1fr; gap: var(--s-6); } }
+  @media (max-width: 900px) {
+    .form-in { gap: var(--s-6); }
+    .form-lado { grid-template-columns: 1fr; gap: var(--s-4); }
+  }
   @media (max-width: 640px) {
     .passo { grid-template-columns: 1fr; }
     .cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
