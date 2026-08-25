@@ -1,0 +1,434 @@
+---
+/**
+ * Texturas — a seção #madeiras.
+ *
+ * Porte do visualizador que o catálogo de pisos já usa e já validou
+ * (Catalogo-Pisos-geral, seção #texturas): uma textura grande por vez, com
+ * nome, descrição, contador, setas e arraste.
+ *
+ * Substituiu a faixa de cartões porque a faixa prometia um clique que o
+ * navegador não entregava: o cartão era um <a>, mas o `setPointerCapture` do
+ * arrasto mandava o evento de clique para o <ul> que capturou o ponteiro, e o
+ * link nunca era ativado. Aqui a régua não contém link nenhum — o alvo do
+ * clique é um botão de verdade, fora da imagem —, então o problema não tem
+ * como voltar.
+ *
+ * A ordem é a de ORDEM_TOM: da mais clara à mais escura, por L* medido. Mesmo
+ * critério do catálogo, e o único eixo que o olho lê sem legenda.
+ */
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import { ORDEM_TOM, texturaDaEspecie, descricaoDaEspecie } from '../lib/texturas';
+import { especiePor, urlPedido } from '../lib/catalogo';
+
+/* A régua ocupa ~330px de largura em CSS. Pedir mais que 560 é jogar bytes
+   fora — são 19 imagens empilhadas no mesmo lugar, e o navegador carrega todas
+   quando a seção entra na tela. O Math.min evita pedir upscale das texturas
+   que já nascem com 300px. */
+const LARGURA_MAX = 560;
+
+const especies = ORDEM_TOM.map((id) => {
+  const especie = especiePor(id);
+  const textura = texturaDaEspecie(id);
+  if (!especie || !textura) return null;
+  return {
+    id,
+    nome: especie.nome,
+    descricao: descricaoDaEspecie(id) ?? '',
+    href: urlPedido(id),
+    textura,
+    largura: Math.min(LARGURA_MAX, textura.width),
+  };
+}).filter(Boolean) as {
+  id: string; nome: string; descricao: string; href: string;
+  textura: ImageMetadata; largura: number;
+}[];
+
+const primeira = especies[0];
+const total = String(especies.length).padStart(2, '0');
+---
+
+<section id="madeiras" class="section wrap reveal tex-sec">
+  <header class="sec-cab">
+    <div>
+      <span class="badge">Revestimentos</span>
+      {/* O espaço antes do <br> é obrigatório: abaixo de 700px o .so-desk sai
+          do fluxo e, sem ele, as duas metades colam em "nobres,origens". */}
+      <h2 class="h2 sec-tit">Madeiras nobres,{' '}<br class="so-desk" />origens certificadas.</h2>
+    </div>
+    <a class="link-action" href="/contato">Falar sobre uma espécie</a>
+  </header>
+
+  <div class="tex-palco-geral">
+    <div class="tex-copy">
+      <!-- O contador vem antes do nome de propósito: ele é o que diz que
+           "Cabreúva Branca" é um item de uma série, e não um segundo título
+           da seção competindo com o h2. -->
+      <p class="tex-contador num">
+        <span id="tex-atual">01</span><span class="tex-sep">/</span><span class="tex-total">{total}</span>
+      </p>
+      <div class="tex-trilha" aria-hidden="true"><span></span></div>
+
+      <h3 class="tex-nome" id="tex-nome" aria-live="polite">{primeira.nome}</h3>
+      <p class="tex-desc" id="tex-desc" aria-live="polite">{primeira.descricao}</p>
+
+      <a class="btn btn-ghost tex-cta" id="tex-cta" href={primeira.href}>
+        Especificar <span id="tex-cta-nome">{primeira.nome}</span>
+      </a>
+    </div>
+
+    <div class="tex-palco">
+      <button class="tex-seta" type="button" data-dir="-1" aria-label="Textura anterior" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" /></svg>
+      </button>
+
+      <div class="tex-regua" id="tex-regua" aria-hidden="true">
+        {especies.map((e, i) => (
+          <Image
+            src={e.textura} alt="" width={e.largura}
+            format="avif" quality={62}
+            loading={i === 0 ? 'eager' : 'lazy'} decoding="async"
+            class={i === 0 ? 'is-visivel' : undefined}
+            data-id={e.id} data-nome={e.nome} data-desc={e.descricao} data-href={e.href}
+          />
+        ))}
+      </div>
+
+      <button class="tex-seta" type="button" data-dir="1" aria-label="Próxima textura">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
+      </button>
+
+      <p class="tex-dica" aria-hidden="true">
+        <span class="tex-dica-icone">
+          <svg viewBox="0 0 40 12" aria-hidden="true">
+            <path d="M6 6h28M6 6l4-4M6 6l4 4M34 6l-4-4M34 6l-4 4" />
+          </svg>
+        </span>
+        <span>Deslize para os lados</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tex-palco-geral {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+    align-items: center;
+    gap: var(--s-8);
+  }
+
+  /* ─── Coluna do texto ─── */
+  /* O nome fica deliberadamente abaixo do --fs-h2: ele é o item da vez, não o
+     título da seção. Deixá-lo maior que "Madeiras nobres, origens
+     certificadas." invertia a hierarquia da página inteira.
+
+     O min-height reserva o pior caso para o layout não pular a cada troca —
+     as descrições vão de duas a quatro linhas. */
+  .tex-nome {
+    margin-top: var(--s-4);
+    font-size: clamp(1.75rem, 2.6vw, 2.125rem); font-weight: 200;
+    line-height: 1.1; letter-spacing: -.02em; color: var(--ink);
+    min-height: 1.15em;
+    transition: opacity var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
+  }
+  .tex-desc {
+    margin-top: var(--s-2); max-width: 34ch;
+    font-size: var(--fs-small); line-height: 1.7; color: var(--muted);
+    /* 5,2em = as quatro linhas da descrição mais longa (Carvalho Europeu) na
+       caixa de 34ch. Medido, não chutado: como o corpo e o max-width são
+       fixos, a caixa tem a mesma largura em qualquer viewport ≥900px. */
+    min-height: 5.2em;
+    transition: opacity var(--d-fast) var(--ease) 50ms, transform var(--d-fast) var(--ease) 50ms;
+  }
+  .tex-nome.is-trocando { opacity: 0; transform: translateY(14px); }
+  .tex-desc.is-trocando { opacity: 0; transform: translateY(10px); }
+
+  .tex-contador {
+    font-size: var(--fs-caption); letter-spacing: .2em; color: var(--wood-text);
+  }
+  .tex-sep { color: var(--muted); margin: 0 .5em; }
+  .tex-total { color: var(--muted); }
+
+  .tex-trilha {
+    margin-top: var(--s-1); width: clamp(120px, 18vw, 240px);
+    height: 1px; background: var(--line);
+  }
+  .tex-trilha span {
+    display: block; height: 100%; width: 100%;
+    background: var(--wood);
+    transform-origin: left;
+    transform: scaleX(var(--tex-p, 0));
+    transition: transform var(--d-base) var(--ease);
+  }
+
+  .tex-cta { margin-top: var(--s-4); }
+
+  /* ─── Palco: seta · régua · seta ─── */
+  .tex-palco {
+    position: relative; justify-self: center;
+    display: flex; align-items: center;
+    gap: clamp(var(--s-1), 2vw, var(--s-3));
+    /* Sem isto o arrasto horizontal na régua rouba o scroll vertical da
+       página no toque. */
+    touch-action: pan-y;
+  }
+
+  .tex-seta {
+    flex: none; width: 44px; height: 44px;
+    display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 50%;
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease),
+                background var(--d-fast) var(--ease), opacity var(--d-fast) var(--ease);
+  }
+  .tex-seta svg {
+    width: 18px; height: 18px;
+    fill: none; stroke: currentColor; stroke-width: 1.4;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .tex-seta:hover { color: var(--ink); border-color: var(--wood); background: var(--surface); }
+  .tex-seta[disabled] { opacity: .28; cursor: default; pointer-events: none; }
+
+  .tex-regua {
+    position: relative;
+    height: min(58vh, 520px);
+    aspect-ratio: 300 / 515;
+    overflow: hidden;
+    background: var(--surface-2);
+    /* Explícito na régua, e não só no palco: é aqui que o dedo pousa, e a
+       intenção é "a página rola na vertical, o gesto lateral é meu". */
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none; -webkit-user-select: none;
+  }
+  .tex-regua.is-arrastando { cursor: grabbing; }
+  .tex-regua::after {
+    content: ''; position: absolute; inset: 0;
+    border: 1px solid rgb(0 0 0 / .10); pointer-events: none;
+  }
+
+  /* As 19 texturas ficam empilhadas no mesmo lugar; só a ativa tem opacidade.
+     O `--sai` dá a direção da entrada e da saída, e o `--arrasto` deixa a
+     imagem acompanhar o ponteiro enquanto a mão está na régua. */
+  .tex-regua :global(img) {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%; object-fit: cover;
+    opacity: 0;
+    transform: translateX(var(--sai, 0%)) scale(1.04);
+    transition: opacity .55s cubic-bezier(.22,.61,.36,1),
+                transform .75s cubic-bezier(.22,.61,.36,1);
+    pointer-events: none;
+  }
+  .tex-regua :global(img.is-visivel) {
+    opacity: 1;
+    transform: translateX(var(--arrasto, 0px)) scale(1);
+  }
+  .tex-regua.is-arrastando :global(img.is-visivel) { transition: none; }
+
+  /* ─── Dica de arraste ─── */
+  .tex-dica {
+    position: absolute; left: 50%; bottom: -2.6rem;
+    transform: translateX(-50%);
+    display: inline-flex; align-items: center; gap: .7em;
+    white-space: nowrap;
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--muted); pointer-events: none;
+  }
+  .tex-dica-icone svg {
+    display: block; width: 40px; height: 12px;
+    fill: none; stroke: var(--wood); stroke-width: 1.2;
+    stroke-linecap: round; stroke-linejoin: round;
+    animation: texDica 2.4s var(--ease) infinite;
+  }
+  @keyframes texDica {
+    0%, 100% { transform: translateX(-4px); }
+    50%      { transform: translateX(4px); }
+  }
+  /* Depois do primeiro uso a dica cumpriu o papel e sai de cena. */
+  .tex-palco.is-usado .tex-dica { opacity: 0; transition: opacity var(--d-base) var(--ease); }
+
+  @media (max-width: 900px) {
+    .tex-palco-geral { grid-template-columns: 1fr; gap: var(--s-6); }
+    .tex-copy { text-align: center; }
+    .tex-desc { margin-inline: auto; }
+    .tex-trilha { margin-inline: auto; }
+    .tex-nome, .tex-desc { min-height: auto; }
+    .tex-regua { height: min(46vh, 420px); justify-self: center; }
+
+    /* No estreito as setas saem das laterais e viram uma barra embaixo da
+       régua. Ladeando, elas eram espremidas contra as bordas da tela e a
+       seta da direita ficava debaixo do botão flutuante do WhatsApp — o
+       alvo existia, mas não dava para acertar. */
+    .tex-palco {
+      display: grid;
+      grid-template-areas: "regua regua" "dica dica" "prev next";
+      grid-template-columns: auto auto;
+      justify-content: center;
+      gap: var(--s-3);
+    }
+    /* As colunas herdam a largura da régua, que atravessa as duas. Sem o
+       justify-self cada seta encostaria no início da sua coluna e o par
+       ficaria espalhado sob a imagem em vez de junto, no centro. */
+    .tex-regua { grid-area: regua; }
+    .tex-seta[data-dir="-1"] { grid-area: prev; justify-self: end; }
+    .tex-seta[data-dir="1"]  { grid-area: next; justify-self: start; }
+    /* Em fluxo, e não absoluta: ao sumir depois do primeiro uso ela guarda o
+       próprio espaço, e a barra de setas não pula. */
+    .tex-dica {
+      grid-area: dica; justify-self: center;
+      position: static; transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tex-regua :global(img), .tex-nome, .tex-desc, .tex-trilha span { transition: none; }
+    .tex-nome.is-trocando, .tex-desc.is-trocando { opacity: 1; transform: none; }
+    .tex-regua :global(img) { transform: none; }
+    .tex-regua :global(img.is-visivel) { transform: none; }
+    .tex-dica-icone svg { animation: none; }
+  }
+</style>
+
+<script>
+  /* Navegação lateral entre as texturas. Portado de catalogo.js do catálogo de
+     pisos — setas, roda horizontal, arraste e teclado. Os dados de cada espécie
+     viajam nos data-* das próprias imagens: não há lista duplicada entre o
+     servidor e o cliente. */
+  (() => {
+    const secao = document.getElementById('madeiras');
+    const regua = document.getElementById('tex-regua');
+    if (!secao || !regua) return;
+
+    const imgs = Array.from(regua.querySelectorAll<HTMLImageElement>('img'));
+    if (imgs.length < 2) return;
+
+    const nome   = document.getElementById('tex-nome')!;
+    const desc   = document.getElementById('tex-desc')!;
+    const atual  = document.getElementById('tex-atual')!;
+    const cta    = document.getElementById('tex-cta') as HTMLAnchorElement;
+    const ctaNome = document.getElementById('tex-cta-nome')!;
+    const trilha = secao.querySelector<HTMLElement>('.tex-trilha span')!;
+    const palco  = secao.querySelector<HTMLElement>('.tex-palco')!;
+    const setas  = Array.from(secao.querySelectorAll<HTMLButtonElement>('.tex-seta'));
+
+    const n = imgs.length;
+    const pad = (v: number) => String(v).padStart(2, '0');
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
+    let idx = 0;
+    let timerTexto: ReturnType<typeof setTimeout> | null = null;
+
+    /* dir: +1 avança (a nova entra pela direita), -1 volta (entra pela esquerda) */
+    const ir = (proximo: number, dir?: number) => {
+      proximo = clamp(proximo, 0, n - 1);
+      if (proximo === idx) return;
+      if (!dir) dir = proximo > idx ? 1 : -1;
+
+      const sai = imgs[idx];
+      const entra = imgs[proximo];
+      sai.style.setProperty('--sai', (dir * -8) + '%');
+      sai.classList.remove('is-visivel');
+      entra.style.setProperty('--sai', (dir * 8) + '%');
+      entra.style.setProperty('--arrasto', '0px');
+      /* Força o reflow para a posição inicial valer antes da transição —
+         sem isto a imagem entra sem deslocamento nenhum. */
+      void entra.offsetWidth;
+      entra.classList.add('is-visivel');
+
+      idx = proximo;
+      atual.textContent = pad(proximo + 1);
+      trilha.style.setProperty('--tex-p', (proximo / (n - 1)).toFixed(4));
+
+      nome.classList.add('is-trocando');
+      desc.classList.add('is-trocando');
+      if (timerTexto) clearTimeout(timerTexto);
+      timerTexto = setTimeout(() => {
+        nome.textContent = entra.dataset.nome ?? '';
+        desc.textContent = entra.dataset.desc ?? '';
+        ctaNome.textContent = entra.dataset.nome ?? '';
+        cta.href = entra.dataset.href ?? '/contato';
+        nome.classList.remove('is-trocando');
+        desc.classList.remove('is-trocando');
+      }, 200);
+
+      for (const b of setas) {
+        const d = Number(b.dataset.dir);
+        b.disabled = (d < 0 && idx === 0) || (d > 0 && idx === n - 1);
+      }
+      palco.classList.add('is-usado');
+    };
+
+    trilha.style.setProperty('--tex-p', '0');
+    for (const b of setas) {
+      b.addEventListener('click', () => ir(idx + Number(b.dataset.dir), Number(b.dataset.dir)));
+    }
+
+    /* ── Roda horizontal do trackpad, e shift+scroll para quem tem mouse ── */
+    let acumulado = 0, travado = false;
+    secao.addEventListener('wheel', (e) => {
+      const dx = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : (e.shiftKey ? e.deltaY : 0);
+      if (!dx) return;
+      e.preventDefault();
+      if (travado) return;
+      acumulado += dx;
+      if (Math.abs(acumulado) < 60) return;
+      const dir = acumulado > 0 ? 1 : -1;
+      acumulado = 0;
+      travado = true;
+      setTimeout(() => { travado = false; }, 320);
+      ir(idx + dir, dir);
+    }, { passive: false });
+
+    /* ── Arraste sobre a régua ──
+       O setPointerCapture aqui é seguro: a régua não contém link nenhum. Era
+       exatamente o oposto na faixa de cartões que esta seção substituiu — lá a
+       captura roubava o clique do <a> e a navegação nunca acontecia. */
+    let inicioX: number | null = null;
+    let largura = 1;
+
+    regua.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      inicioX = e.clientX;
+      largura = regua.offsetWidth || 1;
+      regua.classList.add('is-arrastando');
+      regua.setPointerCapture(e.pointerId);
+    });
+
+    regua.addEventListener('pointermove', (e) => {
+      if (inicioX === null) return;
+      /* 0.25 do deslocamento: a imagem responde à mão sem sair do quadro. */
+      imgs[idx].style.setProperty('--arrasto', ((e.clientX - inicioX) * 0.25).toFixed(1) + 'px');
+    });
+
+    const soltar = (e: PointerEvent, confirma: boolean) => {
+      if (inicioX === null) return;
+      const dx = e.clientX - inicioX;
+      inicioX = null;
+      regua.classList.remove('is-arrastando');
+      imgs[idx].style.setProperty('--arrasto', '0px');
+      try { regua.releasePointerCapture(e.pointerId); } catch { /* já solto */ }
+      if (confirma && Math.abs(dx) > Math.max(40, largura * 0.12)) {
+        ir(idx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+      }
+    };
+    regua.addEventListener('pointerup', (e) => soltar(e, true));
+    /* Cancelamento não é gesto: quando o navegador toma o ponteiro para rolar
+       a página, o dedo já andou de lado o bastante para passar do limiar, e
+       trocar a textura aí faria a seção se mexer sozinha no meio do scroll.
+       Desfaz e não comita. */
+    regua.addEventListener('pointercancel', (e) => soltar(e, false));
+
+    /* ── Setas do teclado, mas só quando a seção está em cena ── */
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      const alvo = e.target as HTMLElement | null;
+      if (alvo && /^(INPUT|TEXTAREA|SELECT)$/.test(alvo.tagName)) return;
+      const r = secao.getBoundingClientRect();
+      if (r.bottom < innerHeight * 0.3 || r.top > innerHeight * 0.7) return;
+      const dir = e.key === 'ArrowRight' ? 1 : -1;
+      ir(idx + dir, dir);
+    });
+  })();
+</script>

@@ -1,0 +1,137 @@
+---
+/**
+ * Rodapé da one page.
+ *
+ * A coluna de navegação virou âncora da própria página; a de "Especificar"
+ * virou a lista de catálogos publicados, que são links reais e externos —
+ * o rodapé antigo apontava para /arquitetos/texturas e /arquitetos/fichas,
+ * que não existem mais.
+ */
+import { categoriasOrdenadas } from '../lib/catalogo';
+import { catalogoDaCategoria, CATALOGOS_AVULSOS } from '../lib/catalogos';
+
+const showrooms = [
+  { cidade: 'São Paulo', linhas: ['Avenida Magalhães de Castro, 4800', 'Torre 1, Edifício Capital · Cj. 201', 'Jardim Panorama — São Paulo · SP'] },
+  { cidade: 'Brasília',  linhas: ['SHIS QI 21 BL B, Ed. IAS 06/58', 'Lago Sul — Brasília · DF'] },
+];
+
+const naPagina = [
+  { nome: 'Superfícies', href: '/#superficies' },
+  { nome: 'Madeiras',    href: '/#madeiras' },
+  { nome: 'Projetos',    href: '/#projetos' },
+  { nome: 'Acervo',      href: '/#acervo' },
+  { nome: 'Contato',     href: '/contato' },
+];
+
+/* Só entra quem tem catálogo publicado — Portas não tem, e some da lista. */
+const catalogos = [
+  ...categoriasOrdenadas
+    .map((c) => ({ nome: c.nome, href: catalogoDaCategoria(c.id) }))
+    .filter((c): c is { nome: string; href: string } => Boolean(c.href)),
+  ...CATALOGOS_AVULSOS.map((c) => ({ nome: c.nome, href: c.href })),
+];
+
+const sociais = [
+  { nome: 'Instagram', href: 'https://www.instagram.com/parketpisos/' },
+  { nome: 'YouTube',   href: 'https://www.youtube.com/@Parketoficial' },
+  { nome: 'Pinterest', href: 'https://br.pinterest.com/parketpisosrevestimentos/' },
+];
+
+const ano = new Date().getFullYear();
+---
+
+<footer class="rod">
+  <div class="wrap">
+    <div class="rod-topo">
+      <div class="rod-marca">
+        <p class="marca">Parket</p>
+        <p class="rod-frase">Superfícies naturais desenvolvidas para projetos que atravessam o tempo.</p>
+        <a class="btn btn-on-dark rod-cta" href="/contato">Falar com um especialista</a>
+      </div>
+
+      <nav class="rod-cols" aria-label="Rodapé">
+        <div>
+          <p class="label">Na página</p>
+          <ul>{naPagina.map((l) => <li><a href={l.href}>{l.nome}</a></li>)}</ul>
+        </div>
+        <div>
+          <p class="label">Catálogos</p>
+          <ul>{catalogos.map((c) => (
+            <li><a href={c.href} rel="noopener noreferrer" target="_blank">{c.nome}</a></li>
+          ))}</ul>
+        </div>
+        <div>
+          <p class="label">Acompanhe</p>
+          <ul>{sociais.map((s) => (
+            <li><a href={s.href} rel="noopener noreferrer" target="_blank">{s.nome}</a></li>
+          ))}</ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="rod-showrooms">
+      {showrooms.map((s) => (
+        <div class="rod-show">
+          <p class="label">Showroom {s.cidade}</p>
+          <address>{s.linhas.map((l) => <span>{l}</span>)}</address>
+        </div>
+      ))}
+      <div class="rod-show">
+        <p class="label">Contato</p>
+        <address>
+          <span><a href="mailto:contato@parket.com.br">contato@parket.com.br</a></span>
+          <span><a href="tel:+5511999600222">+55 11 99960-0222</a></span>
+        </address>
+      </div>
+    </div>
+
+    <p class="rod-base caption">© {ano} Parket. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  /* O bloco de pedido que vem antes também é --ground: sem o filete os dois
+     viram uma mancha escura só e o rodapé perde o começo. */
+  .rod {
+    background: var(--ground); color: var(--on-dark);
+    padding-block: var(--s-12) var(--s-6);
+    border-top: 1px solid rgb(232 228 223 / .14);
+  }
+  /* `:not(.btn)` não é preciosismo: `.rod a` tem especificidade 0,1,1 e vence
+     `.btn-on-dark` (0,1,0), então o `color: inherit` daqui pintava o texto do
+     botão com a cor do rodapé — mesma cor do fundo dele. O botão sumia e
+     sobrava um retângulo claro vazio. O botão traz a própria cor e o próprio
+     hover; a regra de link cuida só dos links. */
+  .rod a:not(.btn) { color: inherit; transition: color var(--d-fast) var(--ease); }
+  .rod a:not(.btn):hover { color: var(--wood); }
+  .rod .label { color: var(--on-dark-muted); display: block; margin-bottom: var(--s-2); }
+
+  .rod-topo {
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
+    gap: var(--s-8); padding-bottom: var(--s-8);
+    border-bottom: 1px solid rgb(232 228 223 / .14);
+  }
+  .rod-marca .marca {
+    font-size: 1.125rem; font-weight: 300; letter-spacing: .34em;
+    text-transform: uppercase; color: var(--on-dark); margin-bottom: var(--s-2);
+  }
+  .rod-frase { font-size: var(--fs-small); color: var(--on-dark-muted); max-width: 36ch; line-height: 1.55; }
+  .rod-cta { margin-top: var(--s-4); }
+
+  .rod-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
+  .rod-cols li { margin-bottom: 9px; font-size: var(--fs-small); }
+
+  .rod-showrooms {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--s-6); padding-block: var(--s-8);
+  }
+  .rod-show address { font-style: normal; font-size: var(--fs-small); line-height: 1.6; color: var(--on-dark-muted); }
+  .rod-show address span { display: block; }
+
+  .rod-base { color: var(--on-dark-muted); padding-top: var(--s-4); border-top: 1px solid rgb(232 228 223 / .14); }
+
+  @media (max-width: 900px) {
+    .rod-topo { grid-template-columns: 1fr; gap: var(--s-6); }
+    .rod-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>

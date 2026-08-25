@@ -1,0 +1,638 @@
+---
+/**
+ * Pedido de orçamento — assistente em cinco passos.
+ *
+ * Substituiu o formulário de oito campos numa tela só. Duas razões:
+ *
+ * 1. O antigo não enviava nada. Não existe endpoint num site estático, então
+ *    ele montava um `mailto:` e torcia para o visitante ter cliente de e-mail
+ *    configurado. No celular, muitas vezes não tem — e o pedido evaporava.
+ *    Agora o destino é o WhatsApp da Parket, que é onde o Douglas e o Davi já
+ *    atendem, com o resumo do pedido montado na mensagem.
+ * 2. Pedir um dado por vez converte melhor que pedir oito de uma vez. A
+ *    estrutura segue a do parket.com.br, que já foi validada: metragem e
+ *    cidade → produtos → perfil e escopo → texto livre → contato.
+ *
+ * PROGRESSIVE ENHANCEMENT: sem JS os cinco blocos aparecem todos, um abaixo do
+ * outro, como um formulário comum — e o <noscript> mostra os canais diretos,
+ * porque sem JS não há como montar a mensagem do WhatsApp. É o JS que dobra os
+ * blocos em passos, não o contrário.
+ */
+interface Props {
+  titulo: string;
+  subtitulo: string;
+  acao: string;
+  /** id da seção, para o CTA da home poder rolar até aqui. */
+  ancora?: string;
+  /** Em /contato o formulário abre a página, então o título dele é o h1.
+      Na home o h1 é o do hero e este continua sendo h2. */
+  comoH1?: boolean;
+}
+const { titulo, subtitulo, acao, ancora, comoH1 = false } = Astro.props;
+const Titulo = comoH1 ? 'h1' : 'h2';
+
+/* Mesmo número do BotaoWhatsApp, do rodapé e do JSON-LD. Quatro cópias no
+   projeto — quando houver uma quinta, vale extrair para src/lib. */
+const WHATSAPP = '5511999600222';
+
+/* As oito regiões são as do parket.com.br: é onde a Parket de fato executa. */
+const cidades = [
+  'São Paulo (Capital)', 'São Paulo (Interior)', 'Rio de Janeiro',
+  'Belo Horizonte', 'Curitiba', 'Brasília', 'Goiás', 'Outros',
+];
+
+/* As nove famílias que a Parket fornece. `cat` liga o cartão à categoria do
+   catálogo, para pré-marcar o produto quando a pessoa chega de `?ref=pisos-…`. */
+const produtos = [
+  { id: 'Piso',         cat: 'pisos',        desc: 'Maciço e engenheirado' },
+  { id: 'Deck',         cat: 'decks',        desc: 'Áreas externas' },
+  { id: 'Forro',        cat: 'forros',       desc: 'Tetos em madeira' },
+  { id: 'Painel',       cat: 'paineis',      desc: 'Ripados, lâminas e laca' },
+  { id: 'Revestimento', cat: null,           desc: 'Paredes' },
+  { id: 'Porta',        cat: 'portas',       desc: 'Sob medida, inclusive mimetizada' },
+  { id: 'Escada',       cat: 'escadas',      desc: 'Degraus e guarda-corpos' },
+  { id: 'Sauna',        cat: null,           desc: 'Revestimento e estrutura' },
+  { id: 'Marcenaria',   cat: null,           desc: 'Peças sob medida' },
+];
+
+const perfis = [
+  { id: 'Arquiteto / Designer', desc: 'Vou especificar para um cliente' },
+  { id: 'Cliente final',        desc: 'É para o meu projeto' },
+];
+
+const escopos = [
+  { id: 'Material + instalação', desc: 'A Parket fornece e instala' },
+  { id: 'Só material',           desc: 'A instalação é por minha conta' },
+];
+
+const PASSOS = 5;
+---
+
+<section class="form-sec section" id={ancora}>
+  <div class="wrap form-in">
+    <div class="form-lado">
+      <p class="label">Pedido</p>
+      <Titulo class:list={[comoH1 ? 'h1' : 'h2', 'form-tit']}>{titulo}</Titulo>
+      <p class="form-sub measure">{subtitulo}</p>
+
+      <dl class="form-meta">
+        <div><dt>Resposta</dt><dd>Em até um dia útil</dd></div>
+        <div><dt>Showrooms</dt><dd>São Paulo · Brasília</dd></div>
+        <div><dt>Direto</dt><dd><a href="mailto:contato@parket.com.br">contato@parket.com.br</a></dd></div>
+      </dl>
+    </div>
+
+    <form class="form" novalidate data-form data-acao={acao} data-zap={WHATSAPP}>
+      <!-- Progresso. Nasce escondido: sem JS não há passos, e anunciar
+           "passo 1 de 5" numa página que mostra os cinco seria mentira. -->
+      <div class="pr" data-progresso hidden>
+        <p class="pr-txt label">Passo <span data-passo-atual>1</span>/{PASSOS}</p>
+        <div class="pr-trilha" aria-hidden="true"><span data-progresso-fill></span></div>
+      </div>
+
+      <!-- Referência vinda de um nome clicado na home (?ref=) -->
+      <div class="campo campo--ref" data-campo-ref hidden>
+        <label for="f-ref">Referência de interesse</label>
+        <input type="text" id="f-ref" name="referencia" readonly data-ref />
+        <button type="button" class="ref-limpar" data-limpar-ref>Remover</button>
+      </div>
+
+      <!-- ─── 1 · Escopo ─── -->
+      <fieldset class="passo" data-passo="1">
+        <legend class="passo-tit">Qual o tamanho do projeto?</legend>
+        <div class="grade">
+
+        <div class="campo campo--largo">
+          <label for="f-area">Área aproximada</label>
+          <div class="medida">
+            <input type="range" id="f-area" name="area" min="5" max="1000" step="5" value="30" data-area />
+            <output class="medida-valor num" for="f-area" data-area-saida>30 m²</output>
+          </div>
+          <p class="dica">Uma estimativa basta — ela só serve para dimensionar a conversa.</p>
+        </div>
+
+        <div class="campo campo--largo">
+          <label for="f-cidade">Cidade de execução <span class="obg">obrigatório</span></label>
+          <select id="f-cidade" name="cidade" required>
+            <option value="">Selecione a região</option>
+            {cidades.map((c) => <option value={c}>{c}</option>)}
+          </select>
+          <p class="erro" data-erro-de="f-cidade" hidden></p>
+        </div>
+        </div>
+      </fieldset>
+
+      <!-- ─── 2 · Produtos ─── -->
+      <fieldset class="passo" data-passo="2">
+        <legend class="passo-tit">Quais superfícies você quer cotar?</legend>
+        <p class="dica dica--topo">Pode marcar mais de uma.</p>
+        <div class="grade">
+
+        <ul class="cartoes" role="list">
+          {produtos.map((p) => (
+            <li>
+              <label class="cartao">
+                <input type="checkbox" name="produtos" value={p.id} data-cat={p.cat ?? ''} />
+                <span class="cartao-nome">{p.id}</span>
+                <span class="cartao-desc">{p.desc}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+        <p class="erro" data-erro-de="produtos" hidden></p>
+        </div>
+      </fieldset>
+
+      <!-- ─── 3 · Perfil e escopo ─── -->
+      <fieldset class="passo" data-passo="3">
+        <legend class="passo-tit">Quem está pedindo, e até onde vamos?</legend>
+        <div class="grade">
+
+        <p class="grupo-tit label">Você é</p>
+        <ul class="cartoes cartoes--duplo" role="list">
+          {perfis.map((p, i) => (
+            <li>
+              <label class="cartao">
+                <input type="radio" name="perfil" value={p.id} checked={i === 0} />
+                <span class="cartao-nome">{p.id}</span>
+                <span class="cartao-desc">{p.desc}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+
+        <p class="grupo-tit label">O pedido inclui</p>
+        <ul class="cartoes cartoes--duplo" role="list">
+          {escopos.map((e, i) => (
+            <li>
+              <label class="cartao">
+                <input type="radio" name="escopo" value={e.id} checked={i === 0} />
+                <span class="cartao-nome">{e.id}</span>
+                <span class="cartao-desc">{e.desc}</span>
+              </label>
+            </li>
+          ))}
+        </ul>
+        </div>
+      </fieldset>
+
+      <!-- ─── 4 · O projeto ─── -->
+      <fieldset class="passo" data-passo="4">
+        <legend class="passo-tit">Quer contar mais sobre o projeto?</legend>
+        <div class="grade">
+
+        <div class="campo campo--largo">
+          <label for="f-msg">Sobre o projeto <span class="opc">opcional</span></label>
+          <textarea id="f-msg" name="mensagem" rows="4"
+            placeholder="Ex.: reforma de apartamento, entrega prevista para dezembro. Já tenho referência de tom claro e paginação em espinha."></textarea>
+          <p class="dica">Prazo, referência de tom, paginação, restrição de obra — o que você já souber adianta a resposta.</p>
+        </div>
+        </div>
+      </fieldset>
+
+      <!-- ─── 5 · Contato ─── -->
+      <fieldset class="passo" data-passo="5">
+        <legend class="passo-tit">Para onde respondemos?</legend>
+        <div class="grade">
+
+        <div class="campo">
+          <label for="f-nome">Nome <span class="obg">obrigatório</span></label>
+          <input type="text" id="f-nome" name="nome" required autocomplete="name" />
+          <p class="erro" data-erro-de="f-nome" hidden></p>
+        </div>
+
+        <div class="campo">
+          <label for="f-escritorio">Escritório <span class="opc">opcional</span></label>
+          <input type="text" id="f-escritorio" name="escritorio" autocomplete="organization" />
+        </div>
+
+        <div class="campo">
+          <label for="f-whats">WhatsApp <span class="obg">obrigatório</span></label>
+          <input type="tel" id="f-whats" name="whatsapp" required autocomplete="tel"
+                 inputmode="tel" placeholder="(11) 99999-9999" />
+          <p class="erro" data-erro-de="f-whats" hidden></p>
+        </div>
+
+        <div class="campo">
+          <label for="f-email">E-mail <span class="opc">opcional</span></label>
+          <input type="email" id="f-email" name="email" autocomplete="email" />
+          <p class="erro" data-erro-de="f-email" hidden></p>
+        </div>
+
+        <!-- Resumo ao vivo: a pessoa confere o que vai enviar antes de enviar. -->
+        <div class="resumo campo--largo" data-resumo hidden>
+          <p class="label resumo-tit">Resumo</p>
+          <dl class="resumo-lista" data-resumo-lista></dl>
+        </div>
+        </div>
+      </fieldset>
+
+      <!-- ─── Navegação ─── -->
+      <div class="form-fim">
+        <button type="button" class="btn btn-ghost nav-voltar" data-voltar hidden>← Voltar</button>
+        <button type="button" class="btn nav-avancar" data-avancar hidden>Próximo passo</button>
+        <button type="submit" class="btn" data-enviar>Abrir o WhatsApp com o pedido</button>
+        <p class="caption form-nota" data-nota>
+          Usamos seus dados apenas para responder a este contato.
+        </p>
+      </div>
+
+      <!-- Confirmação. Diz o que de fato aconteceu: abrimos o WhatsApp com a
+           mensagem pronta. Quem escreve "enviado" aqui está mentindo — o envio
+           só acontece quando a pessoa aperta enviar lá dentro. -->
+      <div class="form-ok" data-ok hidden role="status">
+        <p class="form-ok-tit">Abrimos o WhatsApp com o seu pedido escrito.</p>
+        <p class="form-ok-txt">
+          Falta só apertar enviar lá dentro — a mensagem já está pronta, com tudo
+          o que você preencheu. Se o WhatsApp não abriu,
+          <a data-zap-link href={`https://wa.me/${WHATSAPP}`} rel="noopener noreferrer" target="_blank">clique aqui</a>,
+          ou escreva para <a href="mailto:contato@parket.com.br">contato@parket.com.br</a>.
+        </p>
+      </div>
+
+      <noscript>
+        <div class="form-ok">
+          <p class="form-ok-tit">Prefere falar direto?</p>
+          <p class="form-ok-txt">
+            <a href={`https://wa.me/${WHATSAPP}`} rel="noopener noreferrer" target="_blank">WhatsApp +55 11 99960-0222</a>
+            · <a href="tel:+5511999600222">ligar</a>
+            · <a href="mailto:contato@parket.com.br">contato@parket.com.br</a>
+          </p>
+        </div>
+      </noscript>
+    </form>
+  </div>
+</section>
+
+<style>
+  .form-sec { background: var(--surface); }
+  .form-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s-8); align-items: start; }
+  .form-tit { margin: var(--s-2) 0 var(--s-3); }
+  .form-sub { color: var(--muted); font-size: var(--fs-small); }
+
+  .form-meta { margin-top: var(--s-6); border-top: 1px solid var(--line); }
+  .form-meta > div { display: flex; justify-content: space-between; gap: var(--s-2); padding: 11px 0; border-bottom: 1px solid var(--line-soft); }
+  .form-meta dt { font-size: var(--fs-caption); color: var(--muted); }
+  .form-meta dd { margin: 0; font-size: var(--fs-caption); color: var(--ink); text-align: right; }
+  .form-meta a:hover { color: var(--wood-text); }
+
+  .form { display: grid; gap: var(--s-4); }
+
+  /* ─── Progresso ─── */
+  .pr { display: grid; gap: var(--s-1); }
+  .pr-txt { color: var(--wood-text); }
+  .pr-trilha { height: 1px; background: var(--line); }
+  .pr-trilha span {
+    display: block; height: 100%; width: 100%;
+    background: var(--wood); transform-origin: left;
+    transform: scaleX(var(--pr, .2));
+    transition: transform var(--d-base) var(--ease);
+  }
+
+  /* ─── Passo ─── */
+  /* O fieldset perde borda e padding do agente de usuário: aqui ele é só o
+     agrupamento semântico que o leitor de tela precisa para anunciar a
+     pergunta junto com cada campo. */
+  /* O <legend> não entra no grid do <fieldset>: o navegador o renderiza como
+     caixa especial fora do fluxo, e o primeiro item real caía na mesma célula,
+     sobrepondo o título. Por isso o grid vive num .grade interno e o fieldset
+     é só o agrupamento semântico que o leitor de tela precisa. */
+  .passo { border: 0; padding: 0; margin: 0; display: block; }
+  .passo[hidden] { display: none; }
+  .grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-3); }
+  .passo-tit {
+    padding: 0; margin-bottom: var(--s-4);
+    font-size: 1.375rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em;
+  }
+  .passo-tit:focus-visible { outline: 2px solid var(--wood); outline-offset: 4px; }
+  .grupo-tit { grid-column: 1 / -1; margin-top: var(--s-2); }
+
+  .campo { display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .campo--largo, .campo--ref, .form-fim, .resumo { grid-column: 1 / -1; }
+  .grade > .erro { grid-column: 1 / -1; }
+
+  label { font-size: var(--fs-label); font-weight: 500; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--muted); }
+  .obg, .opc { text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .obg { color: var(--wood-text); }
+  .opc { color: var(--muted); }
+  .dica { font-size: var(--fs-caption); color: var(--muted); }
+  /* Fica entre o legend e o .grade, logo abaixo do título. */
+  .dica--topo { margin: calc(var(--s-3) * -1) 0 var(--s-3); }
+
+  input:not([type=range]):not([type=checkbox]):not([type=radio]), select, textarea {
+    min-height: 48px; padding: 0 0 8px;
+    background: transparent; color: var(--ink);
+    border: 0; border-bottom: 1px solid var(--line);
+    border-radius: 0; font-size: var(--fs-body);
+    transition: border-color var(--d-fast) var(--ease);
+  }
+  textarea { padding-top: 10px; resize: vertical; line-height: 1.55; }
+  select { appearance: none; cursor: pointer; }
+  input:focus, select:focus, textarea:focus { outline: none; border-bottom-color: var(--wood); }
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--wood); outline-offset: 4px; }
+  input[readonly] { color: var(--muted); }
+  .campo.tem-erro input, .campo.tem-erro select { border-bottom-color: #A4442F; }
+  .erro { font-size: var(--fs-caption); color: #A4442F; }
+
+  /* ─── Metragem ─── */
+  .medida { display: flex; align-items: center; gap: var(--s-3); }
+  .medida-valor {
+    flex: none; min-width: 6ch; text-align: right;
+    font-size: 1.5rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em;
+  }
+  input[type=range] {
+    flex: 1; min-height: 44px; padding: 0; border: 0;
+    appearance: none; background: transparent; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track { height: 1px; background: var(--line); }
+  input[type=range]::-moz-range-track { height: 1px; background: var(--line); }
+  input[type=range]::-webkit-slider-thumb {
+    appearance: none; width: 18px; height: 18px; margin-top: -8.5px;
+    background: var(--ink); border: 0; border-radius: 50%;
+  }
+  input[type=range]::-moz-range-thumb { width: 18px; height: 18px; background: var(--ink); border: 0; border-radius: 50%; }
+
+  /* ─── Cartões ─── */
+  .cartoes {
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-2);
+  }
+  .cartoes--duplo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cartao {
+    display: grid; gap: 3px; height: 100%; position: relative;
+    padding: var(--s-3); cursor: pointer;
+    background: var(--paper); border: 1px solid var(--line);
+    text-transform: none; letter-spacing: 0;
+    transition: border-color var(--d-fast) var(--ease), box-shadow var(--d-fast) var(--ease);
+  }
+  .cartao:hover { border-color: var(--wood); }
+  /* O input real fica escondido mas continua no fluxo de foco e de formulário —
+     nada de display:none, que o tiraria da navegação por teclado. */
+  .cartao input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .cartao-nome { font-size: var(--fs-body); color: var(--ink); }
+  .cartao-desc { font-size: var(--fs-caption); color: var(--muted); line-height: 1.45; }
+  .cartao:has(input:checked) { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .cartao:has(input:focus-visible) { outline: 2px solid var(--wood); outline-offset: 3px; }
+
+  /* ─── Resumo ─── */
+  .resumo { padding: var(--s-3); background: var(--paper); border-left: 2px solid var(--wood); }
+  .resumo-tit { margin-bottom: var(--s-2); }
+  .resumo-lista { display: grid; gap: 7px; margin: 0; }
+  /* :global obrigatório — as linhas do resumo são criadas em JS e não recebem
+     o atributo de escopo que o Astro carimba no markup do template. Sem isto a
+     regra compila para `div[data-astro-cid-…]` e não casa com nada. */
+  .resumo-lista > :global(div) { display: flex; justify-content: space-between; gap: var(--s-3); }
+  .resumo-lista :global(dt) { font-size: var(--fs-caption); color: var(--muted); flex: none; }
+  .resumo-lista :global(dd) { margin: 0; font-size: var(--fs-caption); color: var(--ink); text-align: right; }
+
+  /* ─── Navegação ─── */
+  .form-fim { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); margin-top: var(--s-2); }
+  .form-nota { max-width: 34ch; }
+  .form-ok { grid-column: 1 / -1; padding: var(--s-3); background: var(--paper); border-left: 2px solid var(--wood); }
+  .form-ok-tit { font-size: var(--fs-body); color: var(--ink); margin-bottom: 4px; }
+  .form-ok-txt { font-size: var(--fs-small); color: var(--muted); }
+  .form-ok-txt a { color: var(--wood-text); text-decoration: underline; text-underline-offset: 3px; }
+
+  .ref-limpar {
+    position: absolute; right: 0; bottom: 10px;
+    background: none; border: 0; cursor: pointer;
+    font-size: var(--fs-label); letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  }
+  .ref-limpar:hover { color: var(--ink); }
+
+  @media (max-width: 900px) { .form-in { grid-template-columns: 1fr; gap: var(--s-6); } }
+  @media (max-width: 640px) {
+    .passo { grid-template-columns: 1fr; }
+    .cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cartoes--duplo { grid-template-columns: 1fr; }
+    /* No estreito os dois botões dividem a linha em vez de empilhar. */
+    .form-fim > .btn { flex: 1 1 auto; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pr-trilha span { transition: none; } }
+</style>
+
+<script>
+  /*
+   * Sem `define:vars` de propósito. Aquela diretiva marca o script como
+   * is:inline, o Astro deixa de transpilar, e as anotações de tipo abaixo
+   * chegariam cruas ao navegador. A configuração vem por data-* no <form>.
+   */
+  const form = document.querySelector<HTMLFormElement>('[data-form]');
+  if (form) {
+    const ZAP = form.dataset.zap ?? '5511999600222';
+    const passos = Array.from(form.querySelectorAll<HTMLFieldSetElement>('.passo'));
+    const TOTAL = passos.length;
+
+    const progresso = form.querySelector<HTMLElement>('[data-progresso]')!;
+    const fill = form.querySelector<HTMLElement>('[data-progresso-fill]')!;
+    const numero = form.querySelector<HTMLElement>('[data-passo-atual]')!;
+    const bVoltar = form.querySelector<HTMLButtonElement>('[data-voltar]')!;
+    const bAvancar = form.querySelector<HTMLButtonElement>('[data-avancar]')!;
+    const bEnviar = form.querySelector<HTMLButtonElement>('[data-enviar]')!;
+    const nota = form.querySelector<HTMLElement>('[data-nota]')!;
+    const okBox = form.querySelector<HTMLElement>('[data-ok]')!;
+    const area = form.querySelector<HTMLInputElement>('[data-area]')!;
+    const areaSaida = form.querySelector<HTMLOutputElement>('[data-area-saida]')!;
+    const resumo = form.querySelector<HTMLElement>('[data-resumo]')!;
+    const resumoLista = form.querySelector<HTMLElement>('[data-resumo-lista]')!;
+    const campoRef = form.querySelector<HTMLElement>('[data-campo-ref]');
+    const inputRef = form.querySelector<HTMLInputElement>('[data-ref]');
+
+    /* ─── Metragem ─── */
+    const mostrarArea = () => {
+      areaSaida.textContent = `${area.value} m²${area.value === area.max ? '+' : ''}`;
+    };
+    area.addEventListener('input', mostrarArea);
+    mostrarArea();
+
+    /* ─── Coleta e resumo ─── */
+    function coletar() {
+      const d = new FormData(form!);
+      return {
+        area: `${area.value} m²${area.value === area.max ? ' ou mais' : ''}`,
+        cidade: String(d.get('cidade') ?? ''),
+        produtos: d.getAll('produtos').map(String).join(', '),
+        perfil: String(d.get('perfil') ?? ''),
+        escopo: String(d.get('escopo') ?? ''),
+        referencia: campoRef && !campoRef.hidden ? (inputRef?.value ?? '') : '',
+        mensagem: String(d.get('mensagem') ?? '').trim(),
+        nome: String(d.get('nome') ?? '').trim(),
+        escritorio: String(d.get('escritorio') ?? '').trim(),
+        whatsapp: String(d.get('whatsapp') ?? '').trim(),
+        email: String(d.get('email') ?? '').trim(),
+      };
+    }
+
+    function resumir() {
+      const c = coletar();
+      const linhas: [string, string][] = [
+        ['Área', c.area],
+        ['Cidade', c.cidade || '—'],
+        ['Superfícies', c.produtos || '—'],
+        ['Perfil', c.perfil],
+        ['Escopo', c.escopo],
+      ];
+      if (c.referencia) linhas.push(['Referência', c.referencia]);
+      resumoLista.textContent = '';
+      for (const [k, v] of linhas) {
+        const div = document.createElement('div');
+        const dt = document.createElement('dt'); dt.textContent = k;
+        const dd = document.createElement('dd'); dd.textContent = v;
+        div.append(dt, dd); resumoLista.append(div);
+      }
+    }
+    form.addEventListener('change', resumir);
+
+    /* ─── Referência vinda da home (?ref=) ───
+       O slug de uma referência traz a categoria na frente (pisos-carvalho-…);
+       o de uma espécie, não. Quando traz, o produto correspondente já entra
+       marcado — a pessoa não repete no passo 2 o que já disse ao clicar. */
+    const ref = new URL(location.href).searchParams.get('ref');
+    if (ref && campoRef && inputRef) {
+      const cat = /^(pisos|decks|forros|paineis|escadas|portas)-/.exec(ref)?.[1];
+      inputRef.value = ref
+        .replace(/^(pisos|decks|forros|paineis|escadas|portas)-/, '')
+        .split('-').map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+      campoRef.hidden = false;
+      if (cat) {
+        const alvo = form.querySelector<HTMLInputElement>(`input[data-cat="${cat}"]`);
+        if (alvo) alvo.checked = true;
+      }
+    }
+    form.querySelector('[data-limpar-ref]')?.addEventListener('click', () => {
+      if (campoRef) campoRef.hidden = true;
+      if (inputRef) inputRef.value = '';
+      resumir();
+    });
+
+    /* ─── Validação: só cobra o que o passo atual pede ─── */
+    const MENSAGENS: Record<string, string> = {
+      'f-cidade': 'Escolha a região para direcionarmos à equipe certa.',
+      'f-nome': 'Informe seu nome para sabermos com quem falamos.',
+      'f-whats': 'Informe um WhatsApp — é por lá que respondemos.',
+      'f-email': 'Este e-mail parece incompleto. Confira o endereço.',
+      produtos: 'Marque ao menos uma superfície.',
+    };
+
+    function erroDe(chave: string, ruim: boolean, texto = '') {
+      const el = form!.querySelector<HTMLElement>(`[data-erro-de="${chave}"]`);
+      if (!el) return;
+      el.textContent = ruim ? texto : '';
+      el.hidden = !ruim;
+    }
+
+    function validarCampo(campo: HTMLInputElement | HTMLSelectElement) {
+      const vazio = !campo.value.trim();
+      /* O e-mail é opcional, mas se preenchido precisa ser plausível. */
+      const emailRuim = campo.id === 'f-email' && !vazio
+        && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(campo.value);
+      /* Telefone: só exige dígitos suficientes para um número brasileiro. */
+      const telRuim = campo.id === 'f-whats' && !vazio
+        && campo.value.replace(/\D/g, '').length < 10;
+      const ruim = (campo.hasAttribute('required') && vazio) || emailRuim || telRuim;
+      campo.closest('.campo')?.classList.toggle('tem-erro', ruim);
+      erroDe(campo.id, ruim,
+        telRuim ? 'Faltam dígitos neste número. Inclua o DDD.'
+        : MENSAGENS[campo.id] ?? 'Confira este campo.');
+      return !ruim;
+    }
+
+    function validarPasso(i: number) {
+      const p = passos[i];
+      let ok = true;
+      /* Todos os campos de texto do passo, e não só os `required`: o e-mail é
+         opcional mas tem regra de formato, e olhando só o que é obrigatório um
+         "joana@" passava batido e ia malformado para a mensagem. Campo
+         opcional e vazio o `validarCampo` já deixa passar. */
+      const alvos = 'input:not([type=range]):not([type=checkbox]):not([type=radio]):not([readonly]), select';
+      for (const c of p.querySelectorAll<HTMLInputElement | HTMLSelectElement>(alvos)) {
+        if (!validarCampo(c)) ok = false;
+      }
+      /* Checkbox obrigatório em grupo não existe em HTML, então a regra do
+         passo 2 mora aqui. */
+      if (p.dataset.passo === '2') {
+        const algum = form!.querySelectorAll<HTMLInputElement>('input[name="produtos"]:checked').length > 0;
+        erroDe('produtos', !algum, MENSAGENS.produtos);
+        if (!algum) ok = false;
+      }
+      return ok;
+    }
+
+    /* ─── Navegação entre passos ─── */
+    let atual = 0;
+
+    function mostrar(i: number, focar = true) {
+      atual = Math.max(0, Math.min(TOTAL - 1, i));
+      passos.forEach((p, n) => { p.hidden = n !== atual; });
+      numero.textContent = String(atual + 1);
+      fill.style.setProperty('--pr', ((atual + 1) / TOTAL).toFixed(3));
+      bVoltar.hidden = atual === 0;
+      const ultimo = atual === TOTAL - 1;
+      bAvancar.hidden = ultimo;
+      bEnviar.hidden = !ultimo;
+      nota.hidden = !ultimo;
+      resumo.hidden = !ultimo;
+      if (ultimo) resumir();
+      /* O foco vai para a pergunta do passo, não para o primeiro campo: quem
+         usa leitor de tela precisa ouvir o que está sendo perguntado antes de
+         ouvir o rótulo do campo. */
+      if (focar) {
+        const tit = passos[atual].querySelector<HTMLElement>('.passo-tit');
+        if (tit) { tit.tabIndex = -1; tit.focus(); }
+      }
+    }
+
+    bAvancar.addEventListener('click', () => {
+      if (!validarPasso(atual)) {
+        passos[atual].querySelector<HTMLElement>('.tem-erro input, .tem-erro select')?.focus();
+        return;
+      }
+      mostrar(atual + 1);
+    });
+    bVoltar.addEventListener('click', () => mostrar(atual - 1));
+
+    /* Enter num campo de texto avança em vez de enviar do meio do assistente. */
+    form.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const alvo = e.target as HTMLElement;
+      if (alvo.tagName === 'TEXTAREA' || alvo.tagName === 'BUTTON') return;
+      if (atual < TOTAL - 1) { e.preventDefault(); bAvancar.click(); }
+    });
+
+    /* ─── Envio ─── */
+    function mensagem() {
+      const c = coletar();
+      const l: string[] = ['Olá! Vim pelo site da Parket e queria um orçamento.', ''];
+      l.push(`Projeto: ${c.area} · ${c.cidade}`);
+      if (c.produtos) l.push(`Superfícies: ${c.produtos}`);
+      if (c.referencia) l.push(`Referência: ${c.referencia}`);
+      l.push(`Perfil: ${c.perfil}`, `Escopo: ${c.escopo}`);
+      if (c.mensagem) l.push('', 'Sobre o projeto:', c.mensagem);
+      l.push('', `Nome: ${c.nome}`);
+      if (c.escritorio) l.push(`Escritório: ${c.escritorio}`);
+      l.push(`WhatsApp: ${c.whatsapp}`);
+      if (c.email) l.push(`E-mail: ${c.email}`);
+      return l.join('\n');
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      /* Valida o assistente inteiro, não só o último passo: quem chegou aqui
+         por atalho de teclado pode ter pulado uma pergunta. */
+      for (let i = 0; i < TOTAL; i++) {
+        if (!validarPasso(i)) { mostrar(i); return; }
+      }
+      const url = `https://wa.me/${ZAP}?text=${encodeURIComponent(mensagem())}`;
+      const link = form.querySelector<HTMLAnchorElement>('[data-zap-link]');
+      if (link) link.href = url;
+      window.open(url, '_blank', 'noopener');
+      okBox.hidden = false;
+    });
+
+    /* Só agora o assistente entra em modo de passos. Até esta linha a página
+       serviu os cinco blocos abertos — se o script quebrar antes daqui, o
+       formulário continua legível e preenchível. */
+    progresso.hidden = false;
+    mostrar(0, false);
+  }
+</script>

@@ -1,0 +1,457 @@
+---
+/**
+ * A casa navegável em 3D, na home — e o visitante começa DENTRO dela.
+ *
+ * Dois modos no mesmo canvas (src/lib/casa3d-cliente.ts):
+ *   interior  primeira pessoa dentro do ambiente (por ora, a Sala de Estar),
+ *             com a madeira do piso trocável entre as espécies da carta de tons;
+ *   casa      a axonometria explodida — o mapa para circular entre os 12
+ *             ambientes.
+ *
+ * O contrato é este: tudo se comunica pelo
+ * CustomEvent `ambiente:selecionado`. O conteúdo (índice + painel de cada
+ * ambiente) vem pré-renderizado no HTML: sem JS o visitante ainda lê tudo e
+ * navega para /casa. O módulo 3D só é baixado quando a seção se aproxima.
+ */
+import { ambientes, grupos, ambientesDoGrupo, categoriasDo, referenciasDo } from '../lib/casa';
+import { urlReferencia, urlCategoria, especiePor } from '../lib/catalogo';
+import { ORDEM_TOM, texturaDaEspecie, ALIAS } from '../lib/texturas';
+import tons from '../data/tons.json';
+
+import texCarvalho from '../assets/texturas/carvalho-europeu.webp';
+import texCumaru   from '../assets/texturas/cumaru.webp';
+import texItauba   from '../assets/texturas/itauba.webp';
+import texTeca     from '../assets/texturas/teca.webp';
+
+const INICIAL = 'sala-estar';
+/** Ambientes com interior em primeira pessoa já construído. */
+const INTERIORES = ['sala-estar'];
+const PISO_INICIAL = 'carvalho-europeu';
+
+/* A carta de tons vira o seletor de piso do interior: id da espécie, nome
+   real, URL da textura processada e o tom médio medido (scripts/tons.mjs). */
+const pisos = ORDEM_TOM.flatMap((id) => {
+  const tex = texturaDaEspecie(id);
+  if (!tex) return [];
+  const arquivo = ALIAS[id] ?? id;
+  return [{
+    id,
+    nome: especiePor(id)?.nome ?? id,
+    url: tex.src,
+    hex: tons.find((t) => t.id === arquivo)?.hex ?? '#9C8B6E',
+  }];
+});
+
+const dados = {
+  texturas: {
+    carvalho: texCarvalho.src,
+    cumaru:   texCumaru.src,
+    itauba:   texItauba.src,
+    teca:     texTeca.src,
+  },
+  pisos: pisos.map(({ id, nome, url }) => ({ id, nome, url })),
+  interiores: INTERIORES,
+};
+
+const paineis = ambientes.map((a) => ({
+  a,
+  grupoNome: grupos.find((g) => g.id === a.grupo)?.nome ?? a.grupo,
+  categorias: categoriasDo(a),
+  refs: referenciasDo(a, 3),
+}));
+
+const nomeInicial = ambientes.find((a) => a.id === INICIAL)?.nome ?? '';
+---
+
+<div class="casa3d" data-casa3d data-ambiente={INICIAL} data-modo="interior">
+  <div class="c3-vista" data-vista3d>
+    <p class="c3-espera caption" data-espera>Preparando o modelo…</p>
+
+    <p class="c3-onde label" data-onde>Dentro da {nomeInicial}</p>
+    <button class="c3-alternar" type="button" data-alternar hidden>
+      <span data-r-casa>Ver a casa inteira</span>
+      <span data-r-interior hidden>Entrar no ambiente</span>
+    </button>
+
+    <div class="c3-marcadores" data-marcadores hidden>
+      {ambientes.map((a) => (
+        <button class="c3-marcador" type="button" data-marcador={a.id}
+                data-ativo={a.id === INICIAL ? 'sim' : undefined}
+                aria-label={`Selecionar ${a.nome}`}>
+          <span class="c3-marcador-nome">{a.nome}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="c3-pisos" data-pisos hidden>
+      <p class="c3-pisos-rotulo label">Madeira do piso</p>
+      <div class="c3-pisos-fila">
+        {pisos.map((p) => (
+          <button class="c3-piso" type="button" data-piso={p.id} title={p.nome}
+                  style={`--tom:${p.hex}`}
+                  data-ativo={p.id === PISO_INICIAL ? 'sim' : undefined}
+                  aria-label={`Piso em ${p.nome}`} />
+        ))}
+      </div>
+      <p class="c3-piso-nome caption" data-piso-nome>
+        {pisos.find((p) => p.id === PISO_INICIAL)?.nome}
+      </p>
+    </div>
+
+    <p class="c3-dica caption" data-dica hidden>
+      <span data-d-casa hidden>Arraste para girar · no celular, use dois dedos</span>
+      <span data-d-interior>Arraste para olhar ao redor · no celular, use dois dedos</span>
+    </p>
+
+    <noscript>
+      <p class="c3-aviso caption">
+        O modelo 3D precisa de JavaScript. O conteúdo completo dos ambientes
+        está listado abaixo, ambiente a ambiente.
+      </p>
+    </noscript>
+    <p class="c3-aviso caption" data-falha hidden>
+      Não foi possível iniciar o 3D neste navegador —
+      percorra a casa ambiente a ambiente.
+    </p>
+  </div>
+
+  <div class="c3-lado">
+    <nav class="c3-indice" aria-label="Ambientes da casa">
+      {grupos.map((g) => (
+        <div class="c3-grupo">
+          <p class="c3-grupo-nome label">{g.nome}</p>
+          <ul class="c3-lista" role="list">
+            {ambientesDoGrupo(g.id).map((a) => (
+              <li>
+                <button class="c3-item" type="button" data-indice={a.id}
+                        aria-current={a.id === INICIAL ? 'true' : undefined}>
+                  {a.nome}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+
+    {paineis.map(({ a, grupoNome, categorias, refs }) => (
+      <article class="c3-painel" data-painel={a.id} hidden={a.id !== INICIAL}>
+        <p class="c3-painel-grupo label">{grupoNome}{a.area > 0 && ` · ${a.area} m² no projeto de referência`}</p>
+        <h3 class="h3 c3-painel-tit">{a.nome}</h3>
+        <p class="c3-painel-cats caption">
+          {categorias.map((c, n) => (
+            <>{n > 0 && ' · '}<a href={urlCategoria(c.id)}>{c.nome}</a></>
+          ))}
+        </p>
+        {refs.length > 0 && (
+          <ul class="c3-refs" role="list">
+            {refs.map((r) => (
+              <li><a class="c3-ref" href={urlReferencia(r)}>{r.titulo}</a></li>
+            ))}
+          </ul>
+        )}
+        <a class="link-action c3-mais" href="/contato">Especificar este ambiente</a>
+      </article>
+    ))}
+  </div>
+</div>
+
+<script is:inline type="application/json" data-casa3d-dados set:html={JSON.stringify(dados)} />
+
+<style>
+  .casa3d {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    gap: var(--gutter);
+    align-items: start;
+    margin-top: var(--s-4, 32px);
+  }
+
+  /* ─── Vista ─── */
+  .c3-vista {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    min-height: 380px;
+    background:
+      radial-gradient(120% 90% at 50% 8%, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--line-soft);
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+  .c3-vista :global(canvas) { display: block; width: 100%; height: 100%; }
+  .c3-espera {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    color: var(--muted);
+  }
+  .c3-aviso {
+    position: absolute; inset: auto var(--s-2) var(--s-2);
+    color: var(--muted);
+  }
+
+  /* ─── Onde estou + alternar modo ─── */
+  .c3-onde {
+    position: absolute; left: 0; top: 0; z-index: 2;
+    padding: 9px 16px;
+    background: rgb(13 13 13 / .62); backdrop-filter: blur(8px);
+    color: var(--on-dark);
+  }
+  [data-modo="casa"] .c3-onde { display: none; }
+  .c3-alternar {
+    position: absolute; right: 0; top: 0; z-index: 2;
+    padding: 9px 14px;
+    border: 0; border-left: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    background: rgb(245 242 236 / .88); backdrop-filter: blur(6px);
+    color: var(--text);
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    cursor: pointer;
+    transition: background var(--d-fast) var(--ease);
+  }
+  .c3-alternar:hover { background: rgb(245 242 236 / 1); }
+
+  /* ─── Marcadores (modo casa) ─── */
+  .c3-marcadores { position: absolute; inset: 0; pointer-events: none; }
+  [data-modo="interior"] .c3-marcadores { display: none; }
+  .c3-marcador {
+    position: absolute; left: 0; top: 0;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    width: 12px; height: 12px;
+    padding: 0; border: 1px solid rgb(255 255 255 / .85);
+    background: var(--ink);
+    cursor: pointer;
+    transition: background var(--d-fast) var(--ease), width var(--d-fast) var(--ease), height var(--d-fast) var(--ease);
+  }
+  .c3-marcador:hover, .c3-marcador[data-ativo] { background: var(--wood); }
+  .c3-marcador[data-ativo] { width: 15px; height: 15px; }
+  .c3-marcador[data-atras] { visibility: hidden; }
+  .c3-marcador-nome {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    padding: 5px 9px;
+    background: rgb(13 13 13 / .62); backdrop-filter: blur(8px);
+    color: var(--on-dark);
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    opacity: 0; visibility: hidden;
+    transition: opacity var(--d-fast) var(--ease);
+  }
+  .c3-marcador:hover .c3-marcador-nome,
+  .c3-marcador[data-ativo] .c3-marcador-nome { opacity: 1; visibility: visible; }
+
+  /* ─── Carta de pisos (modo interior) ─── */
+  .c3-pisos {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    display: flex; align-items: center; gap: var(--s-2, 16px);
+    padding: 10px 16px;
+    background: rgb(245 242 236 / .88); backdrop-filter: blur(6px);
+    border-top: 1px solid var(--line-soft);
+  }
+  [data-modo="casa"] .c3-pisos { display: none; }
+  .c3-pisos-rotulo { color: var(--wood-text); flex: none; }
+  .c3-pisos-fila {
+    display: flex; gap: 5px;
+    overflow-x: auto; scrollbar-width: none;
+    padding: 2px;
+  }
+  .c3-pisos-fila::-webkit-scrollbar { display: none; }
+  .c3-piso {
+    flex: none;
+    width: 21px; height: 21px;
+    padding: 0; border: 1px solid rgb(0 0 0 / .18);
+    background: var(--tom);
+    cursor: pointer;
+  }
+  .c3-piso[data-ativo] { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .c3-piso-nome { flex: none; margin-left: auto; color: var(--text); }
+
+  /* ─── Dica ─── */
+  .c3-dica {
+    position: absolute; left: 0; bottom: 0; z-index: 1;
+    padding: 6px 16px 8px;
+    background: rgb(245 242 236 / .85); backdrop-filter: blur(6px);
+    color: var(--muted); pointer-events: none;
+  }
+  [data-modo="interior"] .c3-dica { bottom: 42px; }
+  [data-modo="casa"] [data-d-interior],
+  [data-modo="interior"] [data-d-casa] { display: none; }
+  [data-modo="casa"] [data-d-casa],
+  [data-modo="interior"] [data-d-interior] { display: inline; }
+
+  /* ─── Índice ─── */
+  .c3-indice {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: var(--s-3, 24px) var(--s-2, 16px);
+    padding-bottom: var(--s-3, 24px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .c3-grupo-nome { color: var(--wood-text); margin-bottom: 6px; }
+  .c3-item {
+    display: block; width: 100%;
+    padding: 5px 0 5px 12px;
+    border: 0; border-left: 2px solid transparent;
+    background: none; text-align: left;
+    font-size: var(--fs-small); color: var(--muted);
+    cursor: pointer;
+    transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+  }
+  .c3-item:hover { color: var(--text); }
+  .c3-item[aria-current] { color: var(--text); border-left-color: var(--wood); }
+
+  /* ─── Painel ─── */
+  .c3-painel { padding-top: var(--s-3, 24px); }
+  .c3-painel-grupo { color: var(--wood-text); }
+  .c3-painel-tit { margin: 6px 0 4px; }
+  .c3-painel-cats a { color: var(--muted); text-decoration: none; }
+  .c3-painel-cats a:hover { color: var(--text); }
+  .c3-refs { margin: var(--s-2, 16px) 0 0; padding: 0; }
+  .c3-ref {
+    display: block; padding: 9px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: var(--fs-small); color: var(--text);
+    text-decoration: none;
+  }
+  .c3-refs li:last-child .c3-ref { border-bottom: 1px solid var(--line-soft); }
+  .c3-ref:hover { color: var(--wood-text); }
+  .c3-mais { margin-top: var(--s-2, 16px); display: inline-block; }
+
+  @media (max-width: 900px) {
+    .casa3d { grid-template-columns: 1fr; }
+    .c3-vista { aspect-ratio: 4 / 3.4; min-height: 300px; }
+    .c3-indice { grid-template-columns: 1fr 1fr; }
+    .c3-piso-nome { display: none; }
+    /* Em tela estreita o chip de local colide com o alternador — e o índice
+       logo abaixo já mostra onde o visitante está. */
+    .c3-onde { display: none; }
+  }
+</style>
+
+<script>
+  import type { Casa3DApi, Modo } from '../lib/casa3d-cliente';
+
+  const raiz = document.querySelector<HTMLElement>('[data-casa3d]');
+  const vista = raiz?.querySelector<HTMLElement>('[data-vista3d]');
+
+  if (raiz && vista) {
+    const dados = JSON.parse(
+      document.querySelector('[data-casa3d-dados]')!.textContent!,
+    ) as {
+      texturas: Record<string, string>;
+      pisos: { id: string; nome: string; url: string }[];
+      interiores: string[];
+    };
+
+    const marcadores = new Map<string, HTMLElement>();
+    for (const m of raiz.querySelectorAll<HTMLElement>('[data-marcador]'))
+      marcadores.set(m.dataset.marcador!, m);
+
+    /* Nome legível de cada ambiente, lido do próprio índice. */
+    const nomes = new Map<string, string>();
+    for (const b of raiz.querySelectorAll<HTMLElement>('[data-indice]'))
+      nomes.set(b.dataset.indice!, b.textContent!.trim());
+
+    const alternar = vista.querySelector<HTMLElement>('[data-alternar]')!;
+    const onde = vista.querySelector<HTMLElement>('[data-onde]')!;
+    const nomePiso = vista.querySelector<HTMLElement>('[data-piso-nome]')!;
+
+    let api: Casa3DApi | null = null;
+
+    function pintarAlternar() {
+      const modo = raiz!.dataset.modo as Modo;
+      const temInterior = dados.interiores.includes(raiz!.dataset.ambiente!);
+      alternar.hidden = !api || (modo === 'casa' && !temInterior);
+      alternar.querySelector<HTMLElement>('[data-r-casa]')!.hidden = modo !== 'interior';
+      alternar.querySelector<HTMLElement>('[data-r-interior]')!.hidden = modo !== 'casa';
+    }
+
+    /* Um único ouvinte sincroniza índice, painéis, marcadores e cena. */
+    document.addEventListener('ambiente:selecionado', (e) => {
+      const id = (e as CustomEvent<{ id: string }>).detail.id;
+      raiz.dataset.ambiente = id;
+      for (const b of raiz.querySelectorAll<HTMLElement>('[data-indice]')) {
+        if (b.dataset.indice === id) b.setAttribute('aria-current', 'true');
+        else b.removeAttribute('aria-current');
+      }
+      for (const p of raiz.querySelectorAll<HTMLElement>('[data-painel]'))
+        p.hidden = p.dataset.painel !== id;
+      for (const [mid, m] of marcadores) {
+        if (mid === id) m.dataset.ativo = 'sim';
+        else delete m.dataset.ativo;
+      }
+      onde.textContent = `Dentro da ${nomes.get(id) ?? id}`;
+      api?.selecionar(id);
+      pintarAlternar();
+    });
+
+    const emitir = (id: string) =>
+      document.dispatchEvent(new CustomEvent('ambiente:selecionado', { detail: { id } }));
+
+    raiz.addEventListener('click', (e) => {
+      const alvo = (e.target as HTMLElement).closest<HTMLElement>(
+        '[data-indice], [data-marcador], [data-piso], [data-alternar]');
+      if (!alvo) return;
+      if (alvo.dataset.indice ?? alvo.dataset.marcador) {
+        emitir(alvo.dataset.indice ?? alvo.dataset.marcador!);
+      } else if (alvo.dataset.piso) {
+        api?.trocarPiso(alvo.dataset.piso);
+      } else if (api) {
+        api.modo(raiz.dataset.modo === 'interior' ? 'casa' : 'interior');
+      }
+    });
+
+    /* O three.js só desce quando a seção se aproxima. */
+    const io = new IntersectionObserver(async ([entrada]) => {
+      if (!entrada.isIntersecting) return;
+      io.disconnect();
+      try {
+        const { montarCasa3D } = await import('../lib/casa3d-cliente');
+        api = montarCasa3D(vista, {
+          texturas: dados.texturas,
+          pisos: dados.pisos,
+          interiores: dados.interiores,
+          reduzirMovimento: matchMedia('(prefers-reduced-motion: reduce)').matches,
+          onSelecionar: emitir,
+          onModo(m) {
+            raiz.dataset.modo = m;
+            pintarAlternar();
+          },
+          onPiso(id) {
+            for (const b of raiz.querySelectorAll<HTMLElement>('[data-piso]')) {
+              if (b.dataset.piso === id) b.dataset.ativo = 'sim';
+              else delete b.dataset.ativo;
+            }
+            nomePiso.textContent = dados.pisos.find((p) => p.id === id)?.nome ?? '';
+          },
+          onMarcadores(pos) {
+            for (const [id, p] of pos) {
+              const m = marcadores.get(id);
+              if (!m) continue;
+              m.style.left = `${p.x}px`;
+              m.style.top = `${p.y}px`;
+              if (p.atras) m.dataset.atras = 'sim';
+              else delete m.dataset.atras;
+            }
+          },
+        });
+        vista.querySelector<HTMLElement>('[data-espera]')?.remove();
+        vista.querySelector<HTMLElement>('[data-marcadores]')!.hidden = false;
+        vista.querySelector<HTMLElement>('[data-pisos]')!.hidden = false;
+        const dica = vista.querySelector<HTMLElement>('[data-dica]');
+        if (dica) {
+          dica.hidden = false;
+          vista.addEventListener('pointerdown', () => dica.remove(), { once: true });
+        }
+        api.selecionar(raiz.dataset.ambiente!);
+        pintarAlternar();
+      } catch {
+        vista.querySelector<HTMLElement>('[data-espera]')?.remove();
+        const falha = vista.querySelector<HTMLElement>('[data-falha]');
+        if (falha) falha.hidden = false;
+      }
+    }, { rootMargin: '360px' });
+    io.observe(vista);
+  }
+</script>

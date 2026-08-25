@@ -1,0 +1,132 @@
+---
+import '../styles/tokens.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  /** Caminho da imagem social. Cada página tem a sua — nunca a mesma para todas. */
+  imagem?: string;
+  /** JSON-LD adicional da página (Product, Article, CollectionPage…). */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+  /** Trilha de navegação: [{ nome, url }] — vira BreadcrumbList. */
+  trilha?: { nome: string; url: string }[];
+  headerTransparente?: boolean;
+}
+
+const {
+  titulo, descricao, imagem,
+  schema, trilha = [], headerTransparente = false,
+} = Astro.props;
+
+const site = Astro.site ?? new URL('https://parket.com.br');
+const canonica = new URL(Astro.url.pathname, site).href;
+const ogImagem = imagem ? new URL(imagem, site).href : new URL('/og-parket.jpg', site).href;
+
+const organizacao = {
+  '@type': 'Organization',
+  '@id': `${site.origin}/#organizacao`,
+  name: 'Parket',
+  url: site.origin,
+  description: 'Pisos, decks, forros, painéis, escadas e portas em madeira nobre para arquitetura.',
+  telephone: '+55 11 99960-0222',
+  email: 'contato@parket.com.br',
+  sameAs: [
+    'https://www.instagram.com/parketpisos/',
+    'https://www.youtube.com/@Parketoficial',
+    'https://br.pinterest.com/parketpisosrevestimentos/',
+  ],
+};
+
+const breadcrumb = trilha.length
+  ? {
+      '@type': 'BreadcrumbList',
+      itemListElement: trilha.map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: t.nome,
+        item: new URL(t.url, site).href,
+      })),
+    }
+  : null;
+
+const grafo = [
+  organizacao,
+  breadcrumb,
+  ...(Array.isArray(schema) ? schema : schema ? [schema] : []),
+].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonica} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Parket" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:image" content={ogImagem} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#F5F2EC" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': grafo })} />
+  </head>
+
+  <body>
+    <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+    <Header transparente={headerTransparente} />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Footer />
+    <BotaoWhatsApp />
+
+    <script>
+      // Reveal na entrada da seção. Rede de segurança para nunca deixar
+      // conteúdo invisível se o observer falhar.
+      const alvos = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+      const mostrarTudo = () => alvos.forEach((e) => e.classList.add('is-in'));
+
+      if (!('IntersectionObserver' in window) ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        mostrarTudo();
+      } else {
+        const obs = new IntersectionObserver(
+          (entradas) => {
+            for (const e of entradas) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                obs.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '240px 0px 240px 0px', threshold: 0 },
+        );
+        alvos.forEach((e) => obs.observe(e));
+        setTimeout(mostrarTudo, 4000);
+      }
+    </script>
+  </body>
+</html>

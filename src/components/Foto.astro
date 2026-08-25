@@ -1,0 +1,52 @@
+---
+/**
+ * Imagem responsiva única do site.
+ * Aceita tanto URL de parket.com.br quanto arquivo local de coleção — nos dois
+ * casos o Astro gera AVIF com srcset nas larguras 640/960/1440/1920.
+ * Regra da Parte 07: só o hero é eager; todo o resto é lazy.
+ */
+import { Image } from 'astro:assets';
+import { assetLocal, ehRemota } from '../lib/imagens';
+
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  eager?: boolean;
+  sizes?: string;
+  class?: string;
+  ratio?: string;
+}
+
+const {
+  src, alt, width = 1440, height, eager = false,
+  sizes = '(max-width: 900px) 100vw, 50vw',
+  class: cls = '', ratio,
+} = Astro.props;
+
+const local = ehRemota(src) ? null : assetLocal(src);
+const alturaCalculada = height ?? Math.round(width * 0.72);
+const estilo = ratio ? `aspect-ratio:${ratio}` : undefined;
+
+const comuns = {
+  alt,
+  sizes,
+  widths: [640, 960, 1440, 1920],
+  format: 'avif' as const,
+  quality: 68,
+  loading: (eager ? 'eager' : 'lazy') as 'eager' | 'lazy',
+  decoding: (eager ? 'sync' : 'async') as 'sync' | 'async',
+  fetchpriority: (eager ? 'high' : 'auto') as 'high' | 'auto',
+  class: `foto ${cls}`.trim(),
+  style: estilo,
+};
+---
+
+{local
+  ? <Image src={local} {...comuns} />
+  : <Image src={src} width={width} height={alturaCalculada} {...comuns} />}
+
+<style>
+  .foto { width: 100%; height: 100%; object-fit: cover; background: var(--surface); }
+</style>

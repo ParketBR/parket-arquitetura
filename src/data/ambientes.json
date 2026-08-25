@@ -1,0 +1,23 @@
+{
+  "_nota": "Taxonomia de ambientes da casa. Base: assets/ambientes.js da biblioteca Parket (contrato Residência Alto de Pinheiros) mais os ambientes vizinhos que a Parket não executa mas que encostam no piso. 'categorias' segue a mesma lógica de 'blocos' do original: define o que pode aparecer naquele ambiente, e é o que evita oferecer deck para um quarto.",
+  "ambientes": [
+    { "id": "fachada",      "nome": "Fachada",            "grupo": "externo", "categorias": ["paineis", "portas"],                      "area": 0,  "molhado": false, "ordem": 1 },
+    { "id": "hall",         "nome": "Hall de Entrada",    "grupo": "social",  "categorias": ["pisos", "forros", "portas", "paineis"],   "area": 9,  "molhado": false, "ordem": 2 },
+    { "id": "sala-estar",   "nome": "Sala de Estar",      "grupo": "social",  "categorias": ["pisos", "forros", "paineis"],             "area": 38, "molhado": false, "ordem": 3 },
+    { "id": "home-theater", "nome": "Home Theater",       "grupo": "social",  "categorias": ["pisos", "forros", "paineis"],             "area": 15, "molhado": false, "ordem": 4 },
+    { "id": "cozinha",      "nome": "Cozinha",            "grupo": "social",  "categorias": ["paineis", "forros"],                      "area": 18, "molhado": true,  "ordem": 5 },
+    { "id": "escada",       "nome": "Escada Principal",   "grupo": "circulacao", "categorias": ["escadas", "pisos"],                    "area": 7,  "molhado": false, "ordem": 6 },
+    { "id": "circulacao",   "nome": "Circulação",         "grupo": "circulacao", "categorias": ["pisos", "forros"],                     "area": 26, "molhado": false, "ordem": 7 },
+    { "id": "suite-master", "nome": "Suíte Master",       "grupo": "intimo",  "categorias": ["pisos", "forros", "paineis", "portas"],   "area": 21, "molhado": false, "ordem": 8 },
+    { "id": "closet",       "nome": "Closet",             "grupo": "intimo",  "categorias": ["pisos", "paineis", "portas"],             "area": 12, "molhado": false, "ordem": 9 },
+    { "id": "banheiro",     "nome": "Banheiro",           "grupo": "intimo",  "categorias": ["paineis"],                                "area": 8,  "molhado": true,  "ordem": 10 },
+    { "id": "varanda",      "nome": "Varanda Gourmet",    "grupo": "externo", "categorias": ["decks", "forros"],                        "area": 24, "molhado": false, "ordem": 11 },
+    { "id": "deck-piscina", "nome": "Deck de Piscina",    "grupo": "externo", "categorias": ["decks"],                                  "area": 16, "molhado": true,  "ordem": 12 }
+  ],
+  "grupos": [
+    { "id": "social",     "nome": "Social" },
+    { "id": "intimo",     "nome": "Íntimo" },
+    { "id": "circulacao", "nome": "Circulação" },
+    { "id": "externo",    "nome": "Externo" }
+  ]
+}

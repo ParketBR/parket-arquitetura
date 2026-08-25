@@ -1,0 +1,990 @@
+[
+  {
+    "key": "pisos",
+    "title": "Pisos",
+    "desc": "A base do luxo. Texturas orgânicas e padrões exclusivos que definem o caráter do seu espaço.",
+    "cover": "pisos/piso.webp",
+    "videos": [
+      {
+        "type": "youtube",
+        "id": "fHEBXGLVck4",
+        "vertical": true,
+        "title": "A presença absoluta do material"
+      },
+      {
+        "type": "youtube",
+        "id": "i4gXTyMsTZo",
+        "vertical": true,
+        "title": "Coleção Brazil: o espectro tonal da madeira brasileira"
+      },
+      {
+        "type": "youtube",
+        "id": "j6ptdgucfRs",
+        "vertical": true,
+        "title": "Brazil"
+      }
+    ],
+    "collections": [
+      {
+        "key": "brazil",
+        "title": "Brazil",
+        "desc": "A autenticidade das madeiras brasileiras traduzida em réguas de beleza única. Uma coleção que exalta a alma tropical com cores profundas e fibras marcantes.",
+        "localFolder": "pisos/brazil",
+        "names": {
+          "1": "Canela",
+          "2": "Peroba Mica",
+          "3": "Peroba Mica",
+          "4": "Cumaru",
+          "5": "Cumaru",
+          "6": "Tauari Naturalle",
+          "7": "Cumaru",
+          "8": "Chevron de Tauari",
+          "9": "Cumaru",
+          "10": "Sucupira Rústica"
+        },
+        "fits": {
+          "8": "contain"
+        },
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Cumaru, Ipê, Tauari, Catuaba, Peroba do Campo, Sucupira Negra, Peroba Mica, Cabreúva Dourada e Pau Mulato."
+          },
+          {
+            "label": "Origem",
+            "value": "Brasil · manejo sustentável"
+          }
+        ]
+      },
+      {
+        "key": "eternos",
+        "title": "Eternos",
+        "desc": "Tons e texturas que atravessam o tempo. Uma coleção concebida para durar visualmente e estruturalmente, em qualquer cenário.",
+        "localFolder": "pisos/eternos",
+        "names": {
+          "1": "Bambu Demolição",
+          "2": "Canela Demolição",
+          "4": "Canela Demolição",
+          "5": "Canela Demolição"
+        },
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Bambu, Canela"
+          },
+          {
+            "label": "Origem",
+            "value": "Madeira de reaproveitamento"
+          },
+          {
+            "label": "Característica",
+            "value": "Aspecto envelhecido natural"
+          }
+        ]
+      },
+      {
+        "key": "unicos",
+        "title": "Únicos",
+        "desc": "Peças raras com desenhos irrepetíveis. Cada régua é assinada pela natureza com veios, nós e matizes singulares.",
+        "localFolder": "pisos/unicos",
+        "names": {
+          "1": "Pau ferro",
+          "2": "Lapacho",
+          "3": "Momoki de Marrocos",
+          "4": "Nogueira"
+        },
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Pau Ferro, Lapacho, Nogueira, Momoki"
+          },
+          {
+            "label": "Origem",
+            "value": "Seleção curada · diversas procedências"
+          },
+          {
+            "label": "Característica",
+            "value": "Veios, nós e matizes singulares"
+          }
+        ]
+      },
+      {
+        "key": "carvalhos",
+        "title": "Carvalhos",
+        "desc": "A nobreza do Carvalho Europeu em texturas que contam histórias. Tons orgânicos e toques acetinados que trazem o equilíbrio perfeito entre tradição e modernidade.",
+        "specs": [
+          {
+            "label": "Espécie",
+            "value": "Carvalho Europeu (Quercus robur)"
+          },
+          {
+            "label": "Origem",
+            "value": "Europa"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/4D5A0231-b-1-scaled.jpg",
+            "name": "Carvalho Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/27e09f2b-808a-4ecb-b60d-c2702e023383-1.jpg",
+            "name": "Carvalho Europeu<br>Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/aa120b24-69d4-48d5-b47f-b73099b875ef-2-1.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/european-oak-capuccino-1.jpeg",
+            "name": "Carvalho Europeu Cappuccino"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/European-Oak-Giant-1.jpg",
+            "name": "Carvalho Europeu<br>Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/Imagem_7-30-1.webp",
+            "focus": "bottom"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/IMG_0150-1-scaled.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/IMG_6862-1-scaled.jpg",
+            "name": "Carvalho Europeu<br>Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/IMG_8925-2-1.jpeg",
+            "name": "Carvalho Europeu Capuccino"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/IMG_8932-2-1.jpeg",
+            "name": "Carvalho Europeu Capuccino"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/oak-flooring-dinesen-victoria-miro-gallery-wide-wooden-floorboards-02-1.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2026/03/sao_paulo_tch1-1.jpg",
+            "name": "Carvalho Europeu Marrone"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-01.jpg",
+            "name": "Carvalho Europeu Milano"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-03.jpg",
+            "name": "Carvalho Europeu<br>Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-05.jpg",
+            "name": "Carvalho Europeu Nevado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-06.jpg",
+            "name": "Carvalho Europeu Batman"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-07.jpg",
+            "name": "Carvalho Europeu Armani"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-08.jpg",
+            "name": "Carvalho Europeu Armani"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-09.jpg",
+            "name": "Carvalho Europeu Smoke"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-11.jpg",
+            "name": "Carvalho Europeu Giz"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-12.jpg",
+            "name": "Carvalho Europeu<br>Wild Grey"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-13.jpg",
+            "name": "Carvalho Europeu Armani"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-15.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-16.jpg",
+            "name": "Carvalho Europeu Smoke"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-18.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-20.jpg",
+            "name": "Carvalho Europeu Milano"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-21.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-22.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-24.jpg",
+            "name": "Carvalho Europeu Nevado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-25.jpg",
+            "name": "Carvalho Europeu Batman"
+          }
+        ]
+      },
+      {
+        "key": "grandiosos",
+        "title": "Grandiosos",
+        "desc": "Réguas de proporções imponentes que ampliam e valorizam o espaço. Uma coleção que celebra o impacto do formato XL e a continuidade visual da madeira.",
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Carvalho Europeu, Pinho de Riga"
+          },
+          {
+            "label": "Formato",
+            "value": "Réguas extragrandes (XL)"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-01.jpg",
+            "name": "Carvalho Europeu Smoke"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-05.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-06.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-07.jpg",
+            "name": "Pinho de Riga Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-08.jpg",
+            "name": "Pinho de Riga Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-09.jpg",
+            "name": "Pinho de Riga"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-11.jpg",
+            "name": "Pinho de Riga Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-12.jpg",
+            "name": "Carvalho Europeu Naturalle"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-13.jpg",
+            "name": "Carvalho Europeu<br>Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-03.jpg",
+            "name": "Pinho de Riga Mont Blanc"
+          }
+        ]
+      },
+      {
+        "key": "pinho-de-riga",
+        "title": "Pinho de Riga",
+        "desc": "Resgatado de antigas construções europeias, o Pinho de Riga é sinônimo de história e resiliência. Uma madeira com alma que traz profundidade a qualquer projeto contemporâneo.",
+        "specs": [
+          {
+            "label": "Espécie",
+            "value": "Pinho de Riga"
+          },
+          {
+            "label": "Origem",
+            "value": "Reaproveitamento de construções europeias"
+          },
+          {
+            "label": "Característica",
+            "value": "Densidade e narrativa histórica"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-07.jpg",
+            "name": "Pinho de Riga"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-02.jpg",
+            "name": "Pinho de Riga"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-03.jpg",
+            "name": "Pinho de Riga"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-04.jpg",
+            "name": "Pinho de Riga"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-05.jpg",
+            "name": "Pinho de Riga"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-06.jpg",
+            "name": "Pinho de Riga"
+          }
+        ]
+      },
+      {
+        "key": "classicos",
+        "title": "Clássicos",
+        "desc": "Padrões atemporais que definem a sofisticação residencial. Uma linha dedicada à elegância contínua que transcende tendências passageiras.",
+        "specs": [
+          {
+            "label": "Padrões",
+            "value": "Chevron, Espinha de Peixe, Versalles, Mosaico"
+          },
+          {
+            "label": "Espécies",
+            "value": "Carvalho Europeu, Nogueira"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-02.jpg",
+            "name": "Chevron Naturale"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-03.jpg",
+            "name": "Chevron"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-05.jpg",
+            "name": "Chevron"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-06.jpg",
+            "name": "Paginação especial"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-04.jpg",
+            "name": "Chevron Smoked"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-07.jpg",
+            "name": "Espinha de Peixe em Carvalho Europeu"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-01.jpg",
+            "name": "Chevron em Nogueira"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-08.jpg",
+            "name": "Chevron em Carvalho Europeu Mont Blanc"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-09.jpg",
+            "name": "Carvalho Europeu Batman"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-10.jpg",
+            "name": "Carvalho Europeu<br>Mont Blanc"
+          }
+        ]
+      },
+      {
+        "key": "listone-giordano",
+        "title": "Wood + Stone",
+        "titleHtml": "Wood + <span class=\"italic font-normal\">Stone</span>",
+        "desc": "A fusão sublime entre a madeira nobre e a imponência mineral. Uma experiência tátil e visual única que redefine a elegância nos detalhes.",
+        "specs": [
+          {
+            "label": "Composição",
+            "value": "Madeira + Pedra + Latão"
+          },
+          {
+            "label": "Espécies",
+            "value": "Carvalho Europeu, Nogueira"
+          },
+          {
+            "label": "Pedras",
+            "value": "Travertino, Carrara, Nero Marquina, Quartzitos"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-04.jpg",
+            "name": "Carvalho Europeu Smoke + Travertino Navona"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-05.jpg",
+            "name": "Carvalho Europeu<br>all black + Carrara"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-06.jpg",
+            "name": "Nogueira +<br>Nero Marquina + Latão"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-07.jpg",
+            "name": "Carvalho Europeu Naturalle + Travertino Navona"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-09.jpg",
+            "name": "Nogueira + Latão"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-10.jpg",
+            "name": "Carvalho Europeu Armani com paginação petala"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-11.jpg",
+            "name": "Nogueira + Nero Marquina<br>+ Latão"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "decks",
+    "title": "Decks",
+    "desc": "O exterior elevado. Resistência e beleza natural para transformar terraços em refúgios atemporais.",
+    "cover": "decks/image.webp",
+    "collections": [
+      {
+        "key": "brazil",
+        "title": "Brazil",
+        "desc": "Nossa homenagem às raízes tropicais. A Coleção Brazil traz o calor e a beleza duradoura da madeira nativa brasileira para áreas externas.",
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Itaúba, Cumaru, Ipê"
+          },
+          {
+            "label": "Origem",
+            "value": "Brasil · manejo sustentável"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-11.jpg",
+            "name": "Itaúba"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-10.jpg",
+            "name": "Cumaru Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-09.jpg",
+            "name": "Cumaru Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-06.jpg",
+            "name": "Ipê Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-05.jpg",
+            "name": "Cumaru"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-04.jpg",
+            "name": "Ipê Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-03.jpg",
+            "name": "Ipê"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-01.jpg",
+            "name": "Ipê Oxidado + Cumaru"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-08.jpg",
+            "name": "Itaúba Oxidada"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-07.jpg",
+            "name": "Cumaru Oxidado"
+          }
+        ]
+      },
+      {
+        "key": "eurodeck",
+        "title": "Eurodeck",
+        "desc": "Engenharia de precisão com peças longas e uniformes. Uma seleção premium que alia simetria impecável e refinamento absoluto para o seu deck.",
+        "specs": [
+          {
+            "label": "Tons",
+            "value": "Preto, Marrom, Cinza"
+          },
+          {
+            "label": "Origem",
+            "value": "Engenharia europeia"
+          },
+          {
+            "label": "Característica",
+            "value": "Peças longas e uniformes"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_EU-01.jpg",
+            "name": "Eurodeck Preto"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_EU-02.jpg",
+            "name": "Eurodeck Marrom"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_EU-03.jpg",
+            "name": "Eurodeck Cinza"
+          }
+        ]
+      },
+      {
+        "key": "kebony",
+        "title": "Kebony",
+        "desc": "Tecnologia norueguesa de modificação que transforma madeiras sustentáveis em joias estéticas e duráveis. O Kebony ganha uma belíssima pátina prateada atemporal.",
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Momoki, Kebony®"
+          },
+          {
+            "label": "Tecnologia",
+            "value": "Modificação Kebony® (Noruega)"
+          },
+          {
+            "label": "Característica",
+            "value": "Pátina prateada atemporal"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-01.jpg",
+            "name": "Kebony Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-02.jpg",
+            "name": "Kebony Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-03.jpg",
+            "name": "Kebony Oxidado"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-04.jpg",
+            "name": "Kebony Clear"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-05.jpg",
+            "name": "Deck de Momoki"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-06.jpg",
+            "name": "Kebony Clear"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-07.jpg",
+            "name": "Kebony Clear"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-08.jpg",
+            "name": "Kebony Clear"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-09.jpg",
+            "name": "Kebony Clear"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-10.jpg",
+            "name": "Kebony Clear"
+          }
+        ]
+      },
+      {
+        "key": "unicos",
+        "title": "Únicos",
+        "desc": "Projetos de decks que vão além do convencional. Peças de arte natural e padrões sob medida desenhados para áreas molhadas que respiram vanguarda e ousadia.",
+        "specs": [
+          {
+            "label": "Espécies",
+            "value": "Teca, Peroba Demolição, Momoki"
+          },
+          {
+            "label": "Característica",
+            "value": "Soluções sob medida · padrões autorais"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-05.jpg",
+            "name": "Teca"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-06.jpg",
+            "name": "Teca"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-03.jpg",
+            "name": "Teca Oxidada"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-04.jpg",
+            "name": "Teca Oxidada"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-01.jpg",
+            "name": "Deck de Momoki"
+          },
+          {
+            "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-02.jpg",
+            "name": "Peroba Demolição"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "escadas",
+    "title": "Escadas",
+    "desc": "Escadas revestidas, estruturais e flutuantes desenvolvidas com madeiras nobres como Ipê, Cumaru, Carvalho Europeu e Freijó. Cada degrau, espelho e guarda-corpo executado sob medida — com precisão milimétrica, acabamento impecável e total coerência com a linguagem arquitetônica do projeto.",
+    "cover": "escadas/hero.webp",
+    "videos": [
+      {
+        "type": "youtube",
+        "id": "J82KxeHE1Yg",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "GjtCATN2fB4",
+        "vertical": true,
+        "title": "Escada em madeira nobre executada sob medida"
+      }
+    ],
+    "images": [
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-09.jpg",
+        "name": "Carvalho Europeu Naturalle"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-10.jpg",
+        "name": "Carvalho Europeu Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-11.jpg",
+        "name": "Pinho de Riga"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-13.jpg",
+        "name": "Carvalho Europeu Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-14.jpg"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-16.jpg",
+        "name": "Carvalho Europeu Black"
+      }
+    ]
+  },
+  {
+    "key": "portas",
+    "title": "Portas",
+    "desc": "O limiar da sofisticação. Portas que narram a identidade do ambiente desde o primeiro toque.",
+    "cover": "portas/image.webp",
+    "images": [
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-01.jpg",
+        "name": "Muxarabi de Cumaru Premium"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-02.jpg"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-04.jpg"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-05.jpg",
+        "name": "Laca Branca"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-06.jpg",
+        "name": "Muxarabie em Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-07.jpg",
+        "name": "Muxarabi de Carvalho Naturalle"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-09.jpg",
+        "name": "Carvalho Europeu Mont Blanc + Muxarabi de Itaúba"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-10.jpg",
+        "name": "Shou Sugi Ban"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-16.jpg"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-03.jpg"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-08.jpg"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-15.jpg"
+      }
+    ]
+  },
+  {
+    "key": "paineis",
+    "title": "Painéis",
+    "desc": "Geometria viva. Revestimentos que trazem ritmo e profundidade às paredes através da marcenaria fina.",
+    "cover": "paineis/image.webp",
+    "images": [
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-01.jpg",
+        "name": "Carvalho Europeu Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-02.jpg",
+        "name": "Ripado de Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-03.jpg",
+        "name": "Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-06.jpg",
+        "name": "Freijó Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-08.jpg",
+        "name": "Cumaru"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-09.jpg",
+        "name": "Carvalho Europeu Mont Blanc"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-10.jpg",
+        "name": "Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-11.jpg",
+        "name": "Shou Sugi Ban"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-12.jpg",
+        "name": "Carvalho Europeu Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-13.jpg",
+        "name": "Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-14.jpg",
+        "name": "Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-15.jpg",
+        "name": "Cumaru"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-16.jpg",
+        "name": "Shou Sugi Ban"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-17.jpg",
+        "name": "Shou Sugi Ban + Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-18.jpg",
+        "name": "Carvalho Europeu Customizado"
+      }
+    ]
+  },
+  {
+    "key": "forros",
+    "title": "Forros",
+    "desc": "Perspectiva superior. Detalhes em madeira que elevam o teto a uma obra de arte arquitetônica.",
+    "cover": "forros/image.webp",
+    "videos": [
+      {
+        "type": "mp4",
+        "src": "https://parket.com.br/wp-content/uploads/2026/05/Parket-LaminaCarvalho.mp4",
+        "vertical": true,
+        "poster": "forros/video-1-cover.jpg"
+      },
+      {
+        "type": "mp4",
+        "src": "https://parket.com.br/wp-content/uploads/2026/05/ApKikoVertical-1.mp4",
+        "vertical": true
+      },
+      {
+        "type": "mp4",
+        "src": "https://parket.com.br/wp-content/uploads/2026/05/ForroObraFelipe.mp4",
+        "vertical": true
+      },
+      {
+        "type": "youtube",
+        "id": "ILvIX68_muY",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "RtGx42_LvDk",
+        "vertical": true,
+        "title": "Carvalho Europeu em chevron, mármore Mont Blanc e latão num mesmo plano"
+      },
+      {
+        "type": "youtube",
+        "id": "s31ibiYfs_E",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "zImd4pl2yJo",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "-EvbDbcaFds",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "l3ER_9_misQ",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "a5RUs8M3E-0",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "pWWP7BRaN5A",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      },
+      {
+        "type": "youtube",
+        "id": "z4GFZJSSNw4",
+        "vertical": true,
+        "title": "O detalhe que define o projeto premium é aquele que ninguém vê"
+      }
+    ],
+    "images": [
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-01.jpg",
+        "name": "Carvalho Europeu"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-02.jpg",
+        "name": "Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-03.jpg",
+        "name": "Cumaru"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-04.jpg",
+        "name": "Tauari Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-05.jpg",
+        "name": "Cumaru"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-06.jpg",
+        "name": "Cumaru"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-07.jpg",
+        "name": "Carvalho Europeu Light Brown"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-08.jpg",
+        "name": "Peroba do Campo"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-09.jpg",
+        "name": "Milano"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-10.jpg",
+        "name": "Carvalho Europeu"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-12.jpg",
+        "name": "Tauari"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-13.jpg",
+        "name": "Cabreúva Dourada"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-14.jpg",
+        "name": "Cabreúva Dourada"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-15.jpg",
+        "name": "Cabreúva Dourada"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-16.jpg",
+        "name": "Cabreúva Dourada"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-17.jpg",
+        "name": "Cabreúva Dourada"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-19.jpg",
+        "name": "Peroba de Demolição"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-20.jpg",
+        "name": "Cumaru"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-21.jpg",
+        "name": "Carvalho Europeu Customizado"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-22.jpg",
+        "name": "Toblerone de Cabreúva Branca"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-23.jpg",
+        "name": "Freijó"
+      },
+      {
+        "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-25.jpg",
+        "name": "Cumaru"
+      }
+    ]
+  }
+]

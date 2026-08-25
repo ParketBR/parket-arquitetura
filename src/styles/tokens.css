@@ -1,0 +1,244 @@
+/* ═══════════════════════════════════════════════════════════════
+   PARKET · Design System
+   Valores extraídos de parket.com.br — ver Parte 05 do documento
+   de arquitetura em docs/redesign-parket.html
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Cor ─── */
+  /* O papel. Não é branco: L* 95,6 e b* 3,2 — afastado 4,4% do branco puro.
+     O valor do site antigo (#FAF8F5) ficava a 2,3% e lia como tela branca.
+     Ao mexer aqui, mexa na escala inteira: o olho só separa dois claros a
+     partir de ~2,5 de ΔL*, e paper/surface/surface-2 andam juntos. */
+  --paper:      #F5F2EC;
+  --surface:    #EDE9E1;
+  --surface-2:  #E4DFD5;
+  --ink:        #1A1A1A;
+  --preto:      #000000;   /* hover de navegação — mais firme que o --ink */
+  --text:       #2A2A2A;
+  --muted:      #6E6860;   /* 4,9:1 sobre --paper */
+  --line:       #D3CDC3;
+  --line-soft:  #E0DAD0;
+  --wood:       #9C8B6E;   /* 2,84:1 — filete, ícone e display. NUNCA corpo */
+  --wood-text:  #6F6049;   /* 5,5:1 — a versão legível da madeira */
+  --ground:     #0D0D0D;
+  --on-dark:    #E8E4DF;
+  --on-dark-muted: #9A948C;
+
+  /* ─── Tipografia ─── */
+  --sans: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --fs-display: clamp(2.75rem, 7vw, 5.25rem);
+  --fs-h1:      clamp(2.25rem, 4.6vw, 3.5rem);
+  --fs-h2:      clamp(1.75rem, 3.2vw, 2.5rem);
+  --fs-h3:      1.1875rem;
+  --fs-lead:    clamp(1.125rem, 1.7vw, 1.375rem);
+  --fs-body:    1.0625rem;
+  --fs-small:   .9375rem;
+  --fs-caption: .8125rem;
+  --fs-label:   .6875rem;
+
+  --ls-display: -.025em;
+  --ls-h1:      -.02em;
+  --ls-h2:      -.015em;
+  --ls-label:   .16em;
+
+  /* ─── Espaço · base 8 ─── */
+  --s-1: 8px;   --s-2: 16px;  --s-3: 24px;  --s-4: 32px;
+  --s-6: 48px;  --s-8: 64px;  --s-12: 96px; --s-16: 128px;
+  --section: clamp(64px, 8vw, 132px);
+
+  /* ─── Grade ─── */
+  --container: 1440px;
+  --gutter: clamp(20px, 5vw, 64px);
+  --measure: 68ch;
+
+  /* ─── Forma · a Parket não arredonda. Nada, em lugar nenhum. ─── */
+  --radius: 0;
+  --radius-media: 0;
+  --radius-tag: 0;
+
+
+  /* ─── Motion · lento, preciso, sofisticado ─── */
+  --d-fast: 240ms;
+  --d-base: 420ms;
+  --d-slow: 900ms;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+
+  --z-header: 100;
+  --z-panel: 200;
+  --z-bar: 150;
+}
+
+/* ═══ Reset ═══ */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* O `display` do agente de usuário para [hidden] perde para qualquer seletor de
+   classe. Sem esta regra, todo componente que usa `hidden` precisa lembrar de
+   escrever o seu próprio `.x[hidden] { display: none }` — e um dia alguém
+   esquece. Foi o que aconteceu com o campo de referência do formulário. */
+[hidden] { display: none !important; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* A barra tem 76px e é sticky: sem isto a âncora encosta o topo da seção no
+     topo do documento e o cabeçalho cobre o título de quem acabou de clicar. */
+  scroll-padding-top: 92px;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img, picture, video { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+h1, h2, h3, h4, h5, h6 { margin: 0; color: var(--ink); text-wrap: balance; font-weight: 200; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--wood); outline-offset: 3px; }
+
+/* ═══ Tipografia ═══ */
+.display { font-size: var(--fs-display); font-weight: 200; line-height: 1.02; letter-spacing: var(--ls-display); }
+.h1 { font-size: var(--fs-h1); font-weight: 200; line-height: 1.08; letter-spacing: var(--ls-h1); }
+.h2 { font-size: var(--fs-h2); font-weight: 200; line-height: 1.12; letter-spacing: var(--ls-h2); }
+.h3 { font-size: var(--fs-h3); font-weight: 500; line-height: 1.35; letter-spacing: -.005em; }
+.lead { font-size: var(--fs-lead); font-weight: 300; line-height: 1.5; letter-spacing: -.008em; }
+.small { font-size: var(--fs-small); }
+.caption { font-size: var(--fs-caption); color: var(--muted); }
+
+.label {
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Etiqueta de seção — marca o assunto sem roubar a atenção do título */
+.badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-tag);
+  background: var(--paper);
+  font-size: var(--fs-label); font-weight: 500;
+  letter-spacing: var(--ls-label); text-transform: uppercase;
+  color: var(--muted);
+}
+.badge::before {
+  content: ''; width: 5px; height: 5px; flex: none;
+  background: var(--wood);
+}
+.badge--dark { background: transparent; border-color: rgb(232 228 223 / .22); color: var(--on-dark-muted); }
+
+.num { font-variant-numeric: tabular-nums; }
+.measure { max-width: var(--measure); }
+
+/* ═══ Layout ═══ */
+/* width:100% é obrigatório: sem ele o .wrap encolhe para o conteúdo quando o
+   pai é flex ou grid, e o bloco aparece centralizado em vez de alinhado. */
+.wrap { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+.section { padding-block: var(--section); }
+/* Duas seções seguidas somavam padding e abriam o dobro do vão pretendido.
+   O respiro entre elas é sempre um --section, nunca dois. Blocos com fundo
+   próprio (manifesto, acervo, cta) mantêm os dois lados: ali o padding é
+   preenchimento do bloco, não vão entre seções. */
+.section + .section { padding-top: 0; }
+.stack > * + * { margin-top: var(--flow, var(--s-3)); }
+
+/* ═══ Cabeçalho de seção ═══ */
+/* Mora aqui, e não no <style> da página, porque componente também usa: o
+   estilo escopado do Astro não alcança o markup de outro componente. Foi
+   assim que o link de Revestimentos ficou solto embaixo do título em vez de
+   ir para a direita — a classe existia, a regra não chegava nela. */
+.sec-cab {
+  display: flex; flex-wrap: wrap;
+  align-items: flex-end; justify-content: space-between;
+  gap: var(--s-3); margin-bottom: var(--s-8);
+}
+.sec-cab--centro { justify-content: center; text-align: center; }
+.sec-tit { margin-top: var(--s-3); }
+.sec-acoes { display: flex; flex-wrap: wrap; gap: var(--s-4); }
+
+/* Quebra de linha que só existe da tablet para cima. No celular a linha corre
+   e quebra sozinha, onde couber. */
+.so-desk { display: none; }
+@media (min-width: 700px) { .so-desk { display: inline; } }
+
+/* ═══ Botões ═══ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--s-1);
+  min-height: 48px; padding: 0 var(--s-4);
+  font-size: var(--fs-label); font-weight: 500;
+  letter-spacing: var(--ls-label); text-transform: uppercase;
+  border: 1px solid var(--ink); border-radius: var(--radius);
+  background: var(--ink); color: var(--paper);
+  cursor: pointer;
+  transition: background var(--d-fast) var(--ease), color var(--d-fast) var(--ease);
+}
+.btn:hover { background: transparent; color: var(--ink); }
+
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.btn-on-dark { background: var(--on-dark); color: var(--ground); border-color: var(--on-dark); }
+.btn-on-dark:hover { background: transparent; color: var(--on-dark); }
+
+/* Link de ação: o CTA secundário nunca é um segundo botão preenchido */
+.link-action {
+  display: inline-flex; align-items: center; gap: var(--s-1);
+  font-size: var(--fs-label); font-weight: 500;
+  letter-spacing: var(--ls-label); text-transform: uppercase;
+  color: var(--ink); padding-block: 6px;
+  background-image: linear-gradient(var(--wood), var(--wood));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size var(--d-base) var(--ease), color var(--d-fast) var(--ease);
+}
+.link-action:hover { background-size: 100% 2px; color: var(--wood-text); }
+
+/* No toque o alvo precisa de 44px, mas o filete do link é um background em
+   `0 100%`: crescer o padding afastaria o traço do texto. Então a área cresce
+   por pseudo-elemento e o desenho fica onde está. */
+@media (max-width: 700px) {
+  .link-action { position: relative; }
+  .link-action::after {
+    content: ''; position: absolute; inset-inline: 0;
+    top: 50%; height: 44px; transform: translateY(-50%);
+  }
+}
+
+/* ═══ Motion ═══ */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--d-slow) var(--ease), transform var(--d-slow) var(--ease); }
+.reveal.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* ═══ Utilidades ═══ */
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 999;
+  background: var(--ink); color: var(--paper);
+  padding: var(--s-2) var(--s-3);
+}
+.skip:focus { left: var(--s-2); top: var(--s-2); }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

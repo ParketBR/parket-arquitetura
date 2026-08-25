@@ -1,0 +1,1837 @@
+{
+  "categorias": [
+    {
+      "id": "pisos",
+      "nome": "Pisos",
+      "descricao": "A base do luxo. Texturas orgânicas e padrões exclusivos que definem o caráter do seu espaço.",
+      "videos": 3
+    },
+    {
+      "id": "decks",
+      "nome": "Decks",
+      "descricao": "O exterior elevado. Resistência e beleza natural para transformar terraços em refúgios atemporais.",
+      "videos": 0
+    },
+    {
+      "id": "escadas",
+      "nome": "Escadas",
+      "descricao": "Escadas revestidas, estruturais e flutuantes desenvolvidas com madeiras nobres como Ipê, Cumaru, Carvalho Europeu e Freijó. Cada degrau, espelho e guarda-corpo executado sob medida — com precisão milimétrica, acabamento impecável e total coerência com a linguagem arquitetônica do projeto.",
+      "videos": 2
+    },
+    {
+      "id": "portas",
+      "nome": "Portas",
+      "descricao": "O limiar da sofisticação. Portas que narram a identidade do ambiente desde o primeiro toque.",
+      "videos": 0
+    },
+    {
+      "id": "paineis",
+      "nome": "Painéis",
+      "descricao": "Geometria viva. Revestimentos que trazem ritmo e profundidade às paredes através da marcenaria fina.",
+      "videos": 0
+    },
+    {
+      "id": "forros",
+      "nome": "Forros",
+      "descricao": "Perspectiva superior. Detalhes em madeira que elevam o teto a uma obra de arte arquitetônica.",
+      "videos": 12
+    }
+  ],
+  "colecoes": [
+    {
+      "id": "pisos--brazil",
+      "slug": "brazil",
+      "nome": "Brazil",
+      "categoria": "pisos",
+      "descricao": "A autenticidade das madeiras brasileiras traduzida em réguas de beleza única. Uma coleção que exalta a alma tropical com cores profundas e fibras marcantes.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Cumaru, Ipê, Tauari, Catuaba, Peroba do Campo, Sucupira Negra, Peroba Mica, Cabreúva Dourada e Pau Mulato."
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Brasil · manejo sustentável"
+        }
+      ]
+    },
+    {
+      "id": "pisos--eternos",
+      "slug": "eternos",
+      "nome": "Eternos",
+      "categoria": "pisos",
+      "descricao": "Tons e texturas que atravessam o tempo. Uma coleção concebida para durar visualmente e estruturalmente, em qualquer cenário.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Bambu, Canela"
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Madeira de reaproveitamento"
+        },
+        {
+          "rotulo": "Característica",
+          "valor": "Aspecto envelhecido natural"
+        }
+      ]
+    },
+    {
+      "id": "pisos--unicos",
+      "slug": "unicos",
+      "nome": "Únicos",
+      "categoria": "pisos",
+      "descricao": "Peças raras com desenhos irrepetíveis. Cada régua é assinada pela natureza com veios, nós e matizes singulares.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Pau Ferro, Lapacho, Nogueira, Momoki"
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Seleção curada · diversas procedências"
+        },
+        {
+          "rotulo": "Característica",
+          "valor": "Veios, nós e matizes singulares"
+        }
+      ]
+    },
+    {
+      "id": "pisos--carvalhos",
+      "slug": "carvalhos",
+      "nome": "Carvalhos",
+      "categoria": "pisos",
+      "descricao": "A nobreza do Carvalho Europeu em texturas que contam histórias. Tons orgânicos e toques acetinados que trazem o equilíbrio perfeito entre tradição e modernidade.",
+      "specs": [
+        {
+          "rotulo": "Espécie",
+          "valor": "Carvalho Europeu (Quercus robur)"
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Europa"
+        }
+      ]
+    },
+    {
+      "id": "pisos--grandiosos",
+      "slug": "grandiosos",
+      "nome": "Grandiosos",
+      "categoria": "pisos",
+      "descricao": "Réguas de proporções imponentes que ampliam e valorizam o espaço. Uma coleção que celebra o impacto do formato XL e a continuidade visual da madeira.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Carvalho Europeu, Pinho de Riga"
+        },
+        {
+          "rotulo": "Formato",
+          "valor": "Réguas extragrandes (XL)"
+        }
+      ]
+    },
+    {
+      "id": "pisos--pinho-de-riga",
+      "slug": "pinho-de-riga",
+      "nome": "Pinho de Riga",
+      "categoria": "pisos",
+      "descricao": "Resgatado de antigas construções europeias, o Pinho de Riga é sinônimo de história e resiliência. Uma madeira com alma que traz profundidade a qualquer projeto contemporâneo.",
+      "specs": [
+        {
+          "rotulo": "Espécie",
+          "valor": "Pinho de Riga"
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Reaproveitamento de construções europeias"
+        },
+        {
+          "rotulo": "Característica",
+          "valor": "Densidade e narrativa histórica"
+        }
+      ]
+    },
+    {
+      "id": "pisos--classicos",
+      "slug": "classicos",
+      "nome": "Clássicos",
+      "categoria": "pisos",
+      "descricao": "Padrões atemporais que definem a sofisticação residencial. Uma linha dedicada à elegância contínua que transcende tendências passageiras.",
+      "specs": [
+        {
+          "rotulo": "Padrões",
+          "valor": "Chevron, Espinha de Peixe, Versalles, Mosaico"
+        },
+        {
+          "rotulo": "Espécies",
+          "valor": "Carvalho Europeu, Nogueira"
+        }
+      ]
+    },
+    {
+      "id": "pisos--listone-giordano",
+      "slug": "listone-giordano",
+      "nome": "Wood + Stone",
+      "categoria": "pisos",
+      "descricao": "A fusão sublime entre a madeira nobre e a imponência mineral. Uma experiência tátil e visual única que redefine a elegância nos detalhes.",
+      "specs": [
+        {
+          "rotulo": "Composição",
+          "valor": "Madeira + Pedra + Latão"
+        },
+        {
+          "rotulo": "Espécies",
+          "valor": "Carvalho Europeu, Nogueira"
+        },
+        {
+          "rotulo": "Pedras",
+          "valor": "Travertino, Carrara, Nero Marquina, Quartzitos"
+        }
+      ]
+    },
+    {
+      "id": "decks--brazil",
+      "slug": "brazil",
+      "nome": "Brazil",
+      "categoria": "decks",
+      "descricao": "Nossa homenagem às raízes tropicais. A Coleção Brazil traz o calor e a beleza duradoura da madeira nativa brasileira para áreas externas.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Itaúba, Cumaru, Ipê"
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Brasil · manejo sustentável"
+        }
+      ]
+    },
+    {
+      "id": "decks--eurodeck",
+      "slug": "eurodeck",
+      "nome": "Eurodeck",
+      "categoria": "decks",
+      "descricao": "Engenharia de precisão com peças longas e uniformes. Uma seleção premium que alia simetria impecável e refinamento absoluto para o seu deck.",
+      "specs": [
+        {
+          "rotulo": "Tons",
+          "valor": "Preto, Marrom, Cinza"
+        },
+        {
+          "rotulo": "Origem",
+          "valor": "Engenharia europeia"
+        },
+        {
+          "rotulo": "Característica",
+          "valor": "Peças longas e uniformes"
+        }
+      ]
+    },
+    {
+      "id": "decks--kebony",
+      "slug": "kebony",
+      "nome": "Kebony",
+      "categoria": "decks",
+      "descricao": "Tecnologia norueguesa de modificação que transforma madeiras sustentáveis em joias estéticas e duráveis. O Kebony ganha uma belíssima pátina prateada atemporal.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Momoki, Kebony®"
+        },
+        {
+          "rotulo": "Tecnologia",
+          "valor": "Modificação Kebony® (Noruega)"
+        },
+        {
+          "rotulo": "Característica",
+          "valor": "Pátina prateada atemporal"
+        }
+      ]
+    },
+    {
+      "id": "decks--unicos",
+      "slug": "unicos",
+      "nome": "Únicos",
+      "categoria": "decks",
+      "descricao": "Projetos de decks que vão além do convencional. Peças de arte natural e padrões sob medida desenhados para áreas molhadas que respiram vanguarda e ousadia.",
+      "specs": [
+        {
+          "rotulo": "Espécies",
+          "valor": "Teca, Peroba Demolição, Momoki"
+        },
+        {
+          "rotulo": "Característica",
+          "valor": "Soluções sob medida · padrões autorais"
+        }
+      ]
+    }
+  ],
+  "especies": [
+    {
+      "id": "bambu",
+      "nome": "Bambu",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-bambu-demolicao"
+      ]
+    },
+    {
+      "id": "cabreuva-branca",
+      "nome": "Cabreúva Branca",
+      "categorias": [
+        "forros"
+      ],
+      "referencias": [
+        "forros-cabreuva-branca"
+      ]
+    },
+    {
+      "id": "cabreuva-dourada",
+      "nome": "Cabreúva Dourada",
+      "categorias": [
+        "forros"
+      ],
+      "referencias": [
+        "forros-cabreuva-dourada"
+      ]
+    },
+    {
+      "id": "canela",
+      "nome": "Canela",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-canela",
+        "pisos-canela-demolicao"
+      ]
+    },
+    {
+      "id": "carvalho-europeu",
+      "nome": "Carvalho Europeu",
+      "categorias": [
+        "pisos",
+        "escadas",
+        "portas",
+        "paineis",
+        "forros"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-mont-blanc",
+        "pisos-carvalho-europeu-naturalle",
+        "pisos-carvalho-europeu-cappuccino",
+        "pisos-carvalho-europeu-marrone",
+        "pisos-carvalho-europeu-milano",
+        "pisos-carvalho-europeu-nevado",
+        "pisos-carvalho-europeu-batman",
+        "pisos-carvalho-europeu-armani",
+        "pisos-carvalho-europeu-smoke",
+        "pisos-carvalho-europeu-giz",
+        "pisos-carvalho-europeu-wild-grey",
+        "pisos-carvalho-europeu",
+        "pisos-carvalho-europeu-black",
+        "escadas-carvalho-europeu-naturalle",
+        "escadas-carvalho-europeu-customizado",
+        "escadas-carvalho-europeu-black",
+        "portas-carvalho-europeu-naturalle",
+        "portas-carvalho-europeu-mont-blanc",
+        "paineis-carvalho-europeu-customizado",
+        "paineis-carvalho-europeu-mont-blanc",
+        "forros-carvalho-europeu",
+        "forros-carvalho-europeu-light-brown",
+        "forros-carvalho-europeu-customizado"
+      ]
+    },
+    {
+      "id": "cumaru",
+      "nome": "Cumaru",
+      "categorias": [
+        "pisos",
+        "decks",
+        "portas",
+        "paineis",
+        "forros"
+      ],
+      "referencias": [
+        "pisos-cumaru",
+        "decks-cumaru-oxidado",
+        "decks-cumaru",
+        "portas-cumaru",
+        "paineis-cumaru",
+        "forros-cumaru"
+      ]
+    },
+    {
+      "id": "eurodeck",
+      "nome": "Eurodeck",
+      "categorias": [
+        "decks"
+      ],
+      "referencias": [
+        "decks-eurodeck-black",
+        "decks-eurodeck-marrom",
+        "decks-eurodeck-cinza"
+      ]
+    },
+    {
+      "id": "freijo",
+      "nome": "Freijó",
+      "categorias": [
+        "portas",
+        "paineis",
+        "forros"
+      ],
+      "referencias": [
+        "portas-freijo",
+        "paineis-freijo",
+        "paineis-freijo-customizado",
+        "paineis-freijo-shou-sugi-ban",
+        "forros-freijo"
+      ]
+    },
+    {
+      "id": "ipe",
+      "nome": "Ipê",
+      "categorias": [
+        "decks"
+      ],
+      "referencias": [
+        "decks-ipe-oxidado",
+        "decks-ipe"
+      ]
+    },
+    {
+      "id": "itauba",
+      "nome": "Itaúba",
+      "categorias": [
+        "decks"
+      ],
+      "referencias": [
+        "decks-itauba",
+        "decks-itauba-oxidado"
+      ]
+    },
+    {
+      "id": "kebony",
+      "nome": "Kebony",
+      "categorias": [
+        "decks"
+      ],
+      "referencias": [
+        "decks-kebony-oxidado",
+        "decks-kebony-clear"
+      ]
+    },
+    {
+      "id": "lapacho",
+      "nome": "Lapacho",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-lapacho"
+      ]
+    },
+    {
+      "id": "momoki",
+      "nome": "Momoki",
+      "categorias": [
+        "pisos",
+        "decks"
+      ],
+      "referencias": [
+        "pisos-momoki",
+        "decks-momoki"
+      ]
+    },
+    {
+      "id": "nogueira",
+      "nome": "Nogueira",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-nogueira"
+      ]
+    },
+    {
+      "id": "pau-ferro",
+      "nome": "Pau Ferro",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-pau-ferro"
+      ]
+    },
+    {
+      "id": "peroba",
+      "nome": "Peroba",
+      "categorias": [
+        "decks",
+        "forros"
+      ],
+      "referencias": [
+        "decks-peroba-demolicao",
+        "forros-peroba-demolicao"
+      ]
+    },
+    {
+      "id": "peroba-do-campo",
+      "nome": "Peroba do Campo",
+      "categorias": [
+        "forros"
+      ],
+      "referencias": [
+        "forros-peroba-do-campo"
+      ]
+    },
+    {
+      "id": "peroba-mica",
+      "nome": "Peroba Mica",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-peroba-mica"
+      ]
+    },
+    {
+      "id": "pinho-de-riga",
+      "nome": "Pinho de Riga",
+      "categorias": [
+        "pisos",
+        "escadas"
+      ],
+      "referencias": [
+        "pisos-pinho-de-riga-mont-blanc",
+        "pisos-pinho-de-riga",
+        "escadas-pinho-de-riga"
+      ]
+    },
+    {
+      "id": "sucupira",
+      "nome": "Sucupira",
+      "categorias": [
+        "pisos"
+      ],
+      "referencias": [
+        "pisos-sucupira-rustica"
+      ]
+    },
+    {
+      "id": "tauari",
+      "nome": "Tauari",
+      "categorias": [
+        "pisos",
+        "forros"
+      ],
+      "referencias": [
+        "pisos-tauari-naturalle",
+        "pisos-tauari",
+        "forros-tauari-customizado",
+        "forros-tauari"
+      ]
+    },
+    {
+      "id": "teca",
+      "nome": "Teca",
+      "categorias": [
+        "decks"
+      ],
+      "referencias": [
+        "decks-teca",
+        "decks-teca-oxidado"
+      ]
+    }
+  ],
+  "acabamentos": [
+    {
+      "id": "armani",
+      "nome": "Armani",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-armani"
+      ]
+    },
+    {
+      "id": "batman",
+      "nome": "Batman",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-batman"
+      ]
+    },
+    {
+      "id": "black",
+      "nome": "Black",
+      "especies": [
+        "Carvalho Europeu",
+        "Eurodeck"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-black",
+        "decks-eurodeck-black",
+        "escadas-carvalho-europeu-black"
+      ]
+    },
+    {
+      "id": "cappuccino",
+      "nome": "Cappuccino",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-cappuccino"
+      ]
+    },
+    {
+      "id": "cinza",
+      "nome": "Cinza",
+      "especies": [
+        "Eurodeck"
+      ],
+      "referencias": [
+        "decks-eurodeck-cinza"
+      ]
+    },
+    {
+      "id": "clear",
+      "nome": "Clear",
+      "especies": [
+        "Kebony"
+      ],
+      "referencias": [
+        "decks-kebony-clear"
+      ]
+    },
+    {
+      "id": "customizado",
+      "nome": "Customizado",
+      "especies": [
+        "Carvalho Europeu",
+        "Freijó",
+        "Tauari"
+      ],
+      "referencias": [
+        "escadas-carvalho-europeu-customizado",
+        "paineis-carvalho-europeu-customizado",
+        "paineis-freijo-customizado",
+        "forros-tauari-customizado",
+        "forros-carvalho-europeu-customizado"
+      ]
+    },
+    {
+      "id": "demolicao",
+      "nome": "Demolição",
+      "especies": [
+        "Bambu",
+        "Canela",
+        "Peroba"
+      ],
+      "referencias": [
+        "pisos-bambu-demolicao",
+        "pisos-canela-demolicao",
+        "decks-peroba-demolicao",
+        "forros-peroba-demolicao"
+      ]
+    },
+    {
+      "id": "giz",
+      "nome": "Giz",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-giz"
+      ]
+    },
+    {
+      "id": "light-brown",
+      "nome": "Light Brown",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "forros-carvalho-europeu-light-brown"
+      ]
+    },
+    {
+      "id": "marrom",
+      "nome": "Marrom",
+      "especies": [
+        "Eurodeck"
+      ],
+      "referencias": [
+        "decks-eurodeck-marrom"
+      ]
+    },
+    {
+      "id": "marrone",
+      "nome": "Marrone",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-marrone"
+      ]
+    },
+    {
+      "id": "milano",
+      "nome": "Milano",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-milano"
+      ]
+    },
+    {
+      "id": "mont-blanc",
+      "nome": "Mont Blanc",
+      "especies": [
+        "Carvalho Europeu",
+        "Pinho de Riga"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-mont-blanc",
+        "pisos-pinho-de-riga-mont-blanc",
+        "portas-carvalho-europeu-mont-blanc",
+        "paineis-carvalho-europeu-mont-blanc"
+      ]
+    },
+    {
+      "id": "naturalle",
+      "nome": "Naturalle",
+      "especies": [
+        "Tauari",
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-tauari-naturalle",
+        "pisos-carvalho-europeu-naturalle",
+        "escadas-carvalho-europeu-naturalle",
+        "portas-carvalho-europeu-naturalle"
+      ]
+    },
+    {
+      "id": "nevado",
+      "nome": "Nevado",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-nevado"
+      ]
+    },
+    {
+      "id": "oxidado",
+      "nome": "Oxidado",
+      "especies": [
+        "Cumaru",
+        "Ipê",
+        "Itaúba",
+        "Kebony",
+        "Teca"
+      ],
+      "referencias": [
+        "decks-cumaru-oxidado",
+        "decks-ipe-oxidado",
+        "decks-itauba-oxidado",
+        "decks-kebony-oxidado",
+        "decks-teca-oxidado"
+      ]
+    },
+    {
+      "id": "rustica",
+      "nome": "Rústica",
+      "especies": [
+        "Sucupira"
+      ],
+      "referencias": [
+        "pisos-sucupira-rustica"
+      ]
+    },
+    {
+      "id": "shou-sugi-ban",
+      "nome": "Shou Sugi Ban",
+      "especies": [
+        "Freijó"
+      ],
+      "referencias": [
+        "paineis-freijo-shou-sugi-ban"
+      ]
+    },
+    {
+      "id": "smoke",
+      "nome": "Smoke",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-smoke"
+      ]
+    },
+    {
+      "id": "wild-grey",
+      "nome": "Wild Grey",
+      "especies": [
+        "Carvalho Europeu"
+      ],
+      "referencias": [
+        "pisos-carvalho-europeu-wild-grey"
+      ]
+    }
+  ],
+  "referencias": [
+    {
+      "id": "pisos-bambu-demolicao",
+      "titulo": "Bambu Demolição",
+      "categoria": "pisos",
+      "especie": "Bambu",
+      "acabamento": "Demolição",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--eternos"
+      ],
+      "fotos": [
+        "colecoes/eternos/01.webp"
+      ]
+    },
+    {
+      "id": "forros-cabreuva-branca",
+      "titulo": "Cabreúva Branca",
+      "categoria": "forros",
+      "especie": "Cabreúva Branca",
+      "acabamento": null,
+      "paginacao": "Toblerone",
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-22.jpg"
+      ]
+    },
+    {
+      "id": "forros-cabreuva-dourada",
+      "titulo": "Cabreúva Dourada",
+      "categoria": "forros",
+      "especie": "Cabreúva Dourada",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-13.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-14.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-15.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-16.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-17.jpg"
+      ]
+    },
+    {
+      "id": "pisos-canela",
+      "titulo": "Canela",
+      "categoria": "pisos",
+      "especie": "Canela",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--brazil"
+      ],
+      "fotos": [
+        "colecoes/brazil/01.webp"
+      ]
+    },
+    {
+      "id": "pisos-canela-demolicao",
+      "titulo": "Canela Demolição",
+      "categoria": "pisos",
+      "especie": "Canela",
+      "acabamento": "Demolição",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--eternos"
+      ],
+      "fotos": [
+        "colecoes/eternos/02.webp",
+        "colecoes/eternos/04.webp",
+        "colecoes/eternos/05.webp"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu",
+      "titulo": "Carvalho Europeu",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": null,
+      "paginacao": "Espinha de Peixe",
+      "colecoes": [
+        "pisos--classicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-07.jpg"
+      ]
+    },
+    {
+      "id": "forros-carvalho-europeu",
+      "titulo": "Carvalho Europeu",
+      "categoria": "forros",
+      "especie": "Carvalho Europeu",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-01.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-10.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-armani",
+      "titulo": "Carvalho Europeu Armani",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Armani",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos",
+        "pisos--listone-giordano"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-07.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-08.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-13.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-10.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-batman",
+      "titulo": "Carvalho Europeu Batman",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Batman",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos",
+        "pisos--classicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-06.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-25.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-09.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-black",
+      "titulo": "Carvalho Europeu Black",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Black",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--listone-giordano"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-05.jpg"
+      ]
+    },
+    {
+      "id": "escadas-carvalho-europeu-black",
+      "titulo": "Carvalho Europeu Black",
+      "categoria": "escadas",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Black",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-16.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-cappuccino",
+      "titulo": "Carvalho Europeu Cappuccino",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Cappuccino",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2026/03/european-oak-capuccino-1.jpeg",
+        "https://parket.com.br/wp-content/uploads/2026/03/IMG_8925-2-1.jpeg",
+        "https://parket.com.br/wp-content/uploads/2026/03/IMG_8932-2-1.jpeg"
+      ]
+    },
+    {
+      "id": "escadas-carvalho-europeu-customizado",
+      "titulo": "Carvalho Europeu Customizado",
+      "categoria": "escadas",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Customizado",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-10.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-13.jpg"
+      ]
+    },
+    {
+      "id": "paineis-carvalho-europeu-customizado",
+      "titulo": "Carvalho Europeu Customizado",
+      "categoria": "paineis",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Customizado",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-01.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-12.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-18.jpg"
+      ]
+    },
+    {
+      "id": "forros-carvalho-europeu-customizado",
+      "titulo": "Carvalho Europeu Customizado",
+      "categoria": "forros",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Customizado",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-21.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-giz",
+      "titulo": "Carvalho Europeu Giz",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Giz",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-11.jpg"
+      ]
+    },
+    {
+      "id": "forros-carvalho-europeu-light-brown",
+      "titulo": "Carvalho Europeu Light Brown",
+      "categoria": "forros",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Light Brown",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-07.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-marrone",
+      "titulo": "Carvalho Europeu Marrone",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Marrone",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2026/03/sao_paulo_tch1-1.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-milano",
+      "titulo": "Carvalho Europeu Milano",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Milano",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-01.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-20.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-mont-blanc",
+      "titulo": "Carvalho Europeu Mont Blanc",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Mont Blanc",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos",
+        "pisos--grandiosos",
+        "pisos--classicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2026/03/4D5A0231-b-1-scaled.jpg",
+        "https://parket.com.br/wp-content/uploads/2026/03/27e09f2b-808a-4ecb-b60d-c2702e023383-1.jpg",
+        "https://parket.com.br/wp-content/uploads/2026/03/European-Oak-Giant-1.jpg",
+        "https://parket.com.br/wp-content/uploads/2026/03/IMG_6862-1-scaled.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-03.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-13.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-08.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-10.jpg"
+      ]
+    },
+    {
+      "id": "portas-carvalho-europeu-mont-blanc",
+      "titulo": "Carvalho Europeu Mont Blanc",
+      "categoria": "portas",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Mont Blanc",
+      "paginacao": "Muxarabi",
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-09.jpg"
+      ]
+    },
+    {
+      "id": "paineis-carvalho-europeu-mont-blanc",
+      "titulo": "Carvalho Europeu Mont Blanc",
+      "categoria": "paineis",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Mont Blanc",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-09.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-naturalle",
+      "titulo": "Carvalho Europeu Naturalle",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Naturalle",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos",
+        "pisos--grandiosos",
+        "pisos--listone-giordano"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2026/03/aa120b24-69d4-48d5-b47f-b73099b875ef-2-1.jpg",
+        "https://parket.com.br/wp-content/uploads/2026/03/IMG_0150-1-scaled.jpg",
+        "https://parket.com.br/wp-content/uploads/2026/03/oak-flooring-dinesen-victoria-miro-gallery-wide-wooden-floorboards-02-1.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-15.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-18.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-21.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-22.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-05.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-06.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-12.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-07.jpg"
+      ]
+    },
+    {
+      "id": "escadas-carvalho-europeu-naturalle",
+      "titulo": "Carvalho Europeu Naturalle",
+      "categoria": "escadas",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Naturalle",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-09.jpg"
+      ]
+    },
+    {
+      "id": "portas-carvalho-europeu-naturalle",
+      "titulo": "Carvalho Europeu Naturalle",
+      "categoria": "portas",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Naturalle",
+      "paginacao": "Muxarabi",
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-07.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-nevado",
+      "titulo": "Carvalho Europeu Nevado",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Nevado",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-05.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-24.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-smoke",
+      "titulo": "Carvalho Europeu Smoke",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Smoke",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos",
+        "pisos--grandiosos",
+        "pisos--listone-giordano"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-09.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-16.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-01.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-04.jpg"
+      ]
+    },
+    {
+      "id": "pisos-carvalho-europeu-wild-grey",
+      "titulo": "Carvalho Europeu Wild Grey",
+      "categoria": "pisos",
+      "especie": "Carvalho Europeu",
+      "acabamento": "Wild Grey",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--carvalhos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CA-12.jpg"
+      ]
+    },
+    {
+      "id": "pisos-cumaru",
+      "titulo": "Cumaru",
+      "categoria": "pisos",
+      "especie": "Cumaru",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--brazil"
+      ],
+      "fotos": [
+        "colecoes/brazil/04.webp",
+        "colecoes/brazil/05.webp",
+        "colecoes/brazil/07.webp",
+        "colecoes/brazil/09.webp"
+      ]
+    },
+    {
+      "id": "decks-cumaru",
+      "titulo": "Cumaru",
+      "categoria": "decks",
+      "especie": "Cumaru",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "decks--brazil"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-05.jpg"
+      ]
+    },
+    {
+      "id": "portas-cumaru",
+      "titulo": "Cumaru",
+      "categoria": "portas",
+      "especie": "Cumaru",
+      "acabamento": null,
+      "paginacao": "Muxarabi",
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-01.jpg"
+      ]
+    },
+    {
+      "id": "paineis-cumaru",
+      "titulo": "Cumaru",
+      "categoria": "paineis",
+      "especie": "Cumaru",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-08.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-15.jpg"
+      ]
+    },
+    {
+      "id": "forros-cumaru",
+      "titulo": "Cumaru",
+      "categoria": "forros",
+      "especie": "Cumaru",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-03.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-05.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-06.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-20.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-25.jpg"
+      ]
+    },
+    {
+      "id": "decks-cumaru-oxidado",
+      "titulo": "Cumaru Oxidado",
+      "categoria": "decks",
+      "especie": "Cumaru",
+      "acabamento": "Oxidado",
+      "paginacao": null,
+      "colecoes": [
+        "decks--brazil"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-10.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-09.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-07.jpg"
+      ]
+    },
+    {
+      "id": "decks-eurodeck-black",
+      "titulo": "Eurodeck Black",
+      "categoria": "decks",
+      "especie": "Eurodeck",
+      "acabamento": "Black",
+      "paginacao": null,
+      "colecoes": [
+        "decks--eurodeck"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_EU-01.jpg"
+      ]
+    },
+    {
+      "id": "decks-eurodeck-cinza",
+      "titulo": "Eurodeck Cinza",
+      "categoria": "decks",
+      "especie": "Eurodeck",
+      "acabamento": "Cinza",
+      "paginacao": null,
+      "colecoes": [
+        "decks--eurodeck"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_EU-03.jpg"
+      ]
+    },
+    {
+      "id": "decks-eurodeck-marrom",
+      "titulo": "Eurodeck Marrom",
+      "categoria": "decks",
+      "especie": "Eurodeck",
+      "acabamento": "Marrom",
+      "paginacao": null,
+      "colecoes": [
+        "decks--eurodeck"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_EU-02.jpg"
+      ]
+    },
+    {
+      "id": "portas-freijo",
+      "titulo": "Freijó",
+      "categoria": "portas",
+      "especie": "Freijó",
+      "acabamento": null,
+      "paginacao": "Muxarabi",
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-06.jpg"
+      ]
+    },
+    {
+      "id": "paineis-freijo",
+      "titulo": "Freijó",
+      "categoria": "paineis",
+      "especie": "Freijó",
+      "acabamento": null,
+      "paginacao": "Ripado",
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-02.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-03.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-10.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-13.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-14.jpg"
+      ]
+    },
+    {
+      "id": "forros-freijo",
+      "titulo": "Freijó",
+      "categoria": "forros",
+      "especie": "Freijó",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-02.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-23.jpg"
+      ]
+    },
+    {
+      "id": "paineis-freijo-customizado",
+      "titulo": "Freijó Customizado",
+      "categoria": "paineis",
+      "especie": "Freijó",
+      "acabamento": "Customizado",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-06.jpg"
+      ]
+    },
+    {
+      "id": "paineis-freijo-shou-sugi-ban",
+      "titulo": "Freijó Shou Sugi Ban",
+      "categoria": "paineis",
+      "especie": "Freijó",
+      "acabamento": "Shou Sugi Ban",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-17.jpg"
+      ]
+    },
+    {
+      "id": "decks-ipe",
+      "titulo": "Ipê",
+      "categoria": "decks",
+      "especie": "Ipê",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "decks--brazil"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-03.jpg"
+      ]
+    },
+    {
+      "id": "decks-ipe-oxidado",
+      "titulo": "Ipê Oxidado",
+      "categoria": "decks",
+      "especie": "Ipê",
+      "acabamento": "Oxidado",
+      "paginacao": null,
+      "colecoes": [
+        "decks--brazil"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-06.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-04.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-01.jpg"
+      ]
+    },
+    {
+      "id": "decks-itauba",
+      "titulo": "Itaúba",
+      "categoria": "decks",
+      "especie": "Itaúba",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "decks--brazil"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-11.jpg"
+      ]
+    },
+    {
+      "id": "decks-itauba-oxidado",
+      "titulo": "Itaúba Oxidado",
+      "categoria": "decks",
+      "especie": "Itaúba",
+      "acabamento": "Oxidado",
+      "paginacao": null,
+      "colecoes": [
+        "decks--brazil"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_BR-08.jpg"
+      ]
+    },
+    {
+      "id": "decks-kebony-clear",
+      "titulo": "Kebony Clear",
+      "categoria": "decks",
+      "especie": "Kebony",
+      "acabamento": "Clear",
+      "paginacao": null,
+      "colecoes": [
+        "decks--kebony"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-04.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-06.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-07.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-08.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-09.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-10.jpg"
+      ]
+    },
+    {
+      "id": "decks-kebony-oxidado",
+      "titulo": "Kebony Oxidado",
+      "categoria": "decks",
+      "especie": "Kebony",
+      "acabamento": "Oxidado",
+      "paginacao": null,
+      "colecoes": [
+        "decks--kebony"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-01.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-02.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-03.jpg"
+      ]
+    },
+    {
+      "id": "pisos-lapacho",
+      "titulo": "Lapacho",
+      "categoria": "pisos",
+      "especie": "Lapacho",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--unicos"
+      ],
+      "fotos": [
+        "colecoes/unicos/02.webp"
+      ]
+    },
+    {
+      "id": "pisos-momoki",
+      "titulo": "Momoki",
+      "categoria": "pisos",
+      "especie": "Momoki",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--unicos"
+      ],
+      "fotos": [
+        "colecoes/unicos/03.webp"
+      ]
+    },
+    {
+      "id": "decks-momoki",
+      "titulo": "Momoki",
+      "categoria": "decks",
+      "especie": "Momoki",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "decks--kebony",
+        "decks--unicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_KE-05.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-01.jpg"
+      ]
+    },
+    {
+      "id": "pisos-nogueira",
+      "titulo": "Nogueira",
+      "categoria": "pisos",
+      "especie": "Nogueira",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--unicos",
+        "pisos--classicos",
+        "pisos--listone-giordano"
+      ],
+      "fotos": [
+        "colecoes/unicos/04.webp",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-01.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-06.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-09.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_MA-11.jpg"
+      ]
+    },
+    {
+      "id": "pisos-pau-ferro",
+      "titulo": "Pau Ferro",
+      "categoria": "pisos",
+      "especie": "Pau Ferro",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--unicos"
+      ],
+      "fotos": [
+        "colecoes/unicos/01.webp"
+      ]
+    },
+    {
+      "id": "decks-peroba-demolicao",
+      "titulo": "Peroba Demolição",
+      "categoria": "decks",
+      "especie": "Peroba",
+      "acabamento": "Demolição",
+      "paginacao": null,
+      "colecoes": [
+        "decks--unicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-02.jpg"
+      ]
+    },
+    {
+      "id": "forros-peroba-demolicao",
+      "titulo": "Peroba Demolição",
+      "categoria": "forros",
+      "especie": "Peroba",
+      "acabamento": "Demolição",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-19.jpg"
+      ]
+    },
+    {
+      "id": "forros-peroba-do-campo",
+      "titulo": "Peroba do Campo",
+      "categoria": "forros",
+      "especie": "Peroba do Campo",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-08.jpg"
+      ]
+    },
+    {
+      "id": "pisos-peroba-mica",
+      "titulo": "Peroba Mica",
+      "categoria": "pisos",
+      "especie": "Peroba Mica",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--brazil"
+      ],
+      "fotos": [
+        "colecoes/brazil/02.webp",
+        "colecoes/brazil/03.webp"
+      ]
+    },
+    {
+      "id": "pisos-pinho-de-riga",
+      "titulo": "Pinho de Riga",
+      "categoria": "pisos",
+      "especie": "Pinho de Riga",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "pisos--grandiosos",
+        "pisos--pinho-de-riga"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-09.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-07.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-02.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-03.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-04.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-05.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_PR-06.jpg"
+      ]
+    },
+    {
+      "id": "escadas-pinho-de-riga",
+      "titulo": "Pinho de Riga",
+      "categoria": "escadas",
+      "especie": "Pinho de Riga",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_ESC-11.jpg"
+      ]
+    },
+    {
+      "id": "pisos-pinho-de-riga-mont-blanc",
+      "titulo": "Pinho de Riga Mont Blanc",
+      "categoria": "pisos",
+      "especie": "Pinho de Riga",
+      "acabamento": "Mont Blanc",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--grandiosos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-07.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-08.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-11.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_GR-03.jpg"
+      ]
+    },
+    {
+      "id": "pisos-sucupira-rustica",
+      "titulo": "Sucupira Rústica",
+      "categoria": "pisos",
+      "especie": "Sucupira",
+      "acabamento": "Rústica",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--brazil"
+      ],
+      "fotos": [
+        "colecoes/brazil/10.webp"
+      ]
+    },
+    {
+      "id": "pisos-tauari",
+      "titulo": "Tauari",
+      "categoria": "pisos",
+      "especie": "Tauari",
+      "acabamento": null,
+      "paginacao": "Chevron",
+      "colecoes": [
+        "pisos--brazil"
+      ],
+      "fotos": [
+        "colecoes/brazil/08.webp"
+      ]
+    },
+    {
+      "id": "forros-tauari",
+      "titulo": "Tauari",
+      "categoria": "forros",
+      "especie": "Tauari",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-12.jpg"
+      ]
+    },
+    {
+      "id": "forros-tauari-customizado",
+      "titulo": "Tauari Customizado",
+      "categoria": "forros",
+      "especie": "Tauari",
+      "acabamento": "Customizado",
+      "paginacao": null,
+      "colecoes": [],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-04.jpg"
+      ]
+    },
+    {
+      "id": "pisos-tauari-naturalle",
+      "titulo": "Tauari Naturalle",
+      "categoria": "pisos",
+      "especie": "Tauari",
+      "acabamento": "Naturalle",
+      "paginacao": null,
+      "colecoes": [
+        "pisos--brazil"
+      ],
+      "fotos": [
+        "colecoes/brazil/06.webp"
+      ]
+    },
+    {
+      "id": "decks-teca",
+      "titulo": "Teca",
+      "categoria": "decks",
+      "especie": "Teca",
+      "acabamento": null,
+      "paginacao": null,
+      "colecoes": [
+        "decks--unicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-05.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-06.jpg"
+      ]
+    },
+    {
+      "id": "decks-teca-oxidado",
+      "titulo": "Teca Oxidado",
+      "categoria": "decks",
+      "especie": "Teca",
+      "acabamento": "Oxidado",
+      "paginacao": null,
+      "colecoes": [
+        "decks--unicos"
+      ],
+      "fotos": [
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-03.jpg",
+        "https://parket.com.br/wp-content/uploads/2025/10/PRO_DE_UN-04.jpg"
+      ]
+    }
+  ],
+  "galeriaSemReferencia": [
+    {
+      "nome": "Chevron Naturale",
+      "categoria": "pisos",
+      "colecao": "pisos--classicos",
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-02.jpg"
+    },
+    {
+      "nome": "Chevron",
+      "categoria": "pisos",
+      "colecao": "pisos--classicos",
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-03.jpg"
+    },
+    {
+      "nome": "Chevron",
+      "categoria": "pisos",
+      "colecao": "pisos--classicos",
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-05.jpg"
+    },
+    {
+      "nome": "Paginação especial",
+      "categoria": "pisos",
+      "colecao": "pisos--classicos",
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-06.jpg"
+    },
+    {
+      "nome": "Chevron Smoked",
+      "categoria": "pisos",
+      "colecao": "pisos--classicos",
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PI_CL-04.jpg"
+    },
+    {
+      "nome": "Laca Branca",
+      "categoria": "portas",
+      "colecao": null,
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-05.jpg"
+    },
+    {
+      "nome": "Shou Sugi Ban",
+      "categoria": "portas",
+      "colecao": null,
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PO-10.jpg"
+    },
+    {
+      "nome": "Shou Sugi Ban",
+      "categoria": "paineis",
+      "colecao": null,
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-11.jpg"
+    },
+    {
+      "nome": "Shou Sugi Ban",
+      "categoria": "paineis",
+      "colecao": null,
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_PA-16.jpg"
+    },
+    {
+      "nome": "Milano",
+      "categoria": "forros",
+      "colecao": null,
+      "src": "https://parket.com.br/wp-content/uploads/2025/10/PRO_FO-09.jpg"
+    }
+  ]
+}

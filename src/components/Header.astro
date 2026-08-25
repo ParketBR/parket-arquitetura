@@ -1,0 +1,221 @@
+---
+/**
+ * Cabeçalho da one page.
+ *
+ * A navegação não abre mais páginas: são âncoras para as seções da home,
+ * escritas na forma `/#secao` para que funcionem também a partir de /contato.
+ * Os painéis de mega-menu saíram junto com as páginas de produto e espécie —
+ * o índice do catálogo agora é a própria página.
+ *
+ * O CTA é um só, e é o mesmo em toda parte: falar com um especialista.
+ */
+interface Props { transparente?: boolean }
+const { transparente = false } = Astro.props;
+
+const itens = [
+  { nome: 'Superfícies', href: '/#superficies', id: 'superficies' },
+  { nome: 'Madeiras',    href: '/#madeiras',    id: 'madeiras' },
+  { nome: 'Projetos',    href: '/#projetos',    id: 'projetos' },
+  { nome: 'Acervo',      href: '/#acervo',      id: 'acervo' },
+];
+
+const naContato = Astro.url.pathname.startsWith('/contato');
+---
+
+<header class:list={['cab', { 'cab--transp': transparente }]} data-cab>
+  <div class="cab-in wrap">
+    <a class="marca" href="/" aria-label="Parket — página inicial">Parket</a>
+
+    <nav class="nav" aria-label="Principal">
+      {itens.map((i) => (
+        <a class="nav-l" href={i.href} data-secao={i.id}>{i.nome}</a>
+      ))}
+    </nav>
+
+    <a class:list={['btn', 'cab-cta', { 'is-ativo': naContato }]} href="/contato">
+      Falar com um especialista
+    </a>
+
+    <button type="button" class="menu-btn" aria-expanded="false" aria-controls="menu-mob" data-menu>
+      <span class="sr-only">Abrir menu</span>
+      <span class="menu-icone" aria-hidden="true"><span></span><span></span></span>
+    </button>
+  </div>
+
+  <div class="mob" id="menu-mob" hidden>
+    <nav class="wrap mob-in" aria-label="Menu">
+      {itens.map((i) => <a class="mob-l" href={i.href}>{i.nome}</a>)}
+      <a class="btn mob-cta" href="/contato">Falar com um especialista</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cab {
+    /* A barra é preta. Sobre o hero ela desaparece (ver .cab--transp), mas do
+       primeiro rolar em diante é este o estado. Toda a cor sai destes tokens:
+       cada contexto redefine os valores e as regras abaixo não mudam — evita a
+       briga de especificidade entre estado de contexto e :hover. */
+    --cab-fundo: rgb(26 26 26 / .95);
+    --cab-linha: rgb(255 255 255 / .1);
+    --cab-blur: blur(12px);
+    --nav-cor: rgb(255 255 255 / .6);
+    --nav-cor-forte: #FFFFFF;
+    --marca-cor: #FFFFFF;
+    --cta-fundo: #FFFFFF;
+    --cta-texto: var(--preto);
+    --cta-borda: #FFFFFF;
+
+    position: sticky; top: 0; z-index: var(--z-header);
+    background: var(--cab-fundo);
+    border-bottom: 1px solid var(--cab-linha);
+    -webkit-backdrop-filter: var(--cab-blur);
+    backdrop-filter: var(--cab-blur);
+    transition: background var(--d-base) var(--ease), border-color var(--d-base) var(--ease);
+  }
+
+  /* Sobre o hero a barra some para a imagem respirar */
+  .cab--transp:not(.is-rolado) {
+    --cab-fundo: transparent;
+    --cab-linha: transparent;
+    --cab-blur: none;          /* sobre o hero a imagem fica limpa */
+    --nav-cor: rgb(232 228 223 / .78);
+    --nav-cor-forte: #FFFFFF;
+    --marca-cor: var(--on-dark);
+    --cta-fundo: transparent;
+    --cta-texto: var(--on-dark);
+    --cta-borda: rgb(232 228 223 / .55);
+
+    position: fixed; inset-inline: 0;
+  }
+
+  .cab-in {
+    display: flex; align-items: center; gap: var(--s-6);
+    min-height: 76px;
+  }
+  .marca {
+    display: inline-flex; align-items: center;
+    min-height: 44px;   /* alvo de toque; o texto sozinho dava 26px */
+    font-size: 1rem; font-weight: 300; letter-spacing: .34em;
+    text-transform: uppercase; color: var(--marca-cor); white-space: nowrap;
+    transition: color var(--d-base) var(--ease);
+  }
+
+  .nav { display: flex; gap: 2px; margin-inline: auto; }
+  .nav-l {
+    position: relative;
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--nav-cor);
+    padding: 13px 15px;   /* 44px de altura, alvo de clique confortável */
+    white-space: nowrap;
+    transition: color var(--d-fast) var(--ease);
+  }
+  .nav-l:hover,
+  .nav-l:focus-visible,
+  .nav-l.is-ativo { color: var(--nav-cor-forte); }
+
+  /* Filete da seção corrente. A marca fica no filete, não no texto: sublinhar
+     o rótulo inteiro pesa demais para um item que só diz onde o visitante está. */
+  .nav-l::after {
+    content: ''; position: absolute; left: 15px; right: 15px; bottom: 8px;
+    height: 1px; background: var(--wood);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform var(--d-base) var(--ease);
+  }
+  .nav-l.is-ativo::after { transform: scaleX(1); }
+
+  .cab-cta {
+    min-height: 44px; padding-inline: var(--s-3);
+    background: var(--cta-fundo); color: var(--cta-texto); border-color: var(--cta-borda);
+    transition: background var(--d-base) var(--ease), color var(--d-base) var(--ease),
+                border-color var(--d-base) var(--ease);
+  }
+  .cab-cta:hover { background: transparent; color: var(--cta-borda); }
+  /* Já está na página de contato: o botão vira lembrete, não convite. */
+  .cab-cta.is-ativo { background: transparent; color: var(--cta-borda); }
+
+  .menu-btn {
+    display: none; background: none; border: 0; cursor: pointer;
+    padding-inline: 10px; min-height: 44px;
+    /* alinha o ícone com a marca em vez de flutuar pelo padding */
+    align-items: center;
+  }
+  .menu-icone { display: block; width: 22px; }
+  .menu-icone span {
+    display: block; height: 1px; background: var(--marca-cor); margin: 5px 0;
+    transition: background var(--d-base) var(--ease);
+  }
+
+  /* ─── Mobile ─── */
+  .mob { position: absolute; inset-inline: 0; top: 100%; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .mob[hidden] { display: none; }
+  .mob-in { display: flex; flex-direction: column; padding-block: var(--s-3) var(--s-6); }
+  .mob-l {
+    padding: var(--s-2) 0; border-bottom: 1px solid var(--line-soft);
+    font-size: 1.5rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em;
+  }
+  .mob-cta { margin-top: var(--s-4); align-self: flex-start; }
+
+  @media (max-width: 1080px) {
+    .nav, .cab-cta { display: none; }
+    .menu-btn { display: inline-flex; margin-left: auto; }
+    .cab-in { min-height: 64px; gap: var(--s-3); }
+  }
+</style>
+
+<script>
+  const cab = document.querySelector<HTMLElement>('[data-cab]');
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu]');
+  const mob = document.getElementById('menu-mob');
+
+  function fecharMenu() {
+    if (!mob || mob.hidden) return;
+    mob.hidden = true;
+    menuBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  menuBtn?.addEventListener('click', () => {
+    if (!mob) return;
+    const abrindo = mob.hidden;
+    mob.hidden = !abrindo;
+    menuBtn.setAttribute('aria-expanded', String(abrindo));
+  });
+
+  // Âncora clicada no mobile: o menu precisa sair da frente do destino.
+  mob?.querySelectorAll('a').forEach((a) => a.addEventListener('click', fecharMenu));
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
+  document.addEventListener('click', (e) => {
+    if (!cab?.contains(e.target as Node)) fecharMenu();
+  });
+
+  if (cab?.classList.contains('cab--transp')) {
+    const aoRolar = () => cab.classList.toggle('is-rolado', window.scrollY > 40);
+    aoRolar();
+    addEventListener('scroll', aoRolar, { passive: true });
+  }
+
+  /* Seção corrente. A faixa de leitura é o terço superior da tela: medir pelo
+     meio acende a próxima seção antes de o visitante chegar nela. */
+  const elos = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-secao]'));
+  const secoes = elos
+    .map((a) => document.getElementById(a.dataset.secao!))
+    .filter((s): s is HTMLElement => Boolean(s));
+
+  if (secoes.length) {
+    const visiveis = new Set<string>();
+    const obs = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          if (e.isIntersecting) visiveis.add(e.target.id);
+          else visiveis.delete(e.target.id);
+        }
+        const corrente = secoes.find((s) => visiveis.has(s.id))?.id ?? null;
+        for (const a of elos) a.classList.toggle('is-ativo', a.dataset.secao === corrente);
+      },
+      { rootMargin: '-76px 0px -67% 0px', threshold: 0 },
+    );
+    for (const s of secoes) obs.observe(s);
+  }
+</script>

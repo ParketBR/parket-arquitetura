@@ -1,0 +1,128 @@
+[
+  {
+    "id": "cabreuva-branca",
+    "hex": "#F7D5B4",
+    "L": 87.3,
+    "croma": 21.7
+  },
+  {
+    "id": "pinho-de-riga",
+    "hex": "#DBBE9F",
+    "L": 78.8,
+    "croma": 20.5
+  },
+  {
+    "id": "tauari",
+    "hex": "#D8BBA4",
+    "L": 77.9,
+    "croma": 17.2
+  },
+  {
+    "id": "carvalho-europeu",
+    "hex": "#D6AF8D",
+    "L": 74.2,
+    "croma": 24.8
+  },
+  {
+    "id": "freijo",
+    "hex": "#C4AA8C",
+    "L": 71.1,
+    "croma": 19.4
+  },
+  {
+    "id": "bambu",
+    "hex": "#D2A16A",
+    "L": 69.7,
+    "croma": 37.2
+  },
+  {
+    "id": "peroba-do-campo",
+    "hex": "#BB874D",
+    "L": 60.2,
+    "croma": 40.7
+  },
+  {
+    "id": "cabreuva-dourada",
+    "hex": "#A18054",
+    "L": 55.6,
+    "croma": 29.3
+  },
+  {
+    "id": "peroba-mica",
+    "hex": "#C2640E",
+    "L": 52.5,
+    "croma": 66.8
+  },
+  {
+    "id": "catuaba",
+    "hex": "#997544",
+    "L": 51.8,
+    "croma": 33.5
+  },
+  {
+    "id": "teca",
+    "hex": "#8F7159",
+    "L": 49.9,
+    "croma": 19.6
+  },
+  {
+    "id": "canela",
+    "hex": "#A25F29",
+    "L": 47,
+    "croma": 46.9
+  },
+  {
+    "id": "lapacho",
+    "hex": "#9E5623",
+    "L": 44.2,
+    "croma": 48.5
+  },
+  {
+    "id": "momoki",
+    "hex": "#9C5428",
+    "L": 43.8,
+    "croma": 46.2
+  },
+  {
+    "id": "pau-ferro",
+    "hex": "#A64E27",
+    "L": 43.7,
+    "croma": 51.4
+  },
+  {
+    "id": "itauba",
+    "hex": "#915520",
+    "L": 42.2,
+    "croma": 44.8
+  },
+  {
+    "id": "cumaru",
+    "hex": "#76330C",
+    "L": 29.9,
+    "croma": 45
+  },
+  {
+    "id": "nogueira",
+    "hex": "#563B2D",
+    "L": 27.6,
+    "croma": 16.7
+  },
+  {
+    "id": "ipe-tabaco",
+    "hex": "#563A1E",
+    "L": 27,
+    "croma": 23.6
+  },
+  {
+    "id": "pau-mulato",
+    "hex": "#4B2714",
+    "L": 20,
+    "croma": 24.3
+  },
+  {
+    "id": "sucupira-negra",
+    "hex": "#44281A",
+    "L": 19.5,
+    "croma": 18.8
+  }
+]

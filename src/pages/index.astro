@@ -1,0 +1,432 @@
+---
+/**
+ * A one page.
+ *
+ * O site inteiro é esta página mais /contato. A ordem das seções é um funil e
+ * não um índice: promessa → prova → posicionamento → o que existe →
+ * matéria-prima → obra pronta → quem assina → o que remove atrito
+ * (catálogo, textura, amostra) → pedido.
+ *
+ * Toda a página converge para uma ação só: falar com um especialista. Os
+ * outros links ou são âncora dentro da página, ou vão para /contato já
+ * dizendo de qual madeira o visitante estava falando.
+ */
+import Base from '../layouts/Base.astro';
+import Foto from '../components/Foto.astro';
+import HeroVideo from '../components/HeroVideo.astro';
+import GaleriaArco from '../components/GaleriaArco.astro';
+import Texturas from '../components/Texturas.astro';
+import Formulario from '../components/Formulario.astro';
+import {
+  categoriasOrdenadas, especiesPublicadas, referenciasDaCategoria,
+  capaCategoria, referencias,
+} from '../lib/catalogo';
+import { catalogoDaCategoria, totalDeCatalogos } from '../lib/catalogos';
+
+const HERO = 'https://parket.com.br/FOTO%20HERO.jpg';
+
+/* Composição editorial: par largo, trio em pé, faixa. Cada fileira tem vãos
+   iguais entre si — larguras diferentes na mesma fileira desalinham a legenda
+   de uma foto para a outra, que era o defeito da grade anterior. */
+const RITMO = [
+  { span: 3, ratio: '4/3'  },
+  { span: 3, ratio: '4/3'  },
+  { span: 2, ratio: '3/4'  },
+  { span: 2, ratio: '3/4'  },
+  { span: 2, ratio: '3/4'  },
+  { span: 6, ratio: '21/8' },
+];
+
+const cats = categoriasOrdenadas.map((c, n) => ({
+  ...c,
+  qtd: referenciasDaCategoria(c.id).length,
+  capa: capaCategoria(c.id),
+  catalogo: catalogoDaCategoria(c.id),
+  ...(RITMO[n] ?? { span: 2, ratio: '3/4' }),
+}));
+
+/* Os quatro números institucionais, iguais aos de parket.com.br.
+
+   Regra para quem mexer aqui: número institucional só entra com fonte
+   verificável por trás. Antes de trocar ou acrescentar qualquer um, confirmar
+   com a Parket qual é o dado e de onde ele vem.
+
+   Alternativas já rastreadas, se um dia forem preferidas: 1974 (fundação),
+   4,9★ em 125 avaliações no Google, ~700 clientes/ano. */
+const numeros = [
+  { valor: '50+',      rotulo: 'Anos de tradição' },
+  { valor: '20.000m²', rotulo: 'De parque industrial' },
+  { valor: '6.000+',   rotulo: 'Projetos entregues' },
+  { valor: '100%',     rotulo: 'Cadeia produtiva própria com FSC' },
+];
+
+/* Avaliações do perfil da Parket no Google Business, transcritas
+   literalmente — pontuação, ênfase e tudo.
+
+   Regra: depoimento só entra se for verbatim de uma fonte verificável, com o
+   nome de quem escreveu. Nada de texto adaptado, resumido ou atribuído sem
+   confirmação — nem para caber no layout. Se não couber, muda o layout.
+
+   Estas três cobrem ângulos distintos: velocidade e recompra (Torino),
+   escala e solução completa (Tolentino), e o vocabulário de quem especifica
+   (Oliveira). */
+const depoimentos = [
+  { texto: 'Fiz o piso do meu apartamento em SP com a Parket, material lindo, instalação hiper rápida e sem sujeira, em 3 dias fizeram os 90m², é a segunda vez que faço obra com eles, Arrasam sempre!',
+    autor: 'Marina Torino' },
+  { texto: 'Melhor empresa de pisos, painéis e forro em madeira do Brasil com certeza!!! Incrível a qualidade do produto e equipe deles…Já tive a oportunidade de fazer mais de 10 obras com a Parket e sempre foram impecáveis.',
+    autor: 'Claudio Tolentino' },
+  { texto: 'A Parket é definição do que tem de melhor hoje em soluções de madeira para projetos de alto nível. O atendimento é personalizado pelos vendedores que possuem pleno conhecimento sobre o produto e tiram todas as dúvidas, bem como o material e instalação impecável. Nada igual no mercado.',
+    autor: 'Larissa Oliveira' },
+];
+
+/* O acervo é o que tira atrito de quem especifica: os três itens são o que o
+   arquiteto pede antes de fechar. */
+const acervo = [
+  { titulo: `${totalDeCatalogos} catálogos`, texto: 'Coleção por coleção, com paginação, bitola e acabamento. Abrem direto, sem cadastro.' },
+  /* Era "Texturas em 4K · mapa de cor, normal e roughness". O banco de
+     texturas 3D existe e a própria Parket o anuncia, mas nada sustenta o 4K
+     nem os mapas PBR — o acervo local tem só o mapa de cor. O texto agora é
+     o que a empresa publica sobre o próprio produto. */
+  { titulo: 'Banco de texturas 3D',          texto: 'Por espécie, para apresentação, especificação e render do projeto.' },
+  { titulo: 'Amostra física',                texto: 'A peça real no escritório, para ver o veio na luz do projeto.' },
+];
+
+/* Seis aplicações reais para a galeria em arco — uma por família de produto. */
+const arco = categoriasOrdenadas.map((c) => {
+  const ref = referenciasDaCategoria(c.id)
+    .filter((r) => r.fotos.length)
+    .sort((a, b) => b.fotos.length - a.fotos.length)[0];
+  return ref ? { src: ref.fotos[0], alt: `${ref.titulo} aplicado em obra`,
+                 href: '/contato', legenda: c.nome } : null;
+}).filter(Boolean) as { src: string; alt: string; href: string; legenda: string }[];
+
+const titulo = 'Parket — Madeira para Arquitetura | Pisos, Decks, Forros e Painéis';
+const descricao = `Superfícies em madeira nobre para projetos de arquitetura. ${referencias.length} referências, ${especiesPublicadas.length} espécies, catálogo técnico e amostra física para arquitetos. Showrooms em São Paulo e Brasília.`;
+
+const schema = {
+  '@type': 'WebSite',
+  name: 'Parket',
+  url: 'https://parket.com.br',
+  description: descricao,
+};
+---
+
+<Base {titulo} {descricao} {schema} imagem={HERO} headerTransparente>
+  <!-- ─── Hero ─── -->
+  <section class="hero">
+    <HeroVideo alt="Casa contemporânea com forro e brises em madeira nobre Parket" />
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-scrim-topo" aria-hidden="true"></div>
+    <div class="hero-scrim-base" aria-hidden="true"></div>
+    <div class="wrap hero-in">
+      <h1 class="display hero-tit">Madeira para<br>arquitetura.</h1>
+      <p class="lead hero-sub">
+        Superfícies naturais desenvolvidas para projetos<br class="so-desk" />
+        que atravessam o tempo.
+      </p>
+      <div class="hero-acoes">
+        <a class="btn btn-on-dark" href="/contato">Falar com um especialista</a>
+        <a class="link-action hero-link" href="#superficies">Ver as superfícies</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Prova, antes de qualquer argumento ─── -->
+  <section class="provas">
+    <ul class="wrap numeros">
+      {numeros.map((n) => (
+        <li>
+          <span class="num-valor num">{n.valor}</span>
+          <span class="label num-rot">{n.rotulo}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ─── Manifesto ─── -->
+  <section class="manifesto">
+    <div class="wrap">
+      <p class="mani-badge"><span class="badge badge--dark">Manifesto</span></p>
+      <p class="mani-txt">
+        Não vendemos madeira.<br />
+        Criamos superfícies que completam a arquitetura.
+      </p>
+      <p class="mani-sub measure">
+        Cada peça nasce do encontro entre natureza, técnica e precisão construtiva.
+        O que sustenta um grande projeto nunca é apenas o material, é o cuidado
+        invisível em cada detalhe.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─── Superfícies ─── -->
+  <section id="superficies" class="section wrap reveal">
+    <header class="sec-cab">
+      <div>
+        <span class="badge">Superfícies</span>
+        <h2 class="h2 sec-tit">Cada superfície<br class="so-desk" />conta uma história.</h2>
+      </div>
+      <div class="sec-acoes">
+        <a class="link-action" href="#acervo">Abrir os catálogos</a>
+        <a class="link-action" href="/contato">Falar com um especialista</a>
+      </div>
+    </header>
+
+    <div class="cats">
+      {cats.map((c, n) => (
+        <article class="cat" style={`--span:${c.span}`}>
+          <div class="cat-media">
+            {c.capa && <Foto src={c.capa} alt={`${c.nome} em madeira nobre Parket`} width={1600}
+                             sizes={c.span >= 4 ? '(max-width: 900px) 100vw, 92vw'
+                                  : c.span === 3 ? '(max-width: 900px) 100vw, 46vw'
+                                                 : '(max-width: 900px) 50vw, 31vw'}
+                             ratio={c.ratio} eager={n === 0} />}
+          </div>
+          <div class="cat-corpo">
+            <div>
+              <h3 class="cat-nome">{c.nome}</h3>
+              <p class="caption cat-qtd num">{c.qtd} referências</p>
+            </div>
+            {c.catalogo
+              ? <a class="cat-acao" href={c.catalogo} rel="noopener noreferrer" target="_blank">
+                  Catálogo<span class="cat-seta" aria-hidden="true">↗</span>
+                  <span class="sr-only">— abre em outra aba</span>
+                </a>
+              : <a class="cat-acao" href="/contato">Especificar<span class="cat-seta" aria-hidden="true">→</span></a>}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ─── Madeiras · id="madeiras" vive no próprio componente ─── -->
+  <Texturas />
+
+  <!-- ─── Aplicações em arco ─── -->
+  <section id="projetos" class="section reveal">
+    <header class="sec-cab sec-cab--centro wrap">
+      <div>
+        <span class="badge">Projetos</span>
+        <h2 class="h2 sec-tit">A madeira<br class="so-desk" />no mundo real.</h2>
+      </div>
+    </header>
+    <GaleriaArco itens={arco} />
+    <p class="arco-cta wrap"><a class="link-action" href="/contato">Falar sobre uma aplicação</a></p>
+  </section>
+
+  <!-- ─── Quem assina ─── -->
+  <section class="depos-sec reveal">
+    <div class="wrap">
+      <header class="sec-cab sec-cab--centro">
+        <div>
+          <span class="badge">Clientes</span>
+          <h2 class="h2 sec-tit">Quem faz uma obra, {' '}<br class="so-desk" />volta na próxima.</h2>
+          <p class="depos-nota">4,9 ★ em 125 avaliações no Google</p>
+        </div>
+      </header>
+      <ul class="depos">
+        {depoimentos.map((d) => (
+          <li class="depo">
+            <blockquote><p>{d.texto}</p></blockquote>
+            <p class="depo-autor">{d.autor}</p>
+            <p class="caption">Avaliação no Google</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── Acervo · o que remove atrito de quem especifica ─── -->
+  <section id="acervo" class="section wrap reveal">
+    <header class="sec-cab">
+      <div>
+        <span class="badge">Para arquitetos</span>
+        <h2 class="h2 sec-tit">Catálogos e o banco<br class="so-desk" />de texturas 3D.</h2>
+        <p class="acervo-txt measure">
+          Tudo o que o projeto pede antes da especificação, sem cadastro e sem
+          espera — e a amostra física quando a decisão precisa da peça na mão.
+        </p>
+      </div>
+      <a class="btn" href="/contato">Pedir acesso e amostra</a>
+    </header>
+
+    <ul class="acervo-itens">
+      {acervo.map((a) => (
+        <li class="acervo-item">
+          <h3 class="acervo-item-tit">{a.titulo}</h3>
+          <p class="acervo-item-txt">{a.texto}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ─── Pedido ─── -->
+  <section class="fim reveal">
+    <div class="wrap fim-in">
+      <div>
+        <p class="fim-badge"><span class="badge badge--dark">Contato</span></p>
+        <h2 class="h2 fim-tit">Vamos conversar<br class="so-desk" />sobre o seu projeto.</h2>
+        <p class="fim-txt measure">
+          Nossa equipe técnica entende as necessidades do projeto e recomenda a
+          solução em madeira — com dimensões, prazo e método de instalação.
+          Resposta em até um dia útil.
+        </p>
+      </div>
+      <div class="fim-acoes">
+        <a class="btn btn-on-dark" href="#pedido">Pedir o orçamento</a>
+        <a class="fim-direto" href="tel:+5511999600222">+55 11 99960-0222</a>
+        <a class="fim-direto" href="mailto:contato@parket.com.br">contato@parket.com.br</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── O pedido, na própria home ───
+       O bloco escuro acima é o fecho editorial; este é onde a conversa começa
+       de fato. Quem rolou a página inteira não precisa mudar de página para
+       pedir — e quem clicou num nome lá em cima continua indo para /contato,
+       que é onde a referência chega pela querystring. -->
+  <Formulario
+    ancora="pedido"
+    titulo="Peça o orçamento."
+    subtitulo="Cinco perguntas rápidas — metragem, superfícies e contato. No fim abrimos o WhatsApp com o seu pedido já escrito."
+    acao="Pedir orçamento"
+  />
+</Base>
+
+<style>
+  /* ─── Hero ─── */
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; padding-bottom: var(--s-12); }
+  /* Três camadas, porque o quadro do vídeo muda e não dá para confiar na foto:
+     base plana garante o mínimo, e cada gradiente protege uma zona de texto —
+     o topo para o cabeçalho, o rodapé para o título. */
+  .hero-scrim,
+  .hero-scrim-topo,
+  .hero-scrim-base { position: absolute; inset: 0; pointer-events: none; }
+  .hero-scrim { background: rgb(13 13 13 / .34); }
+  .hero-scrim-topo {
+    background: linear-gradient(to bottom, rgb(13 13 13 / .46) 0%, rgb(13 13 13 / 0) 22%);
+  }
+  .hero-scrim-base {
+    background: linear-gradient(to top, rgb(13 13 13 / .62) 0%, rgb(13 13 13 / .28) 38%, rgb(13 13 13 / 0) 62%);
+  }
+  .hero-in { position: relative; color: var(--on-dark); }
+  .hero-tit { color: var(--on-dark); }
+  .hero-sub { color: rgb(232 228 223 / .82); margin: var(--s-3) 0 var(--s-6); }
+  .hero-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3) var(--s-6); }
+  .hero-link { color: var(--on-dark); }
+  .hero-link:hover { color: var(--wood); }
+
+  /* ─── Prova ─── */
+  .provas { background: var(--paper); border-bottom: 1px solid var(--line); }
+  /* Centralizada, e não pendurada na espinha esquerda como o resto da página:
+     com quatro itens curtos em colunas largas, o alinhamento à esquerda
+     deixava a sobra de cada coluna acumulada na direita — a última virava um
+     buraco na borda e a faixa lia como puxada para um lado. Centrado, o ar
+     fica igual dos dois lados de cada número. */
+  .numeros {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--s-4); padding-block: var(--s-6);
+    text-align: center;
+  }
+  .num-valor { display: block; font-size: clamp(1.75rem, 3.2vw, 2.75rem); font-weight: 200; color: var(--ink); letter-spacing: -.02em; line-height: 1.1; }
+  /* Sem cap de largura. O `max-width: 20ch` quebrava três dos quatro rótulos
+     em duas linhas dentro de colunas de 304px, e a sobra da quarta coluna
+     virava um buraco de 175px encostado na borda direita — a faixa inteira
+     lia como puxada para a esquerda. Numa linha só, o resto cai para 47px. */
+  .num-rot { display: block; margin-top: var(--s-1); }
+
+  /* ─── Manifesto ─── */
+  .manifesto { background: var(--ground); color: var(--on-dark); padding-block: var(--section); }
+  .mani-badge { margin-bottom: var(--s-4); }
+  .mani-txt {
+    font-size: clamp(1.75rem, 3.6vw, 3rem); font-weight: 200;
+    line-height: 1.18; letter-spacing: -.02em; color: var(--on-dark);
+    max-width: 22ch;
+  }
+  .mani-sub { color: var(--on-dark-muted); margin-top: var(--s-4); font-size: var(--fs-small); }
+
+  /* ─── Superfícies · composição editorial, não grade de cards iguais ─── */
+  .cats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s-6) var(--s-3); }
+  .cat { grid-column: span var(--span, 2); }
+  .cat-media { overflow: hidden; background: var(--surface); border-radius: var(--radius-media); }
+  .cat-media :global(.foto) { transition: transform 1.1s var(--ease); }
+  .cat:hover .cat-media :global(.foto) { transform: scale(1.03); }
+  .cat-corpo {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--s-3); padding-top: 3px;
+    border-top: 1px solid var(--line-soft); margin-top: var(--s-2);
+  }
+  .cat-nome { font-size: 1.375rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em; }
+  .cat-qtd { margin-top: 2px; }
+  .cat-acao {
+    display: inline-flex; align-items: center; gap: 6px; flex: none;
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--muted); transition: color var(--d-fast) var(--ease);
+    /* 18px de texto num alvo de toque é pouco. O padding é simétrico para o
+       baseline não sair do lugar — a linha alinha por baseline com o nome. */
+    padding-block: 13px;
+  }
+  .cat:hover .cat-acao,
+  .cat-acao:hover { color: var(--wood-text); }
+  .cat-seta { transition: transform var(--d-base) var(--ease); }
+  .cat-acao:hover .cat-seta { transform: translate(2px, -2px); }
+
+  /* ─── Arco ─── */
+  .arco-cta { text-align: center; margin-top: var(--s-4); }
+
+  /* ─── Depoimentos ─── */
+  .depos-sec { background: var(--surface); padding-block: var(--section); }
+  /* A nota do Google é a credencial da seção: sem ela as três falas são
+     texto solto; com ela, são a amostra de um agregado verificável. */
+  .depos-nota {
+    margin-top: var(--s-3);
+    font-size: var(--fs-small); color: var(--wood-text);
+  }
+  .depos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
+  /* As três avaliações têm comprimentos bem diferentes e o texto é literal —
+     não dá para apará-lo até emparelhar. Então a assinatura desce para a base
+     da coluna: os nomes alinham entre si, e a diferença sobra no meio, onde
+     ninguém repara. */
+  .depo { display: flex; flex-direction: column; }
+  .depo blockquote { margin: 0; padding-top: var(--s-3); border-top: 1px solid var(--line); }
+  .depo-autor { margin-top: auto; }
+  .depo blockquote p { font-size: var(--fs-small); line-height: 1.65; color: var(--text); }
+  .depo-autor { padding-top: var(--s-3); font-size: var(--fs-small); color: var(--ink); }
+
+  /* ─── Acervo ─── */
+  .acervo-txt { color: var(--muted); margin-top: var(--s-3); font-size: var(--fs-small); }
+  .acervo-itens {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-6); border-top: 1px solid var(--ink); padding-top: var(--s-4);
+  }
+  .acervo-item-tit { font-size: 1.375rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em; }
+  .acervo-item-txt { margin-top: var(--s-1); font-size: var(--fs-small); color: var(--muted); }
+
+  /* ─── Pedido ─── */
+  .fim { background: var(--ground); color: var(--on-dark); padding-block: var(--section); }
+  .fim-in { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--s-8); align-items: end; }
+  .fim-badge { margin-bottom: var(--s-2); }
+  .fim-tit { color: var(--on-dark); margin-top: var(--s-2); }
+  .fim-txt { color: var(--on-dark-muted); margin-top: var(--s-3); font-size: var(--fs-small); }
+  .fim-acoes { display: flex; flex-direction: column; align-items: flex-start; gap: var(--s-2); }
+  .fim-direto {
+    font-size: var(--fs-small); color: var(--on-dark-muted);
+    transition: color var(--d-fast) var(--ease);
+  }
+  .fim-direto:hover { color: var(--wood); }
+
+  @media (max-width: 900px) {
+    .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cat { grid-column: span 1; }
+    .cat:last-child { grid-column: span 2; }
+    .numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-3); }
+    .depos { grid-template-columns: 1fr; gap: var(--s-4); }
+    .acervo-itens { grid-template-columns: 1fr; gap: var(--s-4); }
+    .fim-in { grid-template-columns: 1fr; gap: var(--s-6); }
+  }
+  @media (max-width: 560px) {
+    .cats { grid-template-columns: 1fr; }
+    .cat, .cat:last-child { grid-column: span 1; }
+  }
+</style>

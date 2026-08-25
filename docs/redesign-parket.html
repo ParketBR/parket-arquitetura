@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<title>Parket — Arquitetura do Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400;500&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────────────────
+   TOKENS · paleta extraída do site oficial parket.com.br
+   ───────────────────────────────────────────────────────── */
+:root{
+  --paper:#FAF8F5;
+  --surface:#F1EEE8;
+  --surface-2:#EAE6DE;
+  --ink:#1A1A1A;
+  --text:#2A2A2A;
+  --muted:#6E6860;
+  --line:#D9D3CB;
+  --line-soft:#E6E1D9;
+  --wood:#9C8B6E;
+  --wood-text:#6F6049;
+  --on-dark:#E8E4DF;
+  --dark-ground:#141312;
+  --swatch-ring:rgba(0,0,0,.12);
+
+  --sans:"DM Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --measure:68ch;
+  --rail:132px;
+  --gap:clamp(28px,4vw,56px);
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#121110;
+    --surface:#1A1917;
+    --surface-2:#22201D;
+    --ink:#F0EDE7;
+    --text:#DDD8D0;
+    --muted:#969087;
+    --line:#312E2A;
+    --line-soft:#252320;
+    --wood:#B9A382;
+    --wood-text:#C3AE8C;
+    --on-dark:#E8E4DF;
+    --dark-ground:#0B0A09;
+    --swatch-ring:rgba(255,255,255,.16);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#121110;
+  --surface:#1A1917;
+  --surface-2:#22201D;
+  --ink:#F0EDE7;
+  --text:#DDD8D0;
+  --muted:#969087;
+  --line:#312E2A;
+  --line-soft:#252320;
+  --wood:#B9A382;
+  --wood-text:#C3AE8C;
+  --on-dark:#E8E4DF;
+  --dark-ground:#0B0A09;
+  --swatch-ring:rgba(255,255,255,.16);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:1.0625rem;
+  font-weight:400;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ─── Estrutura ─── */
+.sheet{max-width:1240px;margin:0 auto;padding:0 clamp(20px,5vw,64px)}
+.part{
+  display:grid;
+  grid-template-columns:var(--rail) minmax(0,1fr);
+  gap:var(--gap);
+  padding:clamp(56px,8vw,104px) 0;
+  border-top:1px solid var(--line);
+}
+.part:first-of-type{border-top:none}
+.rail{position:relative}
+.rail-inner{position:sticky;top:88px}
+.part-num{
+  font-family:var(--mono);
+  font-size:.75rem;font-weight:400;
+  letter-spacing:.1em;
+  color:var(--wood-text);
+  display:block;
+  padding-bottom:10px;
+  border-bottom:2px solid var(--wood);
+  margin-bottom:12px;
+}
+.rail-label{
+  font-size:.6875rem;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+  display:block;
+}
+.body-col{min-width:0}
+.prose{max-width:var(--measure)}
+
+/* ─── Tipografia ─── */
+h1,h2,h3,h4{color:var(--ink);text-wrap:balance;margin:0}
+.display{
+  font-size:clamp(2.75rem,7vw,5.25rem);
+  font-weight:200;line-height:1.02;letter-spacing:-.025em;
+}
+h2{
+  font-size:clamp(1.75rem,3.2vw,2.5rem);
+  font-weight:200;line-height:1.12;letter-spacing:-.015em;
+  margin-bottom:.6em;
+}
+h3{
+  font-size:1.1875rem;font-weight:500;line-height:1.35;
+  letter-spacing:-.005em;
+  margin:2.4em 0 .5em;
+}
+h4{
+  font-size:.9375rem;font-weight:500;line-height:1.4;
+  margin:1.8em 0 .4em;
+}
+p{margin:0 0 1.1em}
+.lead{
+  font-size:clamp(1.125rem,1.7vw,1.375rem);
+  font-weight:300;line-height:1.5;color:var(--text);
+  letter-spacing:-.008em;
+}
+.label{
+  font-size:.6875rem;font-weight:500;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+}
+strong{font-weight:500;color:var(--ink)}
+em{font-style:italic}
+a{color:var(--wood-text);text-underline-offset:3px;text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--wood);outline-offset:3px}
+code,.mono{font-family:var(--mono);font-size:.875em;font-weight:400}
+code{color:var(--wood-text);background:var(--surface);padding:.12em .38em;border-radius:2px}
+
+ul,ol{margin:0 0 1.1em;padding-left:1.15em}
+li{margin-bottom:.42em}
+li::marker{color:var(--wood)}
+hr{border:none;border-top:1px solid var(--line);margin:2.5em 0}
+
+/* ─── Capa ─── */
+.cover{padding:clamp(72px,13vw,152px) 0 clamp(48px,7vw,84px)}
+.cover .display{margin:.24em 0 .3em}
+.cover-meta{
+  display:flex;flex-wrap:wrap;gap:8px 28px;
+  margin-top:clamp(32px,5vw,52px);
+  padding-top:22px;border-top:1px solid var(--line);
+}
+.cover-meta div{display:flex;flex-direction:column;gap:3px}
+.cover-meta .v{font-size:.875rem;color:var(--ink);font-weight:400}
+
+/* ─── Tabelas ─── */
+.tw{overflow-x:auto;margin:0 0 1.6em;border-top:1px solid var(--ink);border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.9375rem;min-width:520px}
+th{
+  text-align:left;vertical-align:bottom;
+  font-size:.625rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);
+  padding:12px 18px 12px 0;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+td{
+  padding:13px 18px 13px 0;
+  border-bottom:1px solid var(--line-soft);
+  vertical-align:top;line-height:1.5;
+}
+tr:last-child td{border-bottom:none}
+th:last-child,td:last-child{padding-right:0}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+td.ink{color:var(--ink);font-weight:400}
+
+/* ─── Achados ─── */
+.finding{
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 20px;
+  padding:26px 0;border-top:1px solid var(--line-soft);
+}
+.finding:first-of-type{border-top:1px solid var(--ink)}
+.sev{
+  font-family:var(--mono);font-size:.6875rem;font-weight:500;
+  letter-spacing:.06em;
+  padding:3px 8px;border-radius:2px;
+  align-self:start;margin-top:3px;white-space:nowrap;
+}
+.sev-1{background:var(--ink);color:var(--paper)}
+.sev-2{background:var(--wood);color:#1A1A1A}
+.sev-3{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.finding>div,.phase>div{min-width:0}
+.finding h3{margin:0 0 .45em;font-size:1.0625rem}
+.finding p{margin-bottom:.7em;max-width:64ch}
+.finding p:last-child{margin-bottom:0}
+.evidence{
+  font-family:var(--mono);font-size:.75rem;line-height:1.7;
+  color:var(--muted);
+  border-left:2px solid var(--wood);
+  padding:2px 0 2px 14px;margin:.9em 0 0;
+  overflow-x:auto;
+}
+
+/* ─── Blocos de dado / wireframe ─── */
+.block{
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  padding:clamp(18px,2.6vw,28px);
+  margin:0 0 1.6em;
+  overflow-x:auto;
+}
+.block pre{
+  margin:0;font-family:var(--mono);
+  font-size:.8125rem;line-height:1.85;
+  color:var(--text);white-space:pre;
+}
+.block .c{color:var(--muted)}
+.block .k{color:var(--wood-text)}
+.block-cap{
+  font-size:.6875rem;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);
+  margin:0 0 14px;
+}
+
+/* ─── Swatches ─── */
+.swatches{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+  gap:2px;margin:0 0 1.8em;
+}
+.sw{padding:0;border:1px solid var(--line)}
+.sw-chip{height:76px;display:block;box-shadow:inset 0 0 0 1px var(--swatch-ring)}
+.sw-meta{padding:10px 12px 12px;background:var(--surface)}
+.sw-name{font-size:.75rem;color:var(--ink);display:block;margin-bottom:2px}
+.sw-hex{font-family:var(--mono);font-size:.6875rem;color:var(--muted);display:block}
+
+/* ─── Escala tipográfica ─── */
+.scale-row{
+  display:grid;grid-template-columns:96px 1fr;gap:20px;
+  align-items:baseline;padding:16px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.scale-row:first-child{border-top:1px solid var(--ink)}
+.scale-spec{font-family:var(--mono);font-size:.6875rem;color:var(--muted);line-height:1.5}
+.scale-demo{color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ─── Jornada ─── */
+.phase{
+  border-top:1px solid var(--line);
+  padding:28px 0;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 22px;
+}
+.phase:first-of-type{border-top:1px solid var(--ink)}
+.phase-n{
+  font-family:var(--mono);font-size:.75rem;color:var(--wood-text);
+  letter-spacing:.08em;padding-top:4px;
+}
+.phase h3{margin:0 0 .1em;font-size:1.25rem;font-weight:300;letter-spacing:-.01em}
+.phase .want{font-size:.9375rem;color:var(--muted);margin:0 0 1em}
+.phase dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 18px;font-size:.9375rem}
+.phase dt{
+  font-size:.625rem;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);
+  padding-top:.32em;white-space:nowrap;
+}
+.phase dd{margin:0;color:var(--text)}
+.phase dd.break{color:var(--wood-text)}
+
+/* ─── Callout ─── */
+.rule{
+  border-left:2px solid var(--wood);
+  padding:4px 0 4px 20px;
+  margin:1.8em 0;
+  max-width:64ch;
+}
+.rule p{margin:0}
+.rule .label{display:block;margin-bottom:.5em}
+
+/* ─── Nav ─── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-in{
+  max-width:1240px;margin:0 auto;
+  padding:13px clamp(20px,5vw,64px);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.wordmark{
+  font-size:.9375rem;font-weight:300;letter-spacing:.34em;
+  color:var(--ink);text-transform:uppercase;
+}
+.topnav{display:flex;gap:20px;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{
+  font-size:.625rem;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+  text-decoration:none;white-space:nowrap;
+  transition:color .3s var(--ease);
+}
+.topnav a:hover{color:var(--ink)}
+
+/* ─── Motion ─── */
+.rev{opacity:0;transform:translateY(14px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.rev.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rev{opacity:1;transform:none;transition:none}
+  *{scroll-behavior:auto!important}
+}
+html{scroll-behavior:smooth}
+
+/* ─── Responsivo ─── */
+@media (max-width:860px){
+  .part{grid-template-columns:1fr;gap:22px;padding:52px 0}
+  .rail-inner{position:static;display:flex;align-items:center;gap:14px}
+  .part-num{border-bottom:none;padding-bottom:0;margin-bottom:0;
+    border-right:2px solid var(--wood);padding-right:12px}
+  .topnav{display:none}
+  .scale-row{grid-template-columns:1fr;gap:6px}
+  .phase,.finding{grid-template-columns:minmax(0,1fr);gap:12px}
+  .phase dl{grid-template-columns:minmax(0,1fr);gap:2px 0}
+  .phase dt{padding-top:.7em}
+}
+footer{
+  border-top:1px solid var(--ink);
+  padding:34px 0 60px;
+  font-size:.8125rem;color:var(--muted);
+}
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <span class="wordmark">Parket</span>
+    <nav class="topnav">
+      <a href="#p00">00 Partida</a>
+      <a href="#p01">01 Auditoria</a>
+      <a href="#p02">02 Arquitetura</a>
+      <a href="#p03">03 Jornada</a>
+      <a href="#p04">04 Conversão</a>
+      <a href="#p05">05 Sistema</a>
+      <a href="#p06">06 Páginas</a>
+      <a href="#p07">07 Performance</a>
+      <a href="#p08">08 SEO</a>
+      <a href="#p09">09 Rota</a>
+    </nav>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <header class="cover">
+    <span class="label">Redesign · Documento de arquitetura e experiência</span>
+    <h1 class="display">Fazer o site<br>especificável.</h1>
+    <p class="lead prose">O site da Parket comunica a marca com competência e falha em servir quem
+    a especifica. Este documento parte de uma auditoria medida do site no ar e define a arquitetura
+    de informação, a jornada do arquiteto e o sistema de interface do novo site.</p>
+    <div class="cover-meta">
+      <div><span class="label">Preparado para</span><span class="v">Parket · Pisos e Revestimentos</span></div>
+      <div><span class="label">Data</span><span class="v">24 de agosto de 2026</span></div>
+      <div><span class="label">Etapa</span><span class="v">Pré-implementação</span></div>
+      <div><span class="label">Pergunta-guia</span><span class="v">Isso ajuda a descobrir, especificar e solicitar?</span></div>
+    </div>
+  </header>
+
+  <!-- ══════════ 00 ══════════ -->
+  <section class="part rev" id="p00">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">00</span>
+      <span class="rail-label">Ponto de partida</span>
+    </div></div>
+    <div class="body-col">
+      <h2>O que foi consultado —<br>e o que não estava lá.</h2>
+      <div class="prose">
+        <p>O item 01 do briefing manda consultar o Obsidian antes de qualquer decisão e não inventar
+        o que já está documentado. Consultei. <strong>O vault não contém nenhuma informação sobre a
+        Parket.</strong></p>
+        <p>É o template <code>Vault-Projeto-Web</code> em branco: 151 notas, todas com data de 3 de
+        agosto, todos os campos ainda como <code>{{PROJETO}}</code>, os tokens de exemplo em azul
+        <code>#2563eb</code> e Playfair Display. Uma busca por "parket" em todo o vault retorna
+        <strong>zero resultados</strong>.</p>
+        <p>Como não havia decisão anterior a respeitar, a marca foi reconstruída a partir das fontes
+        que efetivamente existem — o site no ar, o hub de catálogos e os dados estruturados dos
+        repositórios de catálogo.</p>
+      </div>
+
+      <h3>Fontes efetivamente usadas</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Fonte</th><th>O que forneceu</th></tr></thead>
+          <tbody>
+            <tr><td class="ink">parket.com.br<br><span class="label">renderizado</span></td><td>Manifesto, texto institucional, os quatro números da empresa, três depoimentos assinados, dois showrooms, taxonomia de 9 categorias, 14 espécies, 9 tipologias de projeto, 15 artigos de blog</td></tr>
+            <tr><td class="ink">parket.com.br/catalogo</td><td>6 catálogos por ambiente e 7 coleções de piso, com a nomenclatura em uso</td></tr>
+            <tr><td class="ink"><span class="mono">catalogo.js</span><br><span class="label">Catalogo-Pisos-geral</span></td><td>Dados estruturados por coleção: espécies, origem, características, padrões de paginação, composições. A melhor base de conteúdo técnico que existe hoje</td></tr>
+            <tr><td class="ink">Medição direta<br><span class="label">rede e DOM</span></td><td>Peso real dos assets, contagem de links, árvore de headings, comportamento do hero em 375&nbsp;px</td></tr>
+            <tr><td class="ink">Obsidian Vault</td><td><span style="color:var(--muted)">Nada. Template genérico, sem conteúdo de marca</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Decisões travadas antes de projetar</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:26%">Item</th><th>Decisão</th><th style="width:30%">Por quê</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="ink">Tipografia</td>
+              <td><strong>DM Sans em toda a interface.</strong> Peso 200 no display, 300 em subtítulos, 400 no corpo, 500 em rótulos com <span class="mono">letter-spacing .16em</span></td>
+              <td>O briefing pedia Cormorant + Inter, mas o site oficial usa DM Sans em tudo. Prevaleceu a fonte do site oficial</td>
+            </tr>
+            <tr>
+              <td class="ink">Paleta</td>
+              <td><strong>Valores reais do site no ar</strong>, não os do briefing</td>
+              <td>Continuidade exata com o que já está publicado. O acento de madeira real é bem mais dessaturado que o do briefing</td>
+            </tr>
+            <tr>
+              <td class="ink">Entrega</td>
+              <td>Arquitetura e experiência primeiro; código na rodada seguinte</td>
+              <td>Item 17: não começar pelo código</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rule">
+        <span class="label">Vale registrar</span>
+        <p>Este documento está construído no próprio sistema que ele especifica — DM Sans, a paleta
+        do site oficial, a escala tipográfica e as regras de motion descritas na Parte 05. O que você
+        está lendo é o sistema funcionando.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 01 ══════════ -->
+  <section class="part rev" id="p01">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">01</span>
+      <span class="rail-label">Auditoria</span>
+    </div></div>
+    <div class="body-col">
+      <h2>Oito problemas,<br>em ordem de custo.</h2>
+      <p class="lead prose">Tudo abaixo foi medido no site em produção, não estimado. Os dois
+      primeiros achados sozinhos explicam por que um arquiteto não consegue especificar Parket
+      pelo site.</p>
+
+      <div class="finding">
+        <span class="sev sev-1">CRÍTICO</span>
+        <div>
+          <h3>O site inteiro é uma única URL</h3>
+          <p>A home tem <strong>três links de verdade</strong> — Instagram, YouTube e Pinterest. Os
+          cinco itens de menu, as nove categorias de produto, as doze coleções, as nove tipologias de
+          projeto e os quinze artigos do blog são <code>&lt;div&gt;</code> e <code>&lt;span&gt;</code>
+          com evento de clique. São 50 elementos "VER DETALHES" e nenhum deles é um link.</p>
+          <p>O efeito prático: nada é indexável, um arquiteto não consegue mandar ao colega o link de
+          "Carvalho Europeu Mont Blanc", não há botão voltar, não dá para abrir em nova aba e o leitor
+          de tela não anuncia nada como navegável. <strong>Isso bloqueia sozinho os itens 08, 09 e 15
+          do briefing</strong> — não existe onde colocar uma página de produto porque não existe o
+          conceito de página.</p>
+          <p class="evidence">document.querySelectorAll('a[href]').length → 3<br>elementos "VER DETALHES" → 50 · nenhum dentro de &lt;a&gt;<br>altura do documento → 10.432 px em uma só rota</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-1">CRÍTICO</span>
+        <div>
+          <h3>16,3 MB no primeiro carregamento</h3>
+          <p>São 86 imagens na home, <strong>27 delas sem <code>lazy</code></strong>, ou seja,
+          disputando banda com o hero. Nenhuma das 86 tem <code>srcset</code> — o celular baixa a
+          mesma imagem que o desktop. E 65 das 86 são JPG ou PNG.</p>
+          <p>Os piores casos são todos miniaturas de blog salvas como PNG em tamanho original: uma de
+          <strong>4,46 MB</strong>, outras de 1,82 MB e 1,60 MB — estas duas são capturas de tela
+          usadas como capa de artigo. O hero é <code>FOTO HERO.jpg</code>, 1,13 MB, servido da raiz
+          com espaço no nome do arquivo.</p>
+          <p class="evidence">A-Falsa-Economia-da-Madeira-Barata.png     4.458 KB<br>Captura-de-Tela-2026-04-07-as-14.57.13.png 1.816 KB<br>Captura-de-Tela-2026-04-07-as-15.36.43.png 1.599 KB<br>Madeira-Natural-vs-Porcelanato.png        1.459 KB<br>FOTO HERO.jpg                             1.159 KB<br>──────────────────────────────────────────────────<br>23 imagens eager + JS 450 KB + CSS 119 KB → 16,3 MB</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-1">CRÍTICO</span>
+        <div>
+          <h3>O título do hero desaparece no celular</h3>
+          <p>"Madeira natural." é renderizado em <code>#E8E4DF</code> sobre a foto. Existe um scrim,
+          mas o gradiente sai de 40% de opacidade no topo e já caiu para 15% na metade da altura —
+          ele foi calibrado para proteger o logotipo, que fica no topo, e abandona o título, que fica
+          a 373 px de uma viewport de 812. Em 375 px de largura a frase fica praticamente ilegível.</p>
+          <p>Some-se a isso que o H1 cai de 50 px para 25 px no mobile — metade do tamanho — e o
+          resultado é que a primeira tela da marca, no dispositivo mais usado, não comunica nada.
+          Falha WCAG 2.2 no critério 1.4.3.</p>
+          <p class="evidence">h1 { color: rgb(232,228,223); font-size: 25px }  @375px<br>posição do h1 → y = 373 de 812<br>scrim → linear-gradient(rgba(0,0,0,.4) 0%, rgba(0,0,0,.15) 50%)</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-2">ALTO</span>
+        <div>
+          <h3>O topo da home é um formulário de orçamento de cinco passos</h3>
+          <p>Logo abaixo do hero, antes de qualquer produto, o site pergunta
+          <strong>"QUANTOS M² VOCÊ PRECISA ATENDER?"</strong> e em seguida a cidade de execução.</p>
+          <p>Na fase de descoberta o arquiteto não tem metragem — ele ainda está decidindo o material.
+          Pior: a pergunta trata quem especifica como quem compra. O arquiteto não atende metros
+          quadrados, ele desenha um projeto. O item 06 do briefing pede exatamente o contrário disso:
+          conversão premium e contextual, no momento certo da jornada.</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-2">ALTO</span>
+        <div>
+          <h3>Não existe página de produto</h3>
+          <p>O item 09 do briefing chama a página de produto de uma das partes mais importantes do
+          projeto. Hoje ela não existe em nenhuma forma: "Pisos" é um H3 dentro de um carrossel com
+          uma linha de descrição.</p>
+          <p>Não há dimensões, espessura, tipo de construção, acabamento de fábrica, método de
+          instalação, ficha técnica, código de referência ou texto pronto para memorial descritivo.
+          Todo esse conteúdo existe — está estruturado em <code>catalogo.js</code> — mas não chega
+          ao site.</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-2">ALTO</span>
+        <div>
+          <h3>A marca está partida em dois sistemas</h3>
+          <p>O site usa DM Sans sobre fundo <code>#FAF8F5</code>. Os catálogos usam Inter sobre fundo
+          preto e moram em <code>parketbr.github.io</code>. São duas identidades visuais e dois
+          domínios para a mesma marca.</p>
+          <p>O custo real não é estético. O <strong>acervo — catálogos mais o banco de texturas 3D
+          — é o ativo mais forte que a Parket tem para atrair arquiteto</strong>, e hoje ele é um
+          banner solto na home que leva para fora da marca. Deveria ser o centro da área de
+          especificação.</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-3">MÉDIO</span>
+        <div>
+          <h3>Hierarquia semântica achatada</h3>
+          <p>Um H1, cerca de 15 H2 e cerca de 90 H3. Cada produto, coleção, espécie, tipologia e
+          artigo é um H3 sem página própria. Vários aparecem duplicados porque os carrosséis clonam
+          slides — Brazil, Clássicos e Eternos surgem duas vezes, assim como os quatro primeiros
+          artigos do blog.</p>
+          <p>Para o Google, o site tem uma página com noventa subtítulos repetidos e nenhum destino.</p>
+        </div>
+      </div>
+
+      <div class="finding">
+        <span class="sev sev-3">MÉDIO</span>
+        <div>
+          <h3>Inconsistências de nomenclatura</h3>
+          <p><strong>"Carvalhos Europeu"</strong> aparece quatro vezes na home — erro de concordância
+          no nome do produto mais importante do portfólio. A mesma coleção é
+          <strong>"Wood + Mármore"</strong> no site e <strong>"Wood + Stone"</strong> no catálogo. A
+          coleção de pisos brasileiros é "Brazil" no site e "Brasil" no hub de catálogos.</p>
+          <p>Para uma marca cujo argumento central é precisão milimétrica, o nome do produto errado
+          na vitrine custa mais do que parece.</p>
+        </div>
+      </div>
+
+      <div class="rule">
+        <span class="label">O que o site já faz bem — e deve ser preservado</span>
+        <p>O manifesto <em>"Não vendemos madeira. Criamos superfícies que completam a arquitetura"</em>
+        é uma das melhores linhas da categoria. Os quatro números institucionais são concretos e
+        verificáveis. Os depoimentos são assinados por David Bastos, Paulo Jacobsen e Fernanda Marques
+        — prova social de altíssimo nível, hoje enterrada perto do rodapé. E os 15 artigos do blog
+        são conteúdo técnico real, escrito para quem especifica. Nada disso se joga fora.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 02 ══════════ -->
+  <section class="part rev" id="p02">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">02</span>
+      <span class="rail-label">Arquitetura</span>
+    </div></div>
+    <div class="body-col">
+      <h2>Separar espécie<br>de acabamento.</h2>
+      <p class="lead prose">A decisão estruturante do redesign inteiro cabe numa frase: o que o
+      arquiteto especifica não é uma coleção, é uma <strong>referência</strong> — e uma referência é
+      uma espécie somada a um acabamento.</p>
+
+      <div class="prose">
+        <p>"Carvalho Europeu Mont Blanc" é a espécie <em>Carvalho Europeu</em> com o acabamento
+        <em>Mont Blanc</em>. O site atual trata isso como um nome solto dentro de um carrossel, e por
+        isso não consegue responder às duas perguntas que o arquiteto realmente faz:
+        <em>quais acabamentos existem nesta espécie?</em> e <em>este acabamento existe em qual outra
+        espécie?</em></p>
+        <p>Separar as duas entidades resolve navegação, comparação, filtro, SEO e memorial descritivo
+        de uma vez só. Tudo o mais decorre daí.</p>
+      </div>
+
+      <h3>Modelo de conteúdo</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:20%">Entidade</th><th style="width:10%" class="num">Qtd.</th><th>Exemplos reais</th></tr></thead>
+          <tbody>
+            <tr><td class="ink">Categoria</td><td class="num">9</td><td>Pisos, Decks, Forros, Painéis, Escadas, Portas, Fachadas, Adegas e Spas, Marcenaria</td></tr>
+            <tr><td class="ink">Coleção</td><td class="num">12</td><td>Brazil, Carvalhos, Clássicos, Eternos, Grandiosos, Pinho de Riga, Únicos, Wood&nbsp;+&nbsp;Stone · Eurodeck, Kebony</td></tr>
+            <tr><td class="ink">Espécie</td><td class="num">14</td><td>Carvalho Europeu, Freijó, Cumaru, Cabreúva Dourada, Itaúba, Pau Ferro, Cabreúva Branca, Teca, Tauari, Catuaba, Ipê Tabaco, Peroba do Campo, Nogueira, Pinho de Riga</td></tr>
+            <tr><td class="ink">Acabamento</td><td class="num">14+</td><td>Naturalle, Mont Blanc, Smoke, Armani, Milano, Nevado, Batman, Giz, Wild Grey, Cappuccino, Marrone, Black, Oxidado, Shou Sugi Ban</td></tr>
+            <tr><td class="ink">Paginação</td><td class="num">6</td><td>Régua, Chevron, Espinha de Peixe, Versalhes, Mosaico, Pétala</td></tr>
+            <tr><td class="ink">Referência</td><td class="num">~120</td><td><strong>Espécie × Acabamento × Paginação.</strong> É o que se especifica e o que tem página de produto</td></tr>
+            <tr><td class="ink">Projeto</td><td class="num">—</td><td>Obra real, com arquiteto, local, produto aplicado</td></tr>
+            <tr><td class="ink">Tipologia</td><td class="num">9</td><td>Hotéis, Restaurantes, Escritórios, Casas, Apartamentos, Edifícios, Lojas, Mostras, Museus</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Sitemap e regras de URL</h3>
+      <div class="block">
+        <p class="block-cap">Estrutura de rotas</p>
+<pre>/                                             <span class="c">home</span>
+
+/produtos                                     <span class="c">as 9 categorias</span>
+/produtos/pisos                               <span class="c">categoria · filtro por coleção, espécie,</span>
+                                              <span class="c">tom, paginação, largura, aplicação</span>
+/produtos/pisos/colecao/carvalhos             <span class="c">coleção · view curada, canonical própria</span>
+<span class="k">/produtos/pisos/carvalho-europeu-mont-blanc</span>   <span class="k">PRODUTO · canonical única da referência</span>
+
+/madeiras                                     <span class="c">as 14 espécies · comparador</span>
+/madeiras/carvalho-europeu                    <span class="c">espécie · origem, dureza, tom, onde usar,</span>
+                                              <span class="c">acabamentos disponíveis, projetos</span>
+
+/acabamentos                                  <span class="c">índice visual</span>
+/acabamentos/mont-blanc                       <span class="c">acabamento em todas as espécies</span>
+
+/projetos                                     <span class="c">portfólio</span>
+/projetos/tipologia/hoteis                    <span class="c">recorte por tipologia</span>
+/projetos/casa-de-praia-trancoso              <span class="c">obra · arquiteto, local, referências usadas</span>
+
+<span class="k">/arquitetos</span>                                   <span class="k">área de especificação · item 08</span>
+/arquitetos/catalogos                         <span class="c">os 6 catálogos, dentro da marca</span>
+/arquitetos/texturas                          <span class="c">banco de texturas 3D</span>
+/arquitetos/fichas-tecnicas                   <span class="c">PDF por referência</span>
+/arquitetos/amostras                          <span class="c">pedido de amostra física</span>
+/arquitetos/memorial                          <span class="c">gerador de texto de memorial</span>
+
+/parket                                       <span class="c">institucional</span>
+/parket/showrooms                             <span class="c">São Paulo · Brasília</span>
+/blog · /blog/&lt;slug&gt;                          <span class="c">os 15 artigos existentes</span>
+/contato</pre>
+      </div>
+
+      <div class="prose">
+        <h4>Por que a coleção não entra na URL do produto</h4>
+        <p>"Carvalho Europeu Mont Blanc" aparece em <em>Carvalhos</em> e também em
+        <em>Grandiosos</em>. Se a coleção fosse ancestral da URL, a mesma referência teria dois
+        endereços e competiria consigo mesma no Google. Com o produto pendurado direto na categoria,
+        a canonical é única e a coleção vira o que ela realmente é: um recorte editorial.</p>
+        <h4>Regras fixas</h4>
+        <ul>
+          <li>Minúsculas, hífen, sem acento — <code>cabreuva-dourada</code>, não <code>cabreúva</code></li>
+          <li>Sem data, sem ID, sem parâmetro na URL canônica</li>
+          <li>Filtro é <code>?tom=claro&amp;largura=xl</code> com <code>rel=canonical</code> apontando para a categoria limpa</li>
+          <li>Toda página tem breadcrumb visível e <code>BreadcrumbList</code> em JSON-LD</li>
+          <li>URL nunca muda depois de publicada; se mudar, 301 permanente</li>
+        </ul>
+      </div>
+
+      <h3>Navegação principal</h3>
+      <div class="block">
+        <p class="block-cap">Header · desktop</p>
+<pre>PARKET      Produtos   Madeiras   Projetos   Arquitetos   Parket      [ Solicitar amostra ]</pre>
+      </div>
+      <div class="prose">
+        <p>Cinco itens e um CTA, como pede o item 11. Duas mudanças em relação ao menu atual:
+        <strong>Madeiras</strong> entra como item de primeiro nível — é assim que o arquiteto começa a
+        busca — e <strong>Arquitetos</strong> substitui Blog e Contato no topo, que descem para o
+        rodapé. O CTA do header é <em>Solicitar amostra</em>, não <em>Solicitar orçamento</em>:
+        amostra é o compromisso certo para quem ainda está especificando.</p>
+        <p><strong>Produtos</strong> e <strong>Madeiras</strong> abrem um painel em tela cheia com as
+        9 categorias e as 14 espécies visíveis de uma vez, cada uma com sua miniatura de textura.
+        Nada de submenu suspenso com rolagem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 03 ══════════ -->
+  <section class="part rev" id="p03">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">03</span>
+      <span class="rail-label">Jornada</span>
+    </div></div>
+    <div class="body-col">
+      <h2>Quatro fases,<br>quatro compromissos.</h2>
+      <p class="lead prose">O erro do site atual não é ter conversão demais — é ter a conversão
+      errada na fase errada. Pedir metragem a quem ainda está escolhendo material queima o contato
+      antes de ele existir.</p>
+
+      <div class="phase">
+        <span class="phase-n">01</span>
+        <div>
+          <h3>Descobrir</h3>
+          <p class="want">Chega pelo Instagram, Pinterest, Google ou indicação. Quer ver madeira aplicada em obra real, não conhecer a empresa.</p>
+          <dl>
+            <dt>Entrega</dt><dd>Home editorial e <code>/projetos</code> com obra, arquiteto, local e referência aplicada</dd>
+            <dt>Compromisso</dt><dd>Nenhum. Salvar projeto, seguir navegando</dd>
+            <dt>Hoje quebra</dt><dd class="break">As 9 tipologias de projeto são H3 num carrossel, sem página, sem obra, sem crédito de arquiteto</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="phase-n">02</span>
+        <div>
+          <h3>Comparar</h3>
+          <p class="want">Definiu que vai usar madeira. Precisa escolher espécie e tom — e justificar a escolha para o cliente.</p>
+          <dl>
+            <dt>Entrega</dt><dd><code>/madeiras</code> com as 14 espécies lado a lado: tom, dureza, uso interno ou externo, estabilidade, origem e certificação</dd>
+            <dt>Compromisso</dt><dd>Baixar o banco de texturas 3D — troca de valor real por e-mail profissional</dd>
+            <dt>Hoje quebra</dt><dd class="break">14 espécies num carrossel, apenas 4 com descrição visível, nenhuma comparável</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="phase-n">03</span>
+        <div>
+          <h3>Especificar</h3>
+          <p class="want">Vai escrever o memorial descritivo. Precisa de número: espessura, largura, comprimento, tipo de construção, acabamento, método de instalação.</p>
+          <dl>
+            <dt>Entrega</dt><dd>Página de produto completa e <code>/arquitetos</code> com ficha técnica em PDF, textura, DWG e texto pronto de memorial</dd>
+            <dt>Compromisso</dt><dd>Baixar ficha técnica · solicitar amostra física</dd>
+            <dt>Hoje quebra</dt><dd class="break">Não existe. Nem página de produto, nem ficha, nem dimensão em lugar nenhum do site</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="phase">
+        <span class="phase-n">04</span>
+        <div>
+          <h3>Solicitar</h3>
+          <p class="want">Referência definida, projeto aprovado. Agora sim tem metragem e prazo, e quer falar com alguém que entenda de obra.</p>
+          <dl>
+            <dt>Entrega</dt><dd>Formulário contextual, já preenchido com a referência que ele estava vendo, e contato direto com a equipe técnica</dd>
+            <dt>Compromisso</dt><dd>Falar com especialista · agendar visita ao showroom</dd>
+            <dt>Hoje quebra</dt><dd class="break">O quiz de 5 passos está no topo da home, desconectado de qualquer produto, e é a primeira coisa que o visitante vê</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="rule">
+        <span class="label">A regra</span>
+        <p>O formulário de orçamento sai do topo da home e vai para o fim da jornada — e chega
+        pré-preenchido com o que o arquiteto já olhou. Ele deixa de ser um pedágio na entrada e passa
+        a ser o passo natural de quem já decidiu.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 04 ══════════ -->
+  <section class="part rev" id="p04">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">04</span>
+      <span class="rail-label">Conversão</span>
+    </div></div>
+    <div class="body-col">
+      <h2>Três níveis<br>de compromisso.</h2>
+      <p class="lead prose">O acervo — catálogos e banco de texturas 3D — é o melhor ativo de captura
+      que a Parket tem, porque é a única oferta do site que devolve valor imediato para o arquiteto.
+      Hoje é um banner solto. Deveria ser a espinha dorsal da conversão.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:16%">Nível</th><th style="width:30%">Ação</th><th style="width:24%">Pede</th><th>Onde aparece</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="ink">Baixo</td>
+              <td>Baixar catálogo, textura 3D ou ficha técnica</td>
+              <td>Nome e e-mail profissional</td>
+              <td><code>/madeiras</code> · <code>/arquitetos</code> · página de produto</td>
+            </tr>
+            <tr>
+              <td class="ink">Médio</td>
+              <td>Solicitar amostra física</td>
+              <td>+ escritório e endereço de entrega</td>
+              <td>Página de produto · página de espécie · header</td>
+            </tr>
+            <tr>
+              <td class="ink">Alto</td>
+              <td>Falar com especialista · agendar visita ao showroom</td>
+              <td>+ WhatsApp, tipo e área do projeto</td>
+              <td>Fim da página de produto · <code>/contato</code> · <code>/projetos</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>CTA por página</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:26%">Página</th><th style="width:30%">Primário</th><th style="width:24%">Secundário</th><th>Persistente</th></tr></thead>
+          <tbody>
+            <tr><td class="ink">Home</td><td>Conhecer produtos</td><td>Ver projetos</td><td>Solicitar amostra <span class="label">header</span></td></tr>
+            <tr><td class="ink">Categoria</td><td>Ver referência</td><td>Baixar catálogo</td><td>Solicitar amostra</td></tr>
+            <tr><td class="ink"><strong>Produto</strong></td><td><strong>Solicitar amostra</strong></td><td>Baixar ficha técnica</td><td>Barra fixa com a referência</td></tr>
+            <tr><td class="ink">Espécie</td><td>Baixar textura 3D</td><td>Ver referências nesta espécie</td><td>Solicitar amostra</td></tr>
+            <tr><td class="ink">Projeto</td><td>Ver referências usadas</td><td>Falar com especialista</td><td>—</td></tr>
+            <tr><td class="ink">Arquitetos</td><td>Acessar o acervo</td><td>Solicitar amostra</td><td>—</td></tr>
+            <tr><td class="ink">Blog</td><td>Ver referências citadas</td><td>Acessar o acervo</td><td>—</td></tr>
+            <tr><td class="ink">Contato</td><td>Falar com especialista</td><td>Agendar visita</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rule">
+        <span class="label">Limite</span>
+        <p>Um CTA primário por tela. Nunca dois botões preenchidos lado a lado — o secundário é
+        sempre texto sublinhado ou contorno. Zero pop-up de saída, zero banner de newsletter
+        interrompendo leitura, zero widget flutuante de chat. O item 04 do briefing pede que a
+        interface respire, e respirar significa também não ser interrompido.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 05 ══════════ -->
+  <section class="part rev" id="p05">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">05</span>
+      <span class="rail-label">Sistema</span>
+    </div></div>
+    <div class="body-col">
+      <h2>O sistema<br>de interface.</h2>
+      <p class="lead prose">Extraído do site oficial, não inventado. Os valores abaixo são os que já
+      estão em produção em <span class="mono">parket.com.br</span>.</p>
+
+      <h3>Cor</h3>
+      <div class="swatches">
+        <div class="sw"><span class="sw-chip" style="background:#FAF8F5;border-bottom:1px solid #D9D3CB"></span><span class="sw-meta"><span class="sw-name">Paper</span><span class="sw-hex">#FAF8F5</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#F1EEE8"></span><span class="sw-meta"><span class="sw-name">Surface</span><span class="sw-hex">#F1EEE8</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#D9D3CB"></span><span class="sw-meta"><span class="sw-name">Line</span><span class="sw-hex">#D9D3CB</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#9C8B6E"></span><span class="sw-meta"><span class="sw-name">Wood</span><span class="sw-hex">#9C8B6E</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#2A2A2A"></span><span class="sw-meta"><span class="sw-name">Text</span><span class="sw-hex">#2A2A2A</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#1A1A1A"></span><span class="sw-meta"><span class="sw-name">Ink</span><span class="sw-hex">#1A1A1A</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#0D0D0D"></span><span class="sw-meta"><span class="sw-name">Ground</span><span class="sw-hex">#0D0D0D</span></span></div>
+        <div class="sw"><span class="sw-chip" style="background:#E8E4DF"></span><span class="sw-meta"><span class="sw-name">On dark</span><span class="sw-hex">#E8E4DF</span></span></div>
+      </div>
+
+      <div class="rule">
+        <span class="label">Regra de contraste do acento</span>
+        <p><code>#9C8B6E</code> sobre <code>#FAF8F5</code> dá <strong>2,84:1</strong> — reprova em
+        WCAG AA para texto. A madeira é cor de <em>filete, régua, ícone e display grande</em>, nunca
+        de corpo de texto. Para texto em tom de madeira sobre claro, use <code>#6F6049</code>, que dá
+        5,5:1. Esta regra é o que impede o site de virar uma interface marrom, que o item 04 do
+        briefing pede para evitar.</p>
+      </div>
+
+      <h3>Tipografia</h3>
+      <p class="prose">Uma família só, DM Sans, com a amplitude de peso e o contraste de
+      <span class="mono">letter-spacing</span> fazendo todo o trabalho: display muito leve e muito
+      fechado, rótulo médio e muito aberto. É essa tensão — não uma segunda fonte — que dá o ar
+      editorial.</p>
+
+      <div class="scale-row">
+        <span class="scale-spec">Display<br>200 · −.025em<br>clamp(2.75, 7vw, 5.25rem)</span>
+        <span class="scale-demo" style="font-size:clamp(2rem,4.5vw,3.25rem);font-weight:200;letter-spacing:-.025em;line-height:1.05">Madeira natural.</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">H1<br>200 · −.02em<br>clamp(2.25, 4.6vw, 3.5rem)</span>
+        <span class="scale-demo" style="font-size:clamp(1.6rem,3.4vw,2.4rem);font-weight:200;letter-spacing:-.02em">Carvalho Europeu Mont Blanc</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">H2<br>200 · −.015em<br>clamp(1.75, 3.2vw, 2.5rem)</span>
+        <span class="scale-demo" style="font-size:clamp(1.35rem,2.6vw,1.9rem);font-weight:200;letter-spacing:-.015em">O chão que conecta cada ambiente</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">H3<br>500 · −.005em<br>1.1875rem</span>
+        <span class="scale-demo" style="font-size:1.1875rem;font-weight:500">Dimensões e construção</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">Lead<br>300 · −.008em<br>clamp(1.125, 1.7vw, 1.375rem)</span>
+        <span class="scale-demo" style="font-size:1.2rem;font-weight:300;letter-spacing:-.008em">Superfícies que completam a arquitetura</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">Corpo<br>400 · 1.65<br>1.0625rem</span>
+        <span class="scale-demo" style="font-size:1.0625rem;font-weight:400">Carvalho de manejo sustentável, seco em estufa</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">Dado técnico<br>400 · tabular<br>.9375rem</span>
+        <span class="scale-demo num" style="font-size:.9375rem">15 × 190 × 2200 mm · 4 mm de capa</span>
+      </div>
+      <div class="scale-row">
+        <span class="scale-spec">Rótulo<br>500 · .16em · caixa alta<br>.6875rem</span>
+        <span class="scale-demo" style="font-size:.6875rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase">Solicitar amostra</span>
+      </div>
+
+      <h3>Espaço, grade e motion</h3>
+      <div class="block">
+        <p class="block-cap">Tokens</p>
+<pre><span class="c">/* espaço · base 8 */</span>
+--s-1:8px   --s-2:16px  --s-3:24px  --s-4:32px
+--s-6:48px  --s-8:64px  --s-12:96px --s-16:128px
+--section: clamp(80px, 11vw, 176px)   <span class="c">respiro entre seções</span>
+
+<span class="c">/* grade */</span>
+--container: 1440px      <span class="c">12 col · gutter 24px</span>
+--measure:   68ch        <span class="c">largura máxima de leitura</span>
+--breakpoints: 640 / 900 / 1200 / 1600
+
+<span class="c">/* raio e sombra — o item 04 pede pouquíssimo */</span>
+--radius: 0              <span class="c">nada arredondado, exceto pill de filtro</span>
+--shadow: none           <span class="c">separação por filete, nunca por sombra</span>
+
+<span class="c">/* motion — lento, preciso, sofisticado */</span>
+--d-fast:   240ms        <span class="c">hover, foco</span>
+--d-base:   420ms        <span class="c">transição de estado</span>
+--d-slow:   900ms        <span class="c">reveal de imagem, entrada de seção</span>
+--ease: cubic-bezier(.22, 1, .36, 1)</pre>
+      </div>
+
+      <div class="prose">
+        <h4>Motion — o que é permitido</h4>
+        <ul>
+          <li><strong>Image reveal por clip-path</strong> — a imagem se descobre de baixo para cima em 900 ms. É o gesto principal do site</li>
+          <li><strong>Fade com deslocamento de 14 px</strong> na entrada de seção, uma vez só, sem repetir na volta</li>
+          <li><strong>Hover</strong> — escala de 1.02 na imagem em 600 ms, filete que cresce da esquerda sob o link</li>
+          <li><strong>Parallax</strong> — no máximo 6% de deslocamento, e só no hero</li>
+        </ul>
+        <h4>Proibido</h4>
+        <ul>
+          <li>Bounce, elástico, qualquer <em>overshoot</em></li>
+          <li>Animação abaixo de 200 ms — lê como falha, não como resposta</li>
+          <li>Texto que anima letra por letra</li>
+          <li>Contador de número subindo</li>
+          <li>Qualquer movimento em elemento que o usuário está lendo</li>
+        </ul>
+        <p><code>prefers-reduced-motion: reduce</code> desliga tudo. Sem exceção, sem versão "suave".</p>
+      </div>
+
+      <h3>Inventário de componentes</h3>
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:30%">Componente</th><th>Nota de implementação</th></tr></thead>
+          <tbody>
+            <tr><td class="ink">Header</td><td>Transparente sobre hero, ganha fundo <code>#FAF8F5</code> ao rolar. Painel de produtos e madeiras em tela cheia</td></tr>
+            <tr><td class="ink">Bloco editorial</td><td>Imagem grande com texto ao lado, alternando lado. Substitui o card na home</td></tr>
+            <tr><td class="ink">Ficha de referência</td><td>Imagem, nome, espécie, acabamento, largura. Sem borda, sem sombra — separado por espaço</td></tr>
+            <tr><td class="ink">Amostra de espécie</td><td>Textura recortada, nome, origem, tom, dureza. Base do comparador</td></tr>
+            <tr><td class="ink">Tabela de especificação</td><td>Rótulo à esquerda, valor tabular à direita, filete entre linhas. O componente mais importante da página de produto</td></tr>
+            <tr><td class="ink">Barra de ação fixa</td><td>Aparece na página de produto após a primeira dobra: nome da referência + amostra + ficha</td></tr>
+            <tr><td class="ink">Filtro</td><td>Pill de contorno, multisseleção, contador de resultado, estado refletido na URL</td></tr>
+            <tr><td class="ink">Galeria</td><td>Grade de alturas variadas, lightbox com legenda de referência e projeto</td></tr>
+            <tr><td class="ink">Cartão de projeto</td><td>Imagem, nome da obra, arquiteto, cidade, referências aplicadas</td></tr>
+            <tr><td class="ink">Formulário</td><td>Campo com filete inferior apenas, rótulo sempre visível acima. Detalhado na Parte 06</td></tr>
+            <tr><td class="ink">Bloco de download</td><td>Nome do arquivo, formato, peso, botão. Usado no acervo e na página de produto</td></tr>
+            <tr><td class="ink">Breadcrumb</td><td>Em toda página interna, com JSON-LD correspondente</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 06 ══════════ -->
+  <section class="part rev" id="p06">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">06</span>
+      <span class="rail-label">Páginas</span>
+    </div></div>
+    <div class="body-col">
+      <h2>As cinco páginas<br>que decidem tudo.</h2>
+
+      <h3>Home</h3>
+      <div class="block">
+        <p class="block-cap">Estrutura · desktop</p>
+<pre><span class="k">HERO</span>  <span class="c">100vh · uma imagem, três linhas, um CTA</span>
+      Madeira para arquitetura                     <span class="c">display 200</span>
+      Superfícies naturais desenvolvidas
+      para projetos que atravessam o tempo.        <span class="c">lead 300</span>
+      [ Conhecer a coleção ]
+      <span class="c">scrim vertical constante em 45% — não em gradiente que</span>
+      <span class="c">morre no meio, que é o bug atual do mobile</span>
+
+<span class="k">MANIFESTO</span>  <span class="c">fundo #0D0D0D · a melhor linha da marca, sozinha</span>
+      Não vendemos madeira.
+      Criamos superfícies que completam a arquitetura.
+
+<span class="k">CATEGORIAS</span>  <span class="c">as 9, em composição editorial de alturas</span>
+      <span class="c">variadas — não uma grade de 9 cards iguais</span>
+      Pisos · Decks · Forros · Painéis · Escadas
+      Portas · Fachadas · Adegas e Spas · Marcenaria
+
+<span class="k">MADEIRAS</span>  <span class="c">faixa horizontal de texturas · 14 espécies</span>
+      → /madeiras
+
+<span class="k">PROJETOS</span>  <span class="c">3 obras em destaque, com arquiteto e cidade</span>
+      → /projetos
+
+<span class="k">ACERVO</span>  <span class="c">a captura principal · catálogos + texturas 3D</span>
+      [ Acessar o acervo ]
+
+<span class="k">PROVA</span>  <span class="c">os 4 números + os 3 depoimentos assinados,</span>
+      <span class="c">que hoje estão enterrados perto do rodapé</span>
+      50+ anos · 20.000 m² · 6.000+ projetos · 100% FSC
+
+<span class="k">BLOG</span>  <span class="c">3 artigos · conteúdo técnico para quem especifica</span>
+
+<span class="k">CONTATO</span>  <span class="c">formulário curto + os 2 showrooms</span></pre>
+      </div>
+      <div class="prose">
+        <p>A mudança estrutural: <strong>o quiz de orçamento sai do topo</strong>. O hero volta a ser
+        só imagem, frase e um caminho. A captura vira o acervo, que é o que o arquiteto quer, e o
+        orçamento fica no fim, onde a pergunta sobre metragem finalmente faz sentido.</p>
+      </div>
+
+      <h3>Página de produto</h3>
+      <p class="prose">A peça central do projeto e a que hoje não existe. Toda referência tem uma —
+      cerca de 120 páginas, geradas a partir do modelo de conteúdo.</p>
+      <div class="block">
+        <p class="block-cap">/produtos/pisos/carvalho-europeu-mont-blanc</p>
+<pre><span class="c">Produtos › Pisos › Carvalho Europeu Mont Blanc</span>
+
+<span class="k">┌─ IMAGEM PRINCIPAL ────────┬─ ESPECIFICAÇÃO ──────────┐</span>
+<span class="k">│</span> aplicada em obra          <span class="k">│</span> <span class="c">PKT · PI · CA · 03</span>       <span class="k">│</span>
+<span class="k">│</span> <span class="c">+ miniaturas: textura,</span>    <span class="k">│</span> Carvalho Europeu         <span class="k">│</span>
+<span class="k">│</span> <span class="c">topo da régua, detalhe</span>    <span class="k">│</span> <span class="c">Mont Blanc</span>               <span class="k">│</span>
+<span class="k">│</span> <span class="c">do encaixe</span>                <span class="k">│</span>                          <span class="k">│</span>
+<span class="k">│</span>                           <span class="k">│</span> Engenheirado · capa 4 mm <span class="k">│</span>
+<span class="k">│</span>                           <span class="k">│</span> 15 × 190 × 2200 mm       <span class="k">│</span>
+<span class="k">│</span>                           <span class="k">│</span> Régua · escovado         <span class="k">│</span>
+<span class="k">│</span>                           <span class="k">│</span>                          <span class="k">│</span>
+<span class="k">│</span>                           <span class="k">│</span> [ Solicitar amostra ]    <span class="k">│</span>
+<span class="k">│</span>                           <span class="k">│</span> Baixar ficha técnica ↓   <span class="k">│</span>
+<span class="k">└───────────────────────────┴──────────────────────────┘</span>
+
+<span class="k">APLICAÇÕES</span>       Residencial · Hotelaria · Corporativo
+                  Área seca · piso radiante compatível
+
+<span class="k">ESPECIFICAÇÃO</span>    <span class="c">tabela completa — a seção que o arquiteto</span>
+                  <span class="c">veio buscar. Rótulo à esquerda, valor tabular</span>
+                  <span class="c">à direita, filete entre linhas</span>
+                  Construção      Engenheirado multilaminado
+                  Capa nobre      4 mm
+                  Espessura       15 mm
+                  Largura         190 mm
+                  Comprimento     até 2200 mm
+                  Paginação       Régua · Chevron · Espinha
+                  Acabamento      Óleo natural UV
+                  Instalação      Colada · flutuante
+                  Piso radiante   Compatível
+                  Certificação    FSC · manejo sustentável
+                  Garantia        —
+
+<span class="k">MADEIRA</span>          → /madeiras/carvalho-europeu
+                  origem, dureza Janka, estabilidade, tom
+
+<span class="k">ACABAMENTO</span>       → /acabamentos/mont-blanc
+                  como é obtido, manutenção, envelhecimento
+
+<span class="k">INSTALAÇÃO</span>       método, base exigida, umidade, dilatação
+                  <span class="c">[ Baixar manual de instalação ↓ ]</span>
+
+<span class="k">MEMORIAL</span>         <span class="c">texto pronto para memorial descritivo,</span>
+                  <span class="c">com botão copiar. Economiza 20 minutos</span>
+                  <span class="c">de trabalho do arquiteto — e garante que</span>
+                  <span class="c">a Parket seja especificada com o nome certo</span>
+
+<span class="k">GALERIA</span>          a referência aplicada em obras reais
+
+<span class="k">PROJETOS</span>         obras que usaram esta referência
+
+<span class="k">SEMELHANTES</span>      mesma espécie, outro acabamento
+                  mesmo tom, outra espécie
+
+<span class="k">CTA FINAL</span>        [ Solicitar amostra ]  Falar com especialista</pre>
+      </div>
+      <div class="rule">
+        <span class="label">O detalhe que mais converte</span>
+        <p>O bloco <strong>Memorial</strong> não está no briefing e é a maior oportunidade da página.
+        Entregar o parágrafo pronto para colar no memorial descritivo resolve uma tarefa chata do
+        arquiteto e, de quebra, garante que a especificação saia com a nomenclatura correta da Parket
+        — o que protege a marca na hora da concorrência de fornecedor.</p>
+      </div>
+
+      <h3>Página de espécie</h3>
+      <div class="block">
+        <p class="block-cap">/madeiras/carvalho-europeu</p>
+<pre><span class="k">HERO</span>        macro da textura, largura total
+
+<span class="k">IDENTIDADE</span>  Nome científico     Quercus robur
+            Origem              Europa
+            Dureza Janka        —
+            Estabilidade        —
+            Tom                 Claro a médio
+            Uso                 Interno
+
+<span class="k">CARÁTER</span>     veio, nó, variação natural, como envelhece
+            <span class="c">— o texto que o arquiteto usa para vender</span>
+            <span class="c">a escolha ao cliente dele</span>
+
+<span class="k">ACABAMENTOS</span> os 11 disponíveis nesta espécie, em faixa
+            de texturas → cada um leva à referência
+
+<span class="k">APLICAÇÕES</span>  piso · forro · painel · escada · porta
+
+<span class="k">PROJETOS</span>    obras nesta espécie
+
+<span class="k">TEXTURA 3D</span>  [ Baixar textura ] <span class="c">← captura principal</span>
+            <span class="c">.jpg 4K + .sbsar, com normal e roughness</span></pre>
+      </div>
+
+      <h3>Área do arquiteto</h3>
+      <p class="prose">O item 08 do briefing. Objetivo declarado: reduzir o tempo entre "gostei"
+      e "especifiquei". Tudo em um lugar, dentro da marca — não em outro domínio com outra
+      tipografia.</p>
+      <div class="block">
+        <p class="block-cap">/arquitetos</p>
+<pre>Tudo o que você precisa para especificar Parket.
+
+<span class="k">CATÁLOGOS</span>        os 6, em PDF, dentro da marca
+                 Pisos · Decks · Forros · Painéis
+                 Escadas · Marcenarias
+
+<span class="k">TEXTURAS 3D</span>      banco por espécie e acabamento
+                 4K · normal · roughness · .sbsar
+
+<span class="k">FICHAS</span>           PDF por referência, com todas as
+                 dimensões e método de instalação
+
+<span class="k">BLOCOS</span>           DWG de perfil, rodapé, encaixe,
+                 detalhe de escada
+
+<span class="k">MEMORIAL</span>         texto pronto por referência
+
+<span class="k">AMOSTRAS</span>         até 5 por pedido, entrega no escritório
+
+<span class="k">ESPECIALISTA</span>     contato direto da equipe técnica,
+                 sem passar por formulário genérico
+
+<span class="k">SHOWROOM</span>         São Paulo · Brasília — agendar visita</pre>
+      </div>
+      <div class="prose">
+        <p><strong>Acesso.</strong> Um só cadastro leve — nome, e-mail profissional, escritório,
+        CAU ou CRE — libera o acervo inteiro. Nada de pedir dados de novo a cada download. O cadastro
+        é o momento em que o visitante anônimo vira lead qualificado, e ele acontece uma vez.</p>
+      </div>
+
+      <h3>Formulário</h3>
+      <div class="block">
+        <p class="block-cap">Falar com um especialista · item 10</p>
+<pre>Vamos conversar sobre o seu projeto.        <span class="c">display 200</span>
+Nossa equipe técnica responde em até um dia útil.
+
+<span class="c">Referência de interesse</span>
+Carvalho Europeu Mont Blanc                 <span class="c">← pré-preenchido</span>
+                                            <span class="c">e editável</span>
+
+Nome
+Escritório
+E-mail
+WhatsApp
+Tipo de projeto      <span class="c">Residencial · Hotelaria · Corporativo ·</span>
+                     <span class="c">Varejo · Institucional</span>
+Área aproximada      <span class="c">opcional — não bloqueia o envio</span>
+Mensagem             <span class="c">opcional</span>
+
+[ Falar com um especialista ]</pre>
+      </div>
+      <div class="prose">
+        <ul>
+          <li><strong>Oito campos, três obrigatórios</strong> — nome, e-mail e tipo de projeto. Área e mensagem são opcionais e nunca bloqueiam envio</li>
+          <li>Rótulo sempre visível acima do campo. <em>Placeholder nunca substitui rótulo</em></li>
+          <li>Campo com filete inferior de 1 px em <code>#D9D3CB</code>, que vira <code>#9C8B6E</code> em foco. Sem caixa, sem borda completa, sem fundo cinza</li>
+          <li>Validação só depois do primeiro envio, e por campo — nunca enquanto a pessoa ainda digita</li>
+          <li>Erro diz o que fazer: <em>"Informe um e-mail para podermos responder"</em>, não <em>"Campo inválido"</em></li>
+          <li>Alvo de toque mínimo de 44 px em todos os campos e botões</li>
+          <li>Confirmação na própria página, dizendo <strong>quando</strong> a resposta chega — não um alerta genérico de sucesso</li>
+        </ul>
+      </div>
+
+      <h3>Comportamento no mobile</h3>
+      <div class="prose">
+        <p>Não é empilhar o desktop. Quatro decisões específicas:</p>
+        <ul>
+          <li><strong>Hero</strong> — scrim constante em 45%, não em gradiente. É a correção direta do achado crítico da Parte 01. Display cai para 2,75 rem, não para metade</li>
+          <li><strong>Categorias</strong> — viram faixa de rolagem horizontal com imagem grande, em vez de nove blocos empilhados que exigem doze telas de rolagem</li>
+          <li><strong>Página de produto</strong> — a barra de ação fixa no rodapé aparece assim que a especificação sai da tela, sempre com o nome da referência visível</li>
+          <li><strong>Tabela de especificação</strong> — rótulo acima do valor, não lado a lado; nunca rolagem horizontal em tabela de dado técnico</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 07 ══════════ -->
+  <section class="part rev" id="p07">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">07</span>
+      <span class="rail-label">Performance</span>
+    </div></div>
+    <div class="body-col">
+      <h2>De 16,3 MB<br>para 1,1 MB.</h2>
+      <p class="lead prose">O site é feito de fotografia e não pode deixar de ser. O que muda não é
+      a quantidade de imagem — é o peso de cada uma e o momento em que ela é baixada.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:34%">Métrica</th><th style="width:22%" class="num">Hoje</th><th style="width:22%" class="num">Orçamento</th><th>Como</th></tr></thead>
+          <tbody>
+            <tr><td class="ink">Peso da primeira tela</td><td class="num">16,3 MB</td><td class="num"><strong>1,1 MB</strong></td><td>AVIF + <code>srcset</code> + lazy correto</td></tr>
+            <tr><td class="ink">Imagens sem <code>lazy</code></td><td class="num">27</td><td class="num"><strong>1</strong></td><td>Só o hero, com <code>fetchpriority=high</code></td></tr>
+            <tr><td class="ink">Imagens com <code>srcset</code></td><td class="num">0 de 86</td><td class="num"><strong>todas</strong></td><td>Larguras 640 / 960 / 1440 / 1920</td></tr>
+            <tr><td class="ink">Maior imagem</td><td class="num">4.458 KB</td><td class="num"><strong>180 KB</strong></td><td>Nenhum asset acima de 200 KB</td></tr>
+            <tr><td class="ink">Hero</td><td class="num">1.159 KB JPG</td><td class="num"><strong>140 KB AVIF</strong></td><td><code>preload</code> só desta</td></tr>
+            <tr><td class="ink">CSS</td><td class="num">119 KB</td><td class="num"><strong>~25 KB</strong></td><td>Purge do que não é usado</td></tr>
+            <tr><td class="ink">JS</td><td class="num">450 KB</td><td class="num"><strong>~90 KB</strong></td><td>Rota estática, JS só onde há interação</td></tr>
+            <tr><td class="ink">LCP · 4G</td><td class="num">—</td><td class="num"><strong>&lt; 2,0 s</strong></td><td>Hero pré-carregado, fonte com <code>display:swap</code></td></tr>
+            <tr><td class="ink">CLS</td><td class="num">—</td><td class="num"><strong>&lt; 0,05</strong></td><td><code>width</code> e <code>height</code> em toda imagem</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        <h4>Regras que passam a valer</h4>
+        <ul>
+          <li><strong>Nenhum asset acima de 200 KB entra no repositório.</strong> Checagem no build, que falha se passar</li>
+          <li>AVIF com WebP de reserva e JPG como último recurso, nesta ordem no <code>&lt;picture&gt;</code></li>
+          <li><code>loading="lazy"</code> em tudo exceto a imagem do hero</li>
+          <li>Captura de tela nunca vira capa de artigo — três das piores imagens de hoje são exatamente isso</li>
+          <li>DM Sans em <code>woff2</code>, apenas os pesos 200, 300, 400 e 500, com <code>font-display:swap</code> e <code>preconnect</code></li>
+          <li>Sem biblioteca de animação: <code>clip-path</code>, <code>transform</code> e <code>IntersectionObserver</code> dão conta de tudo na Parte 05</li>
+          <li>Galeria e lightbox carregam sob demanda, nunca no bundle inicial</li>
+        </ul>
+      </div>
+
+      <h3>Acessibilidade</h3>
+      <div class="prose">
+        <ul>
+          <li><strong>Contraste</strong> — mínimo 4,5:1 em texto de corpo. A regra do acento de madeira da Parte 05 é obrigatória, não recomendação</li>
+          <li><strong>Scrim do hero</strong> — 45% constante, testado no recorte de 375 px. É a correção do achado crítico da Parte 01</li>
+          <li><strong>Link é <code>&lt;a href&gt;</code></strong> — nenhum destino navegável fica em <code>div</code> com evento de clique</li>
+          <li><strong>Foco visível</strong> — contorno de 2 px em <code>#9C8B6E</code> com 3 px de deslocamento, em tudo que recebe teclado</li>
+          <li><strong>Alt</strong> — descritivo e útil: <em>"Piso em Carvalho Europeu Mont Blanc em sala de estar com pé-direito duplo"</em>, não <em>"piso de madeira"</em></li>
+          <li><strong>Carrossel</strong> — sempre com controle visível, nunca em rotação automática, sempre navegável por teclado</li>
+          <li><strong>Alvo de toque</strong> — 44 px mínimo</li>
+          <li><strong>Zoom até 200%</strong> sem perda de conteúdo ou função</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 08 ══════════ -->
+  <section class="part rev" id="p08">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">08</span>
+      <span class="rail-label">SEO</span>
+    </div></div>
+    <div class="body-col">
+      <h2>Cerca de 200 páginas<br>onde hoje há uma.</h2>
+      <p class="lead prose">A arquitetura da Parte 02 é, sozinha, a maior mudança de SEO possível
+      aqui. Sai uma rota com noventa H3 repetidos; entram cerca de duzentas páginas, cada uma
+      respondendo a uma busca real.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:26%">Tipo de página</th><th style="width:12%" class="num">Qtd.</th><th style="width:26%">Schema</th><th>Busca que atende</th></tr></thead>
+          <tbody>
+            <tr><td class="ink">Produto</td><td class="num">~120</td><td><code>Product</code></td><td>"carvalho europeu mont blanc"</td></tr>
+            <tr><td class="ink">Espécie</td><td class="num">14</td><td><code>Article</code></td><td>"piso de freijó vale a pena"</td></tr>
+            <tr><td class="ink">Acabamento</td><td class="num">14</td><td><code>Article</code></td><td>"piso carvalho smoke"</td></tr>
+            <tr><td class="ink">Categoria</td><td class="num">9</td><td><code>CollectionPage</code></td><td>"deck de madeira para área externa"</td></tr>
+            <tr><td class="ink">Coleção</td><td class="num">12</td><td><code>CollectionPage</code></td><td>"piso espinha de peixe"</td></tr>
+            <tr><td class="ink">Projeto</td><td class="num">—</td><td><code>CreativeWork</code></td><td>"piso de madeira jacobsen"</td></tr>
+            <tr><td class="ink">Artigo</td><td class="num">15</td><td><code>Article</code></td><td>já existe e já ranqueia</td></tr>
+            <tr><td class="ink">Showroom</td><td class="num">2</td><td><code>LocalBusiness</code></td><td>"piso de madeira showroom são paulo"</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="prose">
+        <h4>Regras por página</h4>
+        <ul>
+          <li><strong>Um H1 por página</strong>, que é o nome da entidade. Hierarquia H1 → H2 → H3 sem pular nível</li>
+          <li><code>title</code> de até 60 caracteres, no padrão <em>Carvalho Europeu Mont Blanc — Piso Engenheirado | Parket</em></li>
+          <li><code>meta description</code> de até 155 caracteres, com a especificação concreta — dimensão e construção vendem mais clique que adjetivo</li>
+          <li>Open Graph com imagem própria por página, 1200×630, nunca a mesma para todas</li>
+          <li><code>Organization</code> e <code>WebSite</code> no <code>&lt;head&gt;</code> global; <code>BreadcrumbList</code> em toda interna</li>
+          <li><code>sitemap.xml</code> gerado no build, submetido no Search Console</li>
+          <li><code>hreflang</code> não se aplica hoje — deixar previsto caso haja versão em inglês para hotelaria internacional</li>
+        </ul>
+        <h4>Corrigir na migração</h4>
+        <ul>
+          <li><strong>"Carvalhos Europeu" → "Carvalho Europeu"</strong> em todas as ocorrências</li>
+          <li>Escolher <strong>"Wood + Stone"</strong> ou <strong>"Wood + Mármore"</strong> — um nome só, nos dois sistemas</li>
+          <li>Escolher <strong>"Brazil"</strong> ou <strong>"Brasil"</strong> para a coleção brasileira</li>
+          <li>Renomear os arquivos com espaço e acento: <code>FOTO HERO.jpg</code> e as capturas de tela viram nome semântico em minúscula com hífen</li>
+          <li>301 de cada âncora antiga da home para a página nova correspondente</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 09 ══════════ -->
+  <section class="part rev" id="p09">
+    <div class="rail"><div class="rail-inner">
+      <span class="part-num">09</span>
+      <span class="rail-label">Rota</span>
+    </div></div>
+    <div class="body-col">
+      <h2>Por onde começar.</h2>
+      <p class="lead prose">Em ordem de retorno sobre esforço. As duas primeiras etapas resolvem os
+      três achados críticos e podem entrar antes de qualquer redesign visual.</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th style="width:8%" class="num">#</th><th style="width:30%">Etapa</th><th>Entrega</th></tr></thead>
+          <tbody>
+            <tr><td class="num ink">01</td><td class="ink">Correções de emergência</td><td>Scrim do hero em 45%; comprimir as 23 imagens eager para AVIF; <code>lazy</code> e <code>srcset</code> em tudo; corrigir "Carvalhos Europeu". <strong>Sem redesign, no site atual</strong> — derruba a primeira tela de 16,3 MB para cerca de 1,5 MB</td></tr>
+            <tr><td class="num ink">02</td><td class="ink">Modelo de conteúdo</td><td>Estruturar espécie, acabamento, paginação e referência a partir de <code>catalogo.js</code>. É a base de tudo que vem depois e não tem interface</td></tr>
+            <tr><td class="num ink">03</td><td class="ink">Design system em código</td><td>Tokens, escala tipográfica, os 12 componentes da Parte 05, página de referência viva</td></tr>
+            <tr><td class="num ink">04</td><td class="ink">Rotas e página de produto</td><td>As ~120 páginas de referência, a categoria com filtro e o breadcrumb. <strong>É a etapa que muda o negócio</strong></td></tr>
+            <tr><td class="num ink">05</td><td class="ink">Madeiras e acabamentos</td><td>As 14 espécies com comparador e os 14 acabamentos</td></tr>
+            <tr><td class="num ink">06</td><td class="ink">Área do arquiteto</td><td>Acervo unificado dentro da marca, cadastro único, downloads, amostras</td></tr>
+            <tr><td class="num ink">07</td><td class="ink">Home nova</td><td>Só agora — a home é a vitrine do que já existe, não faz sentido antes</td></tr>
+            <tr><td class="num ink">08</td><td class="ink">Projetos</td><td>Portfólio com obra, arquiteto, cidade e referências aplicadas</td></tr>
+            <tr><td class="num ink">09</td><td class="ink">Migração e 301</td><td>Blog para as novas rotas, redirecionamentos, sitemap, Search Console</td></tr>
+            <tr><td class="num ink">10</td><td class="ink">Revisões</td><td>Acessibilidade, performance e conversão contra o orçamento da Parte 07</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rule">
+        <span class="label">O que medir depois</span>
+        <p>Downloads do acervo por mês, amostras solicitadas, páginas de produto por sessão,
+        e a única que importa de verdade: <strong>quantas obras chegam ao orçamento já com a
+        referência Parket escrita no memorial</strong>. É isso que o site precisa produzir.</p>
+      </div>
+
+      <hr>
+
+      <div class="prose">
+        <h3 style="margin-top:0">Pendências para a Parket</h3>
+        <p>Cinco coisas que não estão em nenhuma fonte consultada e que só a equipe tem:</p>
+        <ul>
+          <li><strong>Dimensões reais por referência</strong> — espessura, largura, comprimento, capa nobre. Sem isso a página de produto não existe</li>
+          <li><strong>Dureza Janka e estabilidade</strong> das 14 espécies</li>
+          <li><strong>Prazo e política de amostra</strong> — quantas, para quem, em quanto tempo, com ou sem custo</li>
+          <li><strong>Créditos dos projetos</strong> — nome da obra, escritório, cidade, ano e autorização de uso de imagem</li>
+          <li><strong>Nomes canônicos</strong> — a decisão final sobre Wood + Stone e sobre Brazil ou Brasil</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Documento de arquitetura e experiência · Parket · 24 de agosto de 2026<br>
+    Construído em DM Sans com a paleta de <span class="mono">parket.com.br</span>. Auditoria medida
+    no site em produção.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var els = Array.prototype.slice.call(document.querySelectorAll('.rev'));
+  function showAll(){ els.forEach(function(e){ e.classList.add('in'); }); }
+  if (!('IntersectionObserver' in window) ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    showAll();
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '240px 0px 240px 0px', threshold: 0 });
+  els.forEach(function(e){ io.observe(e); });
+  /* Rede de segurança: se algo escapar do observer, nada fica invisível. */
+  setTimeout(showAll, 4000);
+})();
+</script>
+
+</body>
+</html>

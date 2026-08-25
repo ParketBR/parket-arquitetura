@@ -1,0 +1,118 @@
+---
+/**
+ * Galeria em arco — as fotos se abrem em perspectiva, como um leque.
+ * As das pontas giram para dentro; a do centro fica de frente.
+ * Em telas estreitas vira faixa de rolagem horizontal, sem 3D.
+ */
+import Foto from './Foto.astro';
+
+interface Item { src: string; alt: string; href?: string; legenda?: string }
+interface Props { itens: Item[]; anguloMax?: number }
+
+const { itens, anguloMax = 42 } = Astro.props;
+const n = itens.length;
+
+/* Distribui o giro de +ângulo (esquerda) a −ângulo (direita), 0 no centro.
+   Quem gira mais também recua um pouco, senão o arco fica chapado. */
+const pose = (i: number) => {
+  const t = n === 1 ? 0 : (i / (n - 1)) * 2 - 1;      // −1 … +1
+  const giro = -t * anguloMax;
+  const recuo = Math.abs(t) * 168;   // quanto a ponta recua no eixo Z
+  const desce = Math.abs(t) * 26;    // e quanto ela cai, para o arco curvar
+  return `--giro:${giro.toFixed(2)}deg; --recuo:${recuo.toFixed(0)}px; --desce:${desce.toFixed(0)}px`;
+};
+---
+
+<div class="arco" role="list">
+  {itens.map((it, i) => {
+    const Tag = it.href ? 'a' : 'div';
+    return (
+      <Tag class="arco-item" role="listitem" style={pose(i)} href={it.href}>
+        <div class="arco-media">
+          <Foto src={it.src} alt={it.alt} width={1200}
+                sizes="(max-width: 1200px) 280px, 18vw" ratio="4/5" />
+        </div>
+        {it.legenda && <p class="arco-legenda caption">{it.legenda}</p>}
+      </Tag>
+    );
+  })}
+</div>
+
+<style>
+  .arco {
+    /* Ocupa a largura toda do pai, que já vem sem a grade. Nada de 100vw:
+       vw ignora a barra de rolagem e sobra estouro horizontal na página.
+
+       O teto de 2400px existe porque a faixa é dimensionada pela largura:
+       sem ele, num monitor de 3440px cada foto passava de 700px de altura e
+       o arco engolia a tela inteira. Até 2400 sangra de borda a borda —
+       que cobre praticamente todo monitor real. */
+    width: 100%;
+    max-width: min(100%, 2400px);
+    margin-inline: auto;
+    display: flex; justify-content: center; align-items: flex-start;
+    gap: 0;                       /* as fotos se tocam, como na referência */
+    /* A perspectiva acompanha a largura: fixa, ela achata a curva na tela
+       pequena e distorce demais na grande. */
+    perspective: clamp(1500px, 115vw, 2900px);
+    padding-block: var(--s-3) var(--s-2);
+    overflow: hidden;
+  }
+  .arco-item {
+    flex: 1 1 0; min-width: 0;
+    transform: rotateY(var(--giro)) translateZ(calc(var(--recuo) * -1)) translateY(var(--desce));
+    transform-style: preserve-3d;
+    /* A lâmina NÃO se move no hover. Tirá-la do arco desmonta a composição
+       inteira enquanto o mouse passa, e o resto do site usa outro idioma:
+       moldura parada, imagem crescendo por dentro. */
+    filter: brightness(.88);
+    transition: filter var(--d-base) var(--ease);
+  }
+  .arco-media {
+    overflow: hidden; border-radius: var(--radius-media);
+    background: var(--surface);
+  }
+  .arco-media :global(.foto) {
+    transform: scale(1);
+    transition: transform var(--d-base) var(--ease);
+  }
+  /* O brilho já é a pista de profundidade do arco — trazê-lo ao cheio é o que
+     diz "esta é a que você está apontando", sem mexer na geometria. */
+  .arco-item:hover { filter: brightness(1); }
+  .arco-item:hover .arco-media :global(.foto) { transform: scale(1.04); }
+  .arco-item:hover .arco-legenda { color: var(--ink); }
+  .arco-legenda {
+    margin-top: var(--s-2); text-align: center;
+    transition: color var(--d-fast) var(--ease);
+  }
+  /* A legenda não gira junto — texto em perspectiva fica ilegível. */
+  .arco-item .arco-legenda { transform: rotateY(calc(var(--giro) * -1)); }
+
+  /* Abaixo de 1200px o arco não tem largura: seis fotos caberiam com ~180px
+     cada e a perspectiva deixa de se ler. Nessa faixa vira strip arrastável,
+     que mostra menos fotos porém maiores. */
+  @media (max-width: 1200px) {
+    .arco {
+      perspective: none;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: var(--s-1);
+      padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+    .arco::-webkit-scrollbar { display: none; }
+    .arco-item {
+      /* Teto de 320px: 62% puro fazia a foto passar de 500px de altura no
+         tablet — maior do que no desktop, que é o oposto do esperado. */
+      flex: 0 0 clamp(190px, 62%, 280px);
+      max-width: none;
+      transform: none; filter: none;
+      scroll-snap-align: center;
+    }
+    .arco-item:hover { filter: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .arco-item, .arco-item:hover { transition: none; }
+  }
+</style>

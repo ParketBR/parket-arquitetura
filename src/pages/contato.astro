@@ -1,0 +1,95 @@
+---
+/**
+ * A segunda e última página do site.
+ *
+ * Existe por um motivo só: receber o pedido. Não tem navegação de conteúdo,
+ * não tem seção de venda — quem chega aqui já foi convencido pela home. O que
+ * pode aparecer acima do formulário é o que reduz a desistência: prazo de
+ * resposta, canais diretos e onde ficam os showrooms.
+ *
+ * Quando a pessoa chega de um nome clicado na home, a referência vem em `?ref=`
+ * e o formulário mostra o campo já preenchido.
+ */
+import Base from '../layouts/Base.astro';
+import Formulario from '../components/Formulario.astro';
+
+const titulo = 'Falar com um Especialista em Madeira | Parket';
+const descricao = 'Fale com a equipe técnica da Parket sobre o seu projeto: espécie, bitola, acabamento, prazo e instalação. Showrooms em São Paulo e Brasília. Resposta em até um dia útil.';
+
+
+const schema = {
+  '@type': 'ContactPage',
+  name: 'Contato Parket',
+  description: descricao,
+};
+
+const canais = [
+  { rotulo: 'WhatsApp', valor: '+55 11 99960-0222', href: 'https://wa.me/5511999600222', externo: true },
+  { rotulo: 'Telefone', valor: '+55 11 99960-0222', href: 'tel:+5511999600222', externo: false },
+  { rotulo: 'E-mail',   valor: 'contato@parket.com.br', href: 'mailto:contato@parket.com.br', externo: false },
+];
+---
+
+<Base {titulo} {descricao} {schema}>
+  <!-- O formulário abre a página. Quem chega aqui já clicou em "falar com um
+       especialista" na home — não precisa ser convencido de novo antes de
+       poder pedir. O contexto (prazo, canais diretos, showrooms) desceu para
+       depois: serve a quem hesita, não a quem já decidiu. -->
+  <Formulario
+    comoH1
+    titulo="Falar com um especialista."
+    subtitulo="Cinco perguntas rápidas. Se você chegou de uma referência, ela vem junto e adianta a conversa."
+    acao="Falar com um especialista"
+  />
+
+  <header class="topo">
+    <div class="wrap topo-in">
+      <div>
+        <span class="badge">Contato</span>
+        <h2 class="h2 topo-tit">Vamos conversar<br class="so-desk" />sobre o seu projeto.</h2>
+        <p class="lead measure topo-txt">
+          Conte o que está projetando. A equipe técnica responde com espécie,
+          bitola, acabamento, prazo e método de instalação — não com um catálogo
+          genérico.
+        </p>
+      </div>
+
+      <ul class="canais">
+        {canais.map((c) => (
+          <li class="canal">
+            <span class="label">{c.rotulo}</span>
+            <a
+              class="canal-valor"
+              href={c.href}
+              rel={c.externo ? 'noopener noreferrer' : undefined}
+              target={c.externo ? '_blank' : undefined}
+            >{c.valor}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </header>
+</Base>
+
+<style>
+  .topo { padding-block: var(--s-8) var(--s-12); }
+  .topo-in {
+    display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: var(--s-8); align-items: end;
+  }
+  .topo-tit { margin: var(--s-3) 0 var(--s-4); }
+  .topo-txt { color: var(--muted); }
+
+  .canais { border-top: 1px solid var(--ink); }
+  .canal {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--s-3); padding: 13px 0; border-bottom: 1px solid var(--line-soft);
+  }
+  .canal-valor { font-size: var(--fs-small); color: var(--ink); transition: color var(--d-fast) var(--ease); }
+  .canal-valor:hover { color: var(--wood-text); }
+
+  @media (max-width: 900px) {
+    .topo-in { grid-template-columns: 1fr; gap: var(--s-6); }
+    .topo { padding-block: var(--s-6) var(--s-8); }
+  }
+</style>
