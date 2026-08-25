@@ -10,6 +10,7 @@
 import Icone from './Icone.astro';
 import { categoriasOrdenadas } from '../lib/catalogo';
 import { catalogoDaCategoria, CATALOGOS_AVULSOS } from '../lib/catalogos';
+import { caminho } from '../lib/url';
 
 const showrooms = [
   { cidade: 'São Paulo', linhas: ['Avenida Magalhães de Castro, 4800', 'Torre 1, Edifício Capital · Cj. 201', 'Jardim Panorama — São Paulo · SP'] },
@@ -17,11 +18,11 @@ const showrooms = [
 ];
 
 const naPagina = [
-  { nome: 'Superfícies', href: '/#superficies' },
-  { nome: 'Madeiras',    href: '/#madeiras' },
-  { nome: 'Projetos',    href: '/#projetos' },
-  { nome: 'Acervo',      href: '/#acervo' },
-  { nome: 'Contato',     href: '/contato' },
+  { nome: 'Superfícies', href: caminho('/#superficies') },
+  { nome: 'Madeiras',    href: caminho('/#madeiras') },
+  { nome: 'Projetos',    href: caminho('/#projetos') },
+  { nome: 'Acervo',      href: caminho('/#acervo') },
+  { nome: 'Contato',     href: caminho('/contato') },
 ];
 
 /* Só entra quem tem catálogo publicado — Portas não tem, e some da lista. */
@@ -47,7 +48,7 @@ const ano = new Date().getFullYear();
       <div class="rod-marca">
         <p class="marca">Parket</p>
         <p class="rod-frase">Superfícies naturais desenvolvidas para projetos que atravessam o tempo.</p>
-        <a class="btn btn-on-dark rod-cta" href="/contato">Falar com um especialista</a>
+        <a class="btn btn-on-dark rod-cta" href={caminho("/contato")}>Falar com um especialista</a>
       </div>
 
       <nav class="rod-cols" aria-label="Rodapé">

@@ -21,9 +21,11 @@ const {
   schema, trilha = [], headerTransparente = false,
 } = Astro.props;
 
+import { caminho } from '../lib/url';
+
 const site = Astro.site ?? new URL('https://parket.com.br');
 const canonica = new URL(Astro.url.pathname, site).href;
-const ogImagem = imagem ? new URL(imagem, site).href : new URL('/og-parket.jpg', site).href;
+const ogImagem = imagem ? new URL(imagem, site).href : new URL(caminho('/og-parket.jpg'), site).href;
 
 const organizacao = {
   '@type': 'Organization',
@@ -78,10 +80,10 @@ const grafo = [
     <meta property="og:image" content={ogImagem} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" href={caminho("/favicon.ico")} sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href={caminho("/favicon-32x32.png")} />
+    <link rel="icon" type="image/png" sizes="16x16" href={caminho("/favicon-16x16.png")} />
+    <link rel="apple-touch-icon" sizes="180x180" href={caminho("/apple-touch-icon.png")} />
     <meta name="theme-color" content="#F5F2EC" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />

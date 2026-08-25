@@ -4,6 +4,7 @@
  * a partir do catalogo.js dos repositórios de catálogo da Parket.
  */
 import dados from '../data/catalogo.json';
+import { caminho } from './url';
 
 export interface Categoria {
   id: string; nome: string; descricao: string | null; videos: number;
@@ -74,7 +75,7 @@ export function relacionadas(ref: Referencia, limite = 4): Referencia[] {
  * Blanc" abre o pedido já falando daquela madeira — que é exatamente a
  * conversão que a página persegue.
  */
-export const urlPedido = (slug: string) => `/contato?ref=${slug}`;
+export const urlPedido = (slug: string) => `${caminho('/contato')}?ref=${slug}`;
 
 export const urlReferencia = (r: Referencia) => urlPedido(r.id);
 export const urlEspecie    = (e: Especie)    => urlPedido(e.id);

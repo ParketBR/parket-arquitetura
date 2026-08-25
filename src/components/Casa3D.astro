@@ -22,6 +22,7 @@ import texCarvalho from '../assets/texturas/carvalho-europeu.webp';
 import texCumaru   from '../assets/texturas/cumaru.webp';
 import texItauba   from '../assets/texturas/itauba.webp';
 import texTeca     from '../assets/texturas/teca.webp';
+import { caminho } from '../lib/url';
 
 const INICIAL = 'sala-estar';
 /** Ambientes com interior em primeira pessoa já construído. */
@@ -150,7 +151,7 @@ const nomeInicial = ambientes.find((a) => a.id === INICIAL)?.nome ?? '';
             ))}
           </ul>
         )}
-        <a class="link-action c3-mais" href="/contato">Especificar este ambiente</a>
+        <a class="link-action c3-mais" href={caminho("/contato")}>Especificar este ambiente</a>
       </article>
     ))}
   </div>

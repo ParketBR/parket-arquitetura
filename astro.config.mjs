@@ -2,8 +2,16 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+/* O site tem dois destinos: parket.com.br, na raiz do domínio, e o GitHub
+   Pages do repositório, que serve em /parket-arquitetura/. Quem manda são as
+   variáveis que o workflow do Pages define a partir do próprio ambiente — sem
+   elas, o build é o de produção e nada muda. */
+const SITE = process.env.SITE ?? 'https://parket.com.br';
+const BASE = process.env.BASE_PATH ?? '/';
+
 export default defineConfig({
-  site: 'https://parket.com.br',
+  site: SITE,
+  base: BASE,
   // O harness de preview atribui a porta via PORT; sem isso o dev server
   // sobe em 4321+1 e o preview aponta para o lugar errado.
   server: { port: process.env.PORT ? Number(process.env.PORT) : 4321 },

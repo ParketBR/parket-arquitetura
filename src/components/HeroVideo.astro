@@ -7,9 +7,10 @@
  */
 import { Image } from 'astro:assets';
 import poster from '../assets/hero-poster.webp';
+import { caminho } from '../lib/url';
 
 interface Props { src?: string; alt: string }
-const { src = '/video/hero.mp4', alt } = Astro.props;
+const { src = caminho('/video/hero.mp4'), alt } = Astro.props;
 ---
 
 <div class="hv" data-hero-video>

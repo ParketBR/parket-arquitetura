@@ -27,6 +27,7 @@ import {
   capaCategoria, referencias,
 } from '../lib/catalogo';
 import { catalogoDaCategoria, totalDeCatalogos } from '../lib/catalogos';
+import { caminho } from '../lib/url';
 
 const HERO = 'https://parket.com.br/FOTO%20HERO.jpg';
 
@@ -102,7 +103,7 @@ const arco = categoriasOrdenadas.map((c) => {
     .filter((r) => r.fotos.length)
     .sort((a, b) => b.fotos.length - a.fotos.length)[0];
   return ref ? { src: ref.fotos[0], alt: `${ref.titulo} aplicado em obra`,
-                 href: '/contato', legenda: c.nome } : null;
+                 href: caminho('/contato'), legenda: c.nome } : null;
 }).filter(Boolean) as { src: string; alt: string; href: string; legenda: string }[];
 
 const titulo = 'Parket — Madeira para Arquitetura | Pisos, Decks, Forros e Painéis';
@@ -130,7 +131,7 @@ const schema = {
         que atravessam o tempo.
       </p>
       <div class="hero-acoes">
-        <a class="btn btn-on-dark" href="/contato">Falar com um especialista</a>
+        <a class="btn btn-on-dark" href={caminho("/contato")}>Falar com um especialista</a>
         <a class="link-action hero-link" href="#superficies">Ver as superfícies</a>
       </div>
     </div>
@@ -211,7 +212,7 @@ const schema = {
         </div>
         <div class="sec-acoes">
           <a class="link-action" href="#acervo">Abrir os catálogos</a>
-          <a class="link-action" href="/contato">Falar com um especialista</a>
+          <a class="link-action" href={caminho("/contato")}>Falar com um especialista</a>
         </div>
       </header>
 
@@ -225,7 +226,7 @@ const schema = {
                 segundo link. Sem isso o leitor de tela anunciaria "Decks" duas
                 vezes e o teclado pararia duas vezes no mesmo destino — quem
                 navega assim usa o "Catálogo ↗" logo abaixo, que tem texto. */}
-            <a class="cat-media" href={c.catalogo ?? '/contato'}
+            <a class="cat-media" href={c.catalogo ?? caminho('/contato')}
                aria-hidden="true" tabindex="-1"
                rel={c.catalogo ? 'noopener noreferrer' : undefined}
                target={c.catalogo ? '_blank' : undefined}>
@@ -245,7 +246,7 @@ const schema = {
                     Catálogo<span class="cat-seta" aria-hidden="true">↗</span>
                     <span class="sr-only">— abre em outra aba</span>
                   </a>
-                : <a class="cat-acao" href="/contato">Especificar<span class="cat-seta" aria-hidden="true">→</span></a>}
+                : <a class="cat-acao" href={caminho("/contato")}>Especificar<span class="cat-seta" aria-hidden="true">→</span></a>}
             </div>
           </article>
         ))}
@@ -265,7 +266,7 @@ const schema = {
       </div>
     </header>
     <GaleriaArco itens={arco} />
-    <p class="arco-cta wrap"><a class="link-action" href="/contato">Falar sobre uma aplicação</a></p>
+    <p class="arco-cta wrap"><a class="link-action" href={caminho("/contato")}>Falar sobre uma aplicação</a></p>
   </section>
 
   <!-- ─── Quem assina ─── -->
@@ -343,7 +344,7 @@ const schema = {
           espera — e a amostra física quando a decisão precisa da peça na mão.
         </p>
       </div>
-      <a class="btn" href="/contato">Pedir acesso e amostra</a>
+      <a class="btn" href={caminho("/contato")}>Pedir acesso e amostra</a>
     </header>
 
     <ul class="acervo-itens">

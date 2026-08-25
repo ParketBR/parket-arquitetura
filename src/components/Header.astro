@@ -9,22 +9,26 @@
  *
  * O CTA é um só, e é o mesmo em toda parte: falar com um especialista.
  */
+import { caminho } from '../lib/url';
+
 interface Props { transparente?: boolean }
 const { transparente = false } = Astro.props;
 
 const itens = [
-  { nome: 'Superfícies', href: '/#superficies', id: 'superficies' },
-  { nome: 'Madeiras',    href: '/#madeiras',    id: 'madeiras' },
-  { nome: 'Projetos',    href: '/#projetos',    id: 'projetos' },
-  { nome: 'Acervo',      href: '/#acervo',      id: 'acervo' },
+  { nome: 'Superfícies', href: caminho('/#superficies'), id: 'superficies' },
+  { nome: 'Madeiras',    href: caminho('/#madeiras'),    id: 'madeiras' },
+  { nome: 'Projetos',    href: caminho('/#projetos'),    id: 'projetos' },
+  { nome: 'Acervo',      href: caminho('/#acervo'),      id: 'acervo' },
 ];
 
-const naContato = Astro.url.pathname.startsWith('/contato');
+/* Com base (GitHub Pages) o pathname vem prefixado, então a comparação
+   também precisa passar pelo helper. */
+const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
 ---
 
 <header class:list={['cab', { 'cab--transp': transparente }]} data-cab>
   <div class="cab-in wrap">
-    <a class="marca" href="/" aria-label="Parket — página inicial">Parket</a>
+    <a class="marca" href={caminho("/")} aria-label="Parket — página inicial">Parket</a>
 
     <nav class="nav" aria-label="Principal">
       {itens.map((i) => (
@@ -32,7 +36,7 @@ const naContato = Astro.url.pathname.startsWith('/contato');
       ))}
     </nav>
 
-    <a class:list={['btn', 'cab-cta', { 'is-ativo': naContato }]} href="/contato">
+    <a class:list={['btn', 'cab-cta', { 'is-ativo': naContato }]} href={caminho("/contato")}>
       Falar com um especialista
     </a>
 
@@ -45,7 +49,7 @@ const naContato = Astro.url.pathname.startsWith('/contato');
   <div class="mob" id="menu-mob" hidden>
     <nav class="wrap mob-in" aria-label="Menu">
       {itens.map((i) => <a class="mob-l" href={i.href}>{i.nome}</a>)}
-      <a class="btn mob-cta" href="/contato">Falar com um especialista</a>
+      <a class="btn mob-cta" href={caminho("/contato")}>Falar com um especialista</a>
     </nav>
   </div>
 </header>

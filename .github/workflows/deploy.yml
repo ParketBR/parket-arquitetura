@@ -1,0 +1,63 @@
+# Publica o site no GitHub Pages.
+#
+# A versão anterior subia o repositório inteiro (`path: '.'`) sem nunca
+# rodar o build. Como `dist` está no .gitignore, não havia um único
+# index.html no que era publicado — daí o 404 em parketbr.github.io.
+#
+# Agora o job instala, builda e sobe só o `dist`. E como o Pages serve o
+# projeto em /parket-arquitetura/, o build recebe `base` e `site` vindos do
+# próprio ambiente do Pages, em vez de valores escritos à mão que quebram
+# no dia em que o domínio mudar.
+name: Deploy static content to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        env:
+          SITE: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
