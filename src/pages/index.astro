@@ -578,27 +578,42 @@ const schema = {
 
 <style>
   /* ─── Hero ─── */
-  /* ─── A altura do hero é a da tela, seja ela qual for ───
-     Era 100svh — a menor viewport, a de quando o navegador mostra todas as
-     barras. Parece o valor certo para o primeiro quadro, e é no iOS. No
-     Chrome do Android não: ali o `svh` desconta também a barra de baixo, que
-     em boa parte dos aparelhos não existe, e o hero abria mais curto que a
-     tela, deixando um naco da faixa de números aparecendo no rodapé.
+  /* ─── A altura do hero é a da tela, com barra ou sem ───
+     Três tentativas até acertar, e vale registrar por quê.
 
-     O `dvh` é a viewport que o navegador está mostrando neste instante, então
-     o hero preenche exatamente o que se vê — em qualquer navegador e em
-     qualquer estado das barras. O custo é o hero mudar de altura quando as
-     barras recolhem no scroll; como o conteúdo está ancorado embaixo e isso
-     só acontece quando a pessoa já está saindo do hero, é o troco barato.
+     `100svh` é a menor viewport — a de quando o navegador mostra todas as
+     barras. Como a caixa do hero para exatamente onde a barra começa, um naco
+     da faixa de números aparecia embaixo dela. `100dvh` acompanha a barra,
+     mas no primeiro quadro a barra está visível: o dvh vale o mesmo que o
+     svh, e o naco continuava lá.
 
-     A linha de 100vh fica na frente como reserva: navegador que não conhece
-     `dvh` ignora a segunda declaração e cai nela. */
+     O erro dos dois é tratar caixa e conteúdo como a mesma medida. São duas:
+
+       · a CAIXA precisa ser 100lvh, a MAIOR viewport, para cobrir a tela
+         inteira em qualquer estado das barras. Assim nunca sobra brecha para
+         a seção seguinte espiar — o excedente fica escondido atrás da barra,
+         que é o lugar dele.
+
+       · o CONTEÚDO precisa parar acima da barra, senão o botão nasce coberto.
+         `100lvh - 100svh` é exatamente a altura que as barras ocupam; somada
+         ao respiro de baixo, ela levanta o texto até a borda do que se vê.
+
+     No desktop lvh, svh e vh são o mesmo número: a conta zera e sobra o
+     padding de sempre. A regra sem @supports fica na frente para quem não
+     conhece as unidades novas. */
   .hero {
     position: relative;
     min-height: 100vh;
-    min-height: 100dvh;
-    display: flex; align-items: flex-end; padding-bottom: var(--s-12);
+    display: flex; align-items: flex-end;
+    padding-bottom: var(--s-12);
   }
+  @supports (height: 100lvh) and (height: 100svh) {
+    .hero {
+      min-height: 100lvh;
+      padding-bottom: calc(100lvh - 100svh + var(--s-12));
+    }
+  }
+
   /* Três camadas, porque o quadro do vídeo muda e não dá para confiar na foto:
      base plana garante o mínimo, e cada gradiente protege uma zona de texto —
      o topo para o cabeçalho, o rodapé para o título. */
