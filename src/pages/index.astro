@@ -1006,6 +1006,34 @@ const schema = {
     }
   }
 
+  /* ─── O blog vira carrossel no celular ───
+     Quatro cartões empilhados custam quase três telas no fim de uma home que
+     já é longa, e ninguém rola tudo aquilo para ver a quarta chamada. Um por
+     vez, em 72% da largura, com a borda do seguinte avisando que há mais —
+     mesma solução dos números lá em cima.
+
+     Vem depois do bloco de 1100px de propósito: precisa desfazer o
+     grid-template-columns de duas colunas que ele define. */
+  @media (max-width: 640px) {
+    .blog-faixa-lista {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 72%;
+      gap: var(--s-3);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      /* Sangra até a borda da tela; o scroll-padding devolve o alinhamento do
+         primeiro cartão à margem do resto da página. */
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      scroll-padding-inline: var(--gutter);
+    }
+    .blog-faixa-lista::-webkit-scrollbar { display: none; }
+    .blog-faixa-lista > li { scroll-snap-align: start; min-width: 0; }
+  }
+
   /* ─── Superfícies em duas colunas no celular ───
      Empilhada, esta seção media 3.163px — quatro telas de celular, 28% da
      página, para seis cartões. O peso vinha dos três retratos 3/4: em largura
