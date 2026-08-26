@@ -551,10 +551,15 @@ const schema = {
 
   /* Região que rola precisa ser alcançável pelo teclado — mas só quando ela
      de fato rola. Um tabindex fixo criaria uma parada de tabulação inútil no
-     desktop, onde os quatro números aparecem lado a lado sem corte. */
+     desktop, onde os quatro números aparecem lado a lado sem corte.
+
+     No celular a faixa virou esteira automática e deixou de rolar: o tabindex
+     daria uma parada de tabulação que não faz nada, e o "role para os lados"
+     seria instrução para um gesto que não existe mais. Sobra o caso de quem
+     pediu menos movimento — aí a esteira para e a lista volta a rolar. */
   const faixa = document.querySelector<HTMLElement>('.numeros');
   if (faixa) {
-    const estreito = matchMedia('(max-width: 640px)');
+    const estreito = matchMedia('(max-width: 640px) and (prefers-reduced-motion: reduce)');
     const ajustar = () => {
       if (estreito.matches) {
         faixa.tabIndex = 0;
@@ -878,17 +883,25 @@ const schema = {
       padding-block: var(--s-6);
       /* Sem isto o dedo que arrasta a página na diagonal engancha na faixa. */
       touch-action: pan-y;
-      animation: esteira 26s linear infinite;
+      /* 16s para percorrer os 889px de uma lista dá ~55px/s: um número passa
+         a cada três segundos. Em 26s, com a largura corrigida, a faixa
+         arrastava e parecia travada. */
+      animation: esteira 16s linear infinite;
     }
     .numeros {
       display: flex; flex: none;
       gap: var(--s-6);
       padding-block: 0;
-      /* O .wrap centraliza e limita a 1440px; aqui a lista precisa correr
-         livre, então os dois saem. O padding à direita é o respiro entre as
-         duas cópias, para o último rótulo não colar no primeiro do ciclo
-         seguinte. */
-      max-width: none; margin-inline: 0;
+      /* O .wrap dá width:100%, max-width:1440px e margem automática. Os três
+         saem, e o `width: auto` é o que importa: com width:100% cada cópia
+         reivindicava a largura inteira do palco, o `max-content` do palco
+         resolvia essa circularidade para o tamanho de UMA lista, e o
+         translateX(-50%) andava meia lista por ciclo em vez de uma. O laço
+         voltava no meio do caminho e abria um vão em branco na faixa.
+
+         O padding à direita é o respiro entre as duas cópias, para o último
+         rótulo não colar no primeiro do ciclo seguinte. */
+      width: auto; max-width: none; margin-inline: 0;
       padding-inline: 0 var(--s-6);
     }
     .numeros--eco { display: flex; }
