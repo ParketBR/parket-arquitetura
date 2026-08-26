@@ -71,8 +71,9 @@ const escopos = [
 const PASSOS = 5;
 ---
 
-<section class="form-sec section tom-areia" id={ancora}>
-  <div class="wrap form-in">
+<section class="form-sec section tom-papel" id={ancora}>
+  <div class="wrap">
+    <div class="form-in">
     <div class="form-lado">
       <div class="form-copy">
         <p class="label">{rotulo}</p>
@@ -124,10 +125,12 @@ const PASSOS = 5;
 
         <div class="campo campo--largo">
           <label for="f-cidade">Cidade de execução <span class="obg">obrigatório</span></label>
-          <select id="f-cidade" name="cidade" required>
-            <option value="">Selecione a região</option>
-            {cidades.map((c) => <option value={c}>{c}</option>)}
-          </select>
+          <div class="campo-select">
+            <select id="f-cidade" name="cidade" required>
+              <option value="">Selecione a região</option>
+              {cidades.map((c) => <option value={c}>{c}</option>)}
+            </select>
+          </div>
           <p class="erro" data-erro-de="f-cidade" hidden></p>
         </div>
         </div>
@@ -272,6 +275,7 @@ const PASSOS = 5;
         </div>
       </noscript>
     </form>
+    </div>
   </div>
 </section>
 
@@ -280,8 +284,21 @@ const PASSOS = 5;
      faixa horizontal no topo e o formulário ficou com a largura inteira.
      Cinco passos que aparecem um por vez são baixos — numa coluna estreita
      sobrava um vazio à esquerda do mesmo tamanho do formulário. */
-  .form-in { display: grid; gap: var(--s-8); }
+  /* A areia deixou de sangrar de ponta a ponta: virou um painel recuado, com
+     o papel da página aparecendo dos dois lados e em cima e embaixo. O tom é
+     o mesmo degrau do sistema; o que mudou é que ele tem borda — o contato
+     passa a ser um bloco pousado na página, e não mais uma faixa que a
+     atravessa. Por isso a seção agora é tom-papel: o fundo em volta é o da
+     página, e o recuo é o gutter do .wrap que a envolve. */
+  .form-in {
+    display: grid; gap: var(--s-8);
+    background: var(--surface);
+    padding: clamp(var(--s-6), 4.5vw, var(--s-12)) clamp(var(--s-4), 4vw, var(--s-8));
+  }
 
+  /* A faixa: discurso à esquerda, dados de apoio à direita. A proporção é a
+     mesma do resto da página (texto largo, coluna de apoio estreita), e o
+     filete embaixo separa o convite do formulário sem precisar de outra cor. */
   /* A faixa: discurso à esquerda, dados de apoio à direita. A proporção é a
      mesma do resto da página (texto largo, coluna de apoio estreita), e o
      filete embaixo separa o convite do formulário sem precisar de outra cor. */
@@ -353,6 +370,28 @@ const PASSOS = 5;
   }
   textarea { padding-top: 10px; resize: vertical; line-height: 1.55; }
   select { appearance: none; cursor: pointer; }
+
+  /* O select usa appearance:none e o mesmo filete dos campos de texto — sem
+     mais nenhum sinal, "Selecione a região" ficava idêntico a um campo já
+     respondido, e não havia como saber de vista que ali se escolhe.
+
+     O chevron mora num invólucro próprio, e não num ::after do .campo,
+     porque o .campo começa no rótulo: a que altura o controle aparece muda
+     quando o rótulo quebra em duas linhas no estreito. */
+  .campo-select { position: relative; display: flex; flex-direction: column; }
+  .campo-select select { padding-right: var(--s-4); }
+  .campo-select::after {
+    content: ''; position: absolute; right: 5px; bottom: 24px;
+    width: 8px; height: 8px; pointer-events: none;
+    border-right: 1px solid var(--muted); border-bottom: 1px solid var(--muted);
+    transform: rotate(45deg);
+    transition: border-color var(--d-fast) var(--ease);
+  }
+  .campo-select:hover::after, .campo-select:focus-within::after { border-color: var(--ink); }
+  /* Enquanto nada foi escolhido o texto é uma instrução, não uma resposta —
+     e o cinza o separa dos campos que já têm valor. O :invalid só pega
+     porque a opção vazia é a inicial e o campo é obrigatório. */
+  select:required:invalid { color: var(--muted); }
   input:focus, select:focus, textarea:focus { outline: none; border-bottom-color: var(--wood); }
   input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--wood); outline-offset: 4px; }
   input[readonly] { color: var(--muted); }
@@ -434,10 +473,16 @@ const PASSOS = 5;
   .ref-limpar:hover { color: var(--ink); }
 
   @media (max-width: 900px) {
-    .form-in { gap: var(--s-6); }
+    /* No estreito o recuo do painel e o padding interno somavam quase 60px de
+       cada lado e estrangulavam a linha de texto. O painel continua recuado,
+       mas por menos. */
+    .form-in { gap: var(--s-6); padding: var(--s-6) var(--s-4); }
     .form-lado { grid-template-columns: 1fr; gap: var(--s-4); }
   }
   @media (max-width: 640px) {
+    /* Recuo do painel (20px de gutter) mais o padding interno já comem 52px
+       de cada lado num aparelho de 375 — a linha de texto encurta demais. */
+    .form-in { padding: var(--s-6) var(--s-3); }
     .passo { grid-template-columns: 1fr; }
     .cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cartoes--duplo { grid-template-columns: 1fr; }

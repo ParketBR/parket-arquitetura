@@ -12,6 +12,7 @@
  */
 import Base from '../layouts/Base.astro';
 import Formulario from '../components/Formulario.astro';
+import Icone from '../components/Icone.astro';
 
 const titulo = 'Falar com um Especialista em Madeira | Parket';
 const descricao = 'Fale com a equipe técnica da Parket sobre o seu projeto: espécie, bitola, acabamento, prazo e instalação. Showrooms em São Paulo e Brasília. Resposta em até um dia útil.';
@@ -23,10 +24,13 @@ const schema = {
   description: descricao,
 };
 
+/* WhatsApp e Telefone eram o mesmo número em duas linhas seguidas — a lista
+   parecia oferecer dois canais e oferecia um. Sobrou o telefone, que disca em
+   qualquer aparelho; quem quer o WhatsApp tem o botão fixo na tela e o próprio
+   formulário, que termina abrindo a conversa. */
 const canais = [
-  { rotulo: 'WhatsApp', valor: '+55 11 99960-0222', href: 'https://wa.me/5511999600222', externo: true },
-  { rotulo: 'Telefone', valor: '+55 11 99960-0222', href: 'tel:+5511999600222', externo: false },
-  { rotulo: 'E-mail',   valor: 'contato@parket.com.br', href: 'mailto:contato@parket.com.br', externo: false },
+  { rotulo: 'Telefone', valor: '+55 11 99960-0222', href: 'tel:+5511999600222', icone: 'telefone' as const },
+  { rotulo: 'E-mail',   valor: 'contato@parket.com.br', href: 'mailto:contato@parket.com.br', icone: 'email' as const },
 ];
 ---
 
@@ -49,13 +53,9 @@ const canais = [
     <ul class="canais" slot="lado">
       {canais.map((c) => (
         <li class="canal">
-          <span class="label">{c.rotulo}</span>
-          <a
-            class="canal-valor"
-            href={c.href}
-            rel={c.externo ? 'noopener noreferrer' : undefined}
-            target={c.externo ? '_blank' : undefined}
-          >{c.valor}</a>
+          <a class="canal-valor" href={c.href}>
+            <Icone nome={c.icone} class="icone--detalhe" />{c.valor}
+          </a>
         </li>
       ))}
     </ul>
@@ -64,15 +64,26 @@ const canais = [
 
 <style>
   /* Os canais entram no slot "lado" do formulário, logo abaixo de Resposta e
-     Showrooms. Filete de --ink no topo para a lista não virar continuação da
-     <dl> de cima, que usa --line: são duas listas com o mesmo desenho e uma
-     precisa começar. */
-  .canais { margin-top: var(--s-4); border-top: 1px solid var(--ink); }
-  .canal {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: var(--s-3); padding: 13px 0; border-bottom: 1px solid var(--line-soft);
+     Showrooms.
+
+     Os rótulos "Telefone" e "E-mail" saíram: o glifo já diz qual é o canal e
+     o próprio valor — um número, um endereço — diz o resto. Com eles foram
+     também os filetes de cada linha; sobrou o de --ink no topo, que é o que
+     impede a lista de virar continuação da <dl> de Resposta e Showrooms.
+     Duas linhas soltas não precisam de grade. */
+  .canais {
+    margin-top: var(--s-4); padding-top: var(--s-3);
+    border-top: 1px solid var(--ink);
+    display: flex; flex-direction: column; align-items: flex-end; gap: var(--s-2);
   }
-  .canal-valor { font-size: var(--fs-small); color: var(--ink); transition: color var(--d-fast) var(--ease); }
+  /* O glifo volta para o mesmo lugar em que vive na home: colado ao valor,
+     na cor de detalhe, marcando o que é clicável. inline-flex porque o
+     alinhamento é do par ícone+texto, não do texto sozinho. */
+  .canal-valor {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: var(--fs-small); color: var(--ink);
+    transition: color var(--d-fast) var(--ease);
+  }
   .canal-valor:hover { color: var(--wood-text); }
 
 </style>

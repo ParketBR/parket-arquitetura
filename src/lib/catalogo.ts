@@ -84,7 +84,6 @@ export const urlEspecie    = (e: Especie)    => urlPedido(e.id);
 export const ANCORAS = {
   superficies: '#superficies',
   madeiras:    '#madeiras',
-  projetos:    '#projetos',
   acervo:      '#acervo',
 } as const;
 

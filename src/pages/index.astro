@@ -19,7 +19,6 @@ import Base from '../layouts/Base.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import HeroVideo from '../components/HeroVideo.astro';
-import GaleriaArco from '../components/GaleriaArco.astro';
 import Texturas from '../components/Texturas.astro';
 import Formulario from '../components/Formulario.astro';
 import {
@@ -121,15 +120,6 @@ const acervo = [
   { titulo: 'Amostra física',                texto: 'A peça real no escritório, para ver o veio na luz do projeto.' },
 ];
 
-/* Seis aplicações reais para a galeria em arco — uma por família de produto. */
-const arco = categoriasOrdenadas.map((c) => {
-  const ref = referenciasDaCategoria(c.id)
-    .filter((r) => r.fotos.length)
-    .sort((a, b) => b.fotos.length - a.fotos.length)[0];
-  return ref ? { src: ref.fotos[0], alt: `${ref.titulo} aplicado em obra`,
-                 href: caminho('/contato'), legenda: c.nome } : null;
-}).filter(Boolean) as { src: string; alt: string; href: string; legenda: string }[];
-
 const titulo = 'Parket — Madeira para Arquitetura | Pisos, Decks, Forros e Painéis';
 const descricao = `Superfícies em madeira nobre para projetos de arquitetura. ${referencias.length} referências, ${especiesPublicadas.length} espécies, catálogo técnico e amostra física para arquitetos. Showrooms em São Paulo e Brasília.`;
 
@@ -177,10 +167,15 @@ const schema = {
   <section class="manifesto tom-escuro">
     <div class="wrap">
       <p class="mani-badge"><span class="badge">Manifesto</span></p>
-      <p class="mani-txt">
+      {/* h2, e não parágrafo: é o segundo maior tipo da página e o argumento
+          central do site. Como <p> ele não entrava no sumário do documento —
+          quem navega por títulos no leitor de tela passava direto, e a busca
+          lia o manifesto como texto de apoio. A classe carrega o tamanho, então
+          a troca de tag não move um pixel. */}
+      <h2 class="mani-txt">
         Não vendemos madeira.<br />
         Criamos superfícies que completam a arquitetura.
-      </p>
+      </h2>
       <p class="mani-sub measure">
         Cada peça nasce do encontro entre natureza, técnica e precisão construtiva.
         O que sustenta um grande projeto nunca é apenas o material, é o cuidado
@@ -281,53 +276,41 @@ const schema = {
   <!-- ─── Madeiras · id="madeiras" vive no próprio componente ─── -->
   <Texturas />
 
-  <!-- ─── Aplicações em arco ─── -->
-  <section id="projetos" class="projetos section tom-escuro reveal">
-    <header class="sec-cab sec-cab--centro wrap">
-      <div>
-        <span class="badge">Projetos</span>
-        <h2 class="h2 sec-tit">A madeira{' '}<br class="so-desk" />no mundo real.</h2>
-      </div>
-    </header>
-    <GaleriaArco itens={arco} />
-    <p class="arco-cta wrap"><a class="link-action" href={caminho("/contato")}>Falar sobre uma aplicação</a></p>
-  </section>
+  <!-- ─── Acervo · o que remove atrito de quem especifica ───
+       Vinha depois do formulário e disputava com ele: quem tinha acabado de
+       abandonar o orçamento encontrava logo abaixo um pedido mais fácil, com
+       CTA próprio. Catálogo e amostra são o que tira a dúvida de quem ainda
+       está decidindo — servem de último argumento antes do pedido, não de
+       oferta concorrente depois dele.
 
-  <!-- ─── Quem assina ─── -->
-  <section class="depos-sec section tom-papel reveal">
+       Escuro porque com Projetos fora daqui a metade de baixo da página virou
+       um campo de papel de ponta a ponta. Esta é a quebra que faltava. -->
+  {/* O .wrap saiu do <section> e virou filho: com ele na própria seção, o
+      fundo ficava preso à caixa de 1440px e o escuro não chegava às bordas da
+      tela — uma faixa recuada no meio do papel, em vez da quebra de tom que
+      as outras seções fazem. Enquanto era papel sobre papel ninguém via. */}
+  <section id="acervo" class="section tom-escuro reveal">
     <div class="wrap">
-      <header class="sec-cab sec-cab--centro">
-        <div>
-          <span class="badge">Clientes</span>
-          <h2 class="h2 sec-tit">Quem faz uma obra, {' '}<br class="so-desk" />volta na próxima.</h2>
-          <p class="depos-nota">4,9 ★ em 125 avaliações no Google</p>
-        </div>
-      </header>
-      {/* Todos os depoimentos vão para o HTML. Sem JS a seção é uma lista
-          longa e completa, que é o comportamento honesto; é o script que a
-          dobra em páginas e faz o rodízio. */}
-      <ul class="depos" data-depos>
-        {depoimentos.map((d) => (
-          <li class="depo">
-            <blockquote><p>{d.texto}</p></blockquote>
-            <p class="depo-autor">{d.autor}</p>
-          </li>
-        ))}
-      </ul>
-
-      {/* Nasce escondida: com uma página só de depoimentos não há o que
-          navegar, e o script só a revela quando existe rodízio de verdade. */}
-      <div class="depos-nav" data-depos-nav hidden>
-        <button type="button" class="depos-pt" data-depos-ir="-1" aria-label="Depoimentos anteriores">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" /></svg>
-        </button>
-        <p class="caption num depos-conta" aria-live="polite">
-          <span data-depos-atual>1</span><span class="depos-sep">/</span><span data-depos-total>1</span>
+    <header class="sec-cab">
+      <div>
+        <span class="badge">Para arquitetos</span>
+        <h2 class="h2 sec-tit">Catálogos e o banco{' '}<br class="so-desk" />de texturas 3D.</h2>
+        <p class="acervo-txt measure">
+          Tudo o que o projeto pede antes da especificação, sem cadastro e sem
+          espera — e a amostra física quando a decisão precisa da peça na mão.
         </p>
-        <button type="button" class="depos-pt" data-depos-ir="1" aria-label="Próximos depoimentos">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
-        </button>
       </div>
+      <a class="btn" href={caminho("/contato")}>Pedir acesso e amostra</a>
+    </header>
+
+    <ul class="acervo-itens">
+      {acervo.map((a) => (
+        <li class="acervo-item">
+          <h3 class="acervo-item-tit">{a.titulo}</h3>
+          <p class="acervo-item-txt">{a.texto}</p>
+        </li>
+      ))}
+    </ul>
     </div>
   </section>
 
@@ -354,31 +337,52 @@ const schema = {
         <Icone nome="email" class="icone--detalhe" />contato@parket.com.br
       </a>
     </div>
+
   </Formulario>
 
-  <!-- ─── Acervo · o que remove atrito de quem especifica ─── -->
-  <section id="acervo" class="section tom-papel wrap reveal">
-    <header class="sec-cab">
-      <div>
-        <span class="badge">Para arquitetos</span>
-        <h2 class="h2 sec-tit">Catálogos e o banco{' '}<br class="so-desk" />de texturas 3D.</h2>
-        <p class="acervo-txt measure">
-          Tudo o que o projeto pede antes da especificação, sem cadastro e sem
-          espera — e a amostra física quando a decisão precisa da peça na mão.
-        </p>
-      </div>
-      <a class="btn" href={caminho("/contato")}>Pedir acesso e amostra</a>
-    </header>
+  <!-- ─── Quem assina ─── -->
+  <section class="depos-sec section tom-papel reveal">
+    <div class="wrap">
+      {/* Todos os depoimentos vão para o HTML. Sem JS a seção é uma lista
+          longa e completa, que é o comportamento honesto; é o script que a
+          dobra em páginas e faz o rodízio. */}
+      <ul class="depos" data-depos>
+        {depoimentos.map((d) => (
+          <li class="depo">
+            <blockquote><p>{d.texto}</p></blockquote>
+            <p class="depo-autor">{d.autor}</p>
+          </li>
+        ))}
+      </ul>
 
-    <ul class="acervo-itens">
-      {acervo.map((a) => (
-        <li class="acervo-item">
-          <h3 class="acervo-item-tit">{a.titulo}</h3>
-          <p class="acervo-item-txt">{a.texto}</p>
-        </li>
-      ))}
-    </ul>
+      {/* Nasce escondida: com uma página só de depoimentos não há o que
+          navegar, e o script só a revela quando existe rodízio de verdade. */}
+      <div class="depos-nav" data-depos-nav hidden>
+        <div class="depos-esq">
+          {/* A credencial voltou aqui, e não num cabeçalho: sem ela as três
+              falas são elogio sem procedência. Na linha do contador ela custa
+              uma linha e não recria o título que saiu. */}
+          <p class="depos-nota">
+            <span class="depos-nota-num num">4,9</span>
+            <span class="depos-nota-estrela" aria-hidden="true">★</span>
+            em 125 avaliações no Google
+          </p>
+          <p class="caption num depos-conta" aria-live="polite">
+            <span data-depos-atual>1</span><span class="depos-sep">/</span><span data-depos-total>1</span>
+          </p>
+        </div>
+        <div class="depos-setas">
+          <button type="button" class="depos-pt" data-depos-ir="-1" aria-label="Depoimentos anteriores">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" /></svg>
+          </button>
+          <button type="button" class="depos-pt" data-depos-ir="1" aria-label="Próximos depoimentos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
+
 </Base>
 
 <script>
@@ -643,16 +647,12 @@ const schema = {
   .cat-seta { transition: transform var(--d-base) var(--ease); }
   .cat-acao:hover .cat-seta { transform: translate(2px, -2px); }
 
-  /* ─── Arco ─── */
-  .arco-cta { text-align: center; margin-top: var(--s-4); }
-
   /* ─── Depoimentos ─── */
-  /* A nota do Google é a credencial da seção: sem ela as três falas são
-     texto solto; com ela, são a amostra de um agregado verificável. */
-  .depos-nota {
-    margin-top: var(--s-3);
-    font-size: var(--fs-small); color: var(--wood-text);
-  }
+  /* Sem cabeçalho: o bloco não tem mais badge nem título, então o vão de
+     --section que a régua de tons abre para separar duas seções de mesmo tom
+     ficava sobrando em cima de três falas soltas. Aqui ele é a metade — o
+     bastante para não colar no painel de contato, sem o buraco. */
+  .depos-sec { padding-top: clamp(32px, 4vw, 64px); }
   .depos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
   /* As três avaliações têm comprimentos bem diferentes e o texto é literal —
      não dá para apará-lo até emparelhar. Então a assinatura desce para a base
@@ -661,8 +661,16 @@ const schema = {
   .depo { display: flex; flex-direction: column; }
   .depo blockquote { margin: 0; padding-top: var(--s-3); border-top: 1px solid var(--line); }
   .depo-autor { margin-top: auto; }
-  .depo blockquote p { font-size: var(--fs-small); line-height: 1.65; color: var(--text); }
-  .depo-autor { padding-top: var(--s-3); font-size: var(--fs-small); color: var(--ink); }
+  /* A fala é a prova da seção; estava no mesmo corpo pequeno da legenda e
+     lia-se como letra miúda. Sobe para o corpo do site — quem assina é que
+     vira etiqueta, na régua de rótulo do resto da página. */
+  .depo blockquote p { font-size: var(--fs-body); line-height: 1.6; color: var(--text); }
+  .depo-autor {
+    padding-top: var(--s-4);
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--ink);
+  }
 
   /* ─── Rodízio ───
      A troca é um fade e nada mais: depoimento é texto, e texto que desliza
@@ -671,28 +679,56 @@ const schema = {
   .depo { transition: opacity var(--d-base) var(--ease); }
   .depos[data-trocando] .depo { opacity: 0; }
 
-  .depos-nav { display: flex; align-items: center; justify-content: center; gap: var(--s-3); margin-top: var(--s-6); }
-  .depos-conta { color: var(--muted); }
-  .depos-sep { margin: 0 4px; color: var(--line); }
-  /* Mesma seta e mesmo alvo de 44px da régua de texturas — é o mesmo gesto
-     na mesma página, não pode ter dois desenhos. */
+  /* Os três botões flutuavam soltos no meio do papel. O filete fecha o bloco
+     — é o mesmo traço que abre cada coluna, agora encerrando a seção — e a
+     largura passa a ser usada: contagem numa ponta, setas na outra. */
+  .depos-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s-3); margin-top: var(--s-6);
+    padding-top: var(--s-3); border-top: 1px solid var(--line);
+  }
+  .depos-esq { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem var(--s-4); }
+  .depos-nota {
+    display: inline-flex; align-items: baseline; gap: 7px;
+    font-size: var(--fs-caption); color: var(--muted);
+  }
+  .depos-nota-num { font-size: 1.0625rem; font-weight: 300; color: var(--ink); letter-spacing: -.01em; }
+  .depos-nota-estrela { color: var(--wood); }
+  .depos-conta { color: var(--muted); letter-spacing: .04em; }
+  .depos-conta [data-depos-atual] { color: var(--ink); }
+  .depos-sep { margin: 0 6px; color: var(--line); }
+  /* A margem negativa devolve o alvo de 44px à borda: sem ela o botão parece
+     recuado em relação à coluna que termina exatamente ali. */
+  .depos-setas { display: flex; align-items: center; margin-right: -12px; }
+  /* Sem moldura. A régua de texturas precisa da borda porque a seta vive
+     encostada nas amostras e some dentro delas; aqui está sozinha sobre
+     papel, e o quadrado só acrescentava um desenho que a página não usa em
+     lugar nenhum. O alvo de 44px continua inteiro. */
   .depos-pt {
     flex: none; width: 44px; height: 44px; display: grid; place-items: center;
-    border: 1px solid var(--line); background: transparent; color: var(--muted);
+    border: 0; background: transparent; color: var(--muted);
     cursor: pointer;
-    transition: color var(--d-fast) var(--ease), border-color var(--d-fast) var(--ease);
+    transition: color var(--d-fast) var(--ease), transform var(--d-fast) var(--ease);
   }
-  .depos-pt svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-  .depos-pt:hover { color: var(--ink); border-color: var(--wood); }
+  .depos-pt svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+  .depos-pt:hover { color: var(--ink); }
+  /* Sem a caixa, o deslocamento no hover é o que confirma o sentido. */
+  @media (prefers-reduced-motion: no-preference) {
+    .depos-pt[data-depos-ir="-1"]:hover { transform: translateX(-3px); }
+    .depos-pt[data-depos-ir="1"]:hover { transform: translateX(3px); }
+  }
 
   /* ─── Acervo ─── */
-  .acervo-txt { color: var(--muted); margin-top: var(--s-3); font-size: var(--fs-small); }
+  /* No escuro o tokens.css já cuida do h2, do h3, da .badge e do .btn pela
+     classe .tom-escuro; aqui ficam os textos e o filete que esta seção pinta
+     por conta própria. */
+  .acervo-txt { color: var(--on-dark-muted); margin-top: var(--s-3); font-size: var(--fs-small); }
   .acervo-itens {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--s-6); border-top: 1px solid var(--ink); padding-top: var(--s-4);
+    gap: var(--s-6); border-top: 1px solid rgb(232 228 223 / .22); padding-top: var(--s-4);
   }
-  .acervo-item-tit { font-size: 1.375rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em; }
-  .acervo-item-txt { margin-top: var(--s-1); font-size: var(--fs-small); color: var(--muted); }
+  .acervo-item-tit { font-size: 1.375rem; font-weight: 200; color: var(--on-dark); letter-spacing: -.01em; }
+  .acervo-item-txt { margin-top: var(--s-1); font-size: var(--fs-small); color: var(--on-dark-muted); }
 
   /* ─── Pedido ─── */
   /* Canais diretos dentro do formulário (slot "lado"). Vivem aqui, e não no
@@ -715,7 +751,12 @@ const schema = {
     .cat { grid-column: span 1; }
     .cat:last-child { grid-column: span 2; }
     .numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-3); }
+    /* Numa coluna só, a altura reservada é a do maior dos nove depoimentos —
+       e com a assinatura colada na base, o depoimento curto abria um buraco
+       de duzentos pixels no meio do cartão. Aqui o nome sobe logo abaixo da
+       fala e a folga sobra no fim do bloco, onde não parece falta. */
     .depos { grid-template-columns: 1fr; gap: var(--s-4); }
+    .depo-autor { margin-top: 0; padding-top: var(--s-3); }
     .acervo-itens { grid-template-columns: 1fr; gap: var(--s-4); }
     .sobre-texto { grid-template-columns: 1fr; gap: var(--s-4); }
     .sobre-corpo { padding-top: 0; }

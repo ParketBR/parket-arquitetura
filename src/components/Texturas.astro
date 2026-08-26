@@ -20,7 +20,6 @@ import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { ORDEM_TOM, texturaDaEspecie, descricaoDaEspecie } from '../lib/texturas';
 import { especiePor, urlPedido } from '../lib/catalogo';
-import { caminho } from '../lib/url';
 
 /* A régua ocupa ~330px de largura em CSS. Pedir mais que 560 é jogar bytes
    fora — são 19 imagens empilhadas no mesmo lugar, e o navegador carrega todas
@@ -50,18 +49,20 @@ const total = String(especies.length).padStart(2, '0');
 ---
 
 <section id="madeiras" class="section wrap reveal tex-sec">
-  <header class="sec-cab">
-    <div>
-      <span class="badge">Revestimentos</span>
-      {/* O espaço antes do <br> é obrigatório: abaixo de 700px o .so-desk sai
-          do fluxo e, sem ele, as duas metades colam em "nobres,origens". */}
-      <h2 class="h2 sec-tit">Madeiras nobres,{' '}<br class="so-desk" />origens certificadas.</h2>
-    </div>
-    <a class="link-action" href={caminho("/contato")}>Falar sobre uma espécie</a>
-  </header>
-
   <div class="tex-palco-geral">
     <div class="tex-copy">
+      <!-- O cabeçalho vive dentro da coluna de texto, e não numa faixa
+           própria acima do palco. Solto lá em cima ele ficava a um --s-8 do
+           conteúdo e a régua, centrada na altura, abria um vão morto do lado
+           esquerdo — título numa ponta, contador na outra, nada no meio.
+           Aqui a coluna é uma coisa só: assunto, item da vez e ação. -->
+      <header class="tex-cab">
+        <span class="badge">Revestimentos</span>
+        {/* O espaço antes do <br> é obrigatório: abaixo de 700px o .so-desk sai
+            do fluxo e, sem ele, as duas metades colam em "nobres,origens". */}
+        <h2 class="h2 sec-tit">Madeiras nobres,{' '}<br class="so-desk" />origens certificadas.</h2>
+      </header>
+
       <!-- O contador vem antes do nome de propósito: ele é o que diz que
            "Cabreúva Branca" é um item de uma série, e não um segundo título
            da seção competindo com o h2. -->
@@ -73,8 +74,12 @@ const total = String(especies.length).padStart(2, '0');
       <h3 class="tex-nome" id="tex-nome" aria-live="polite">{primeira.nome}</h3>
       <p class="tex-desc" id="tex-desc" aria-live="polite">{primeira.descricao}</p>
 
+      {/* Rótulo fixo. Quando o botão dizia "Especificar Cabreúva Branca" ele
+          mudava de largura a cada troca de espécie e prometia um formulário
+          de especificação que não existe — o destino é o mesmo contato de
+          sempre. A espécie continua indo junto, no ?ref= do href. */}
       <a class="btn btn-ghost tex-cta" id="tex-cta" href={primeira.href}>
-        Especificar <span id="tex-cta-nome">{primeira.nome}</span>
+        Falar com um especialista
       </a>
     </div>
 
@@ -169,6 +174,8 @@ const total = String(especies.length).padStart(2, '0');
     transform: scaleX(var(--tex-p, 0));
     transition: transform var(--d-base) var(--ease);
   }
+
+  .tex-cab { margin-bottom: var(--s-8); }
 
   .tex-cta { margin-top: var(--s-4); }
 
@@ -319,7 +326,6 @@ const total = String(especies.length).padStart(2, '0');
     const desc   = document.getElementById('tex-desc')!;
     const atual  = document.getElementById('tex-atual')!;
     const cta    = document.getElementById('tex-cta') as HTMLAnchorElement;
-    const ctaNome = document.getElementById('tex-cta-nome')!;
     const trilha = secao.querySelector<HTMLElement>('.tex-trilha span')!;
     const palco  = secao.querySelector<HTMLElement>('.tex-palco')!;
     const setas  = Array.from(secao.querySelectorAll<HTMLButtonElement>('.tex-seta'));
@@ -358,7 +364,6 @@ const total = String(especies.length).padStart(2, '0');
       timerTexto = setTimeout(() => {
         nome.textContent = entra.dataset.nome ?? '';
         desc.textContent = entra.dataset.desc ?? '';
-        ctaNome.textContent = entra.dataset.nome ?? '';
         /* O data-href já vem de urlPedido(), que conhece o base. O fallback
            é o href atual do próprio botão, e não uma raiz escrita à mão. */
         cta.href = entra.dataset.href ?? cta.href;

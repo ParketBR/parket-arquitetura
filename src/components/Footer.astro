@@ -20,7 +20,6 @@ const showrooms = [
 const naPagina = [
   { nome: 'Superfícies', href: caminho('/#superficies') },
   { nome: 'Madeiras',    href: caminho('/#madeiras') },
-  { nome: 'Projetos',    href: caminho('/#projetos') },
   { nome: 'Acervo',      href: caminho('/#acervo') },
   { nome: 'Contato',     href: caminho('/contato') },
 ];
@@ -44,43 +43,17 @@ const ano = new Date().getFullYear();
 
 <footer class="rod">
   <div class="wrap">
-    <div class="rod-topo">
+    {/* Uma faixa só. Eram duas — marca+navegação em cima, endereços embaixo —
+        e cada uma trazia o próprio padding de --s-8: o rodapé passava de 900px
+        de altura, três quartos de uma tela, para dizer o que cabe em cinco
+        colunas. Os contatos subiram para junto da marca, que é onde o olho já
+        procura quem é a empresa e como falar com ela. */}
+    <div class="rod-grade">
       <div class="rod-marca">
         <p class="marca">Parket</p>
         <p class="rod-frase">Superfícies naturais desenvolvidas para projetos que atravessam o tempo.</p>
         <a class="btn btn-on-dark rod-cta" href={caminho("/contato")}>Falar com um especialista</a>
-      </div>
-
-      <nav class="rod-cols" aria-label="Rodapé">
-        <div>
-          <p class="label">Na página</p>
-          <ul>{naPagina.map((l) => <li><a href={l.href}>{l.nome}</a></li>)}</ul>
-        </div>
-        <div>
-          <p class="label">Catálogos</p>
-          <ul>{catalogos.map((c) => (
-            <li><a href={c.href} rel="noopener noreferrer" target="_blank">{c.nome}</a></li>
-          ))}</ul>
-        </div>
-        <div>
-          <p class="label">Acompanhe</p>
-          <ul>{sociais.map((s) => (
-            <li><a href={s.href} rel="noopener noreferrer" target="_blank">{s.nome}</a></li>
-          ))}</ul>
-        </div>
-      </nav>
-    </div>
-
-    <div class="rod-showrooms">
-      {showrooms.map((s) => (
-        <div class="rod-show">
-          <p class="label">Showroom {s.cidade}</p>
-          <address>{s.linhas.map((l) => <span>{l}</span>)}</address>
-        </div>
-      ))}
-      <div class="rod-show">
-        <p class="label">Contato</p>
-        <address>
+        <address class="rod-contatos">
           <span class="rod-contato">
             <Icone nome="email" class="icone--detalhe" />
             <a href="mailto:contato@parket.com.br">contato@parket.com.br</a>
@@ -90,10 +63,69 @@ const ano = new Date().getFullYear();
             <a href="tel:+5511999600222">+55 11 99960-0222</a>
           </span>
         </address>
+
+        <div class="rod-news">
+          <p class="label">Newsletter</p>
+          <p class="rod-news-txt">Receba novidades sobre lançamentos e projetos.</p>
+
+          <form class="rod-news-form" data-news>
+            <label class="sr-only" for="rod-email">Seu e-mail</label>
+            <input
+              class="rod-news-campo" type="email" id="rod-email" name="email"
+              placeholder="seu@email.com" autocomplete="email" required
+            />
+            <button class="rod-news-btn" type="submit">Assinar</button>
+          </form>
+
+          {/* role="status" e não um alert: a confirmação é anunciada quando o
+              leitor de tela chegar num intervalo, sem interromper o que
+              estiver lendo. Nasce escondida e o script a revela. */}
+          <p class="rod-news-ok" data-news-ok role="status" hidden>
+            Obrigado! Você receberá nossas novidades em breve.
+          </p>
+          <p class="rod-news-erro" data-news-erro role="status" hidden>
+            Não deu para enviar agora. Escreva para
+            <a href="mailto:contato@parket.com.br">contato@parket.com.br</a>.
+          </p>
+        </div>
       </div>
+
+      {/* Dois <nav> rotulados em vez de um só englobando as duas listas: com
+          rótulo cada um vira um ponto de salto nomeado para quem navega por
+          landmarks, e o `display: contents` que seria preciso para achatar um
+          <nav> pai em colunas do grid não é confiável na árvore de
+          acessibilidade. */}
+      <nav class="rod-bloco" aria-label="Na página">
+        <p class="label">Na página</p>
+        <ul>{naPagina.map((l) => <li><a href={l.href}>{l.nome}</a></li>)}</ul>
+      </nav>
+
+      <nav class="rod-bloco" aria-label="Catálogos">
+        <p class="label">Catálogos</p>
+        <ul>{catalogos.map((c) => (
+          <li><a href={c.href} rel="noopener noreferrer" target="_blank">{c.nome}</a></li>
+        ))}</ul>
+      </nav>
+
+      <div class="rod-bloco rod-shows">
+        {showrooms.map((s) => (
+          <div class="rod-show">
+            <p class="label">Showroom {s.cidade}</p>
+            <address>{s.linhas.map((l) => <span>{l}</span>)}</address>
+          </div>
+        ))}
+      </div>
+
     </div>
 
-    <p class="rod-base caption">© {ano} Parket. Todos os direitos reservados.</p>
+    <div class="rod-base">
+      <ul class="rod-sociais">
+        {sociais.map((s) => (
+          <li><a href={s.href} rel="noopener noreferrer" target="_blank">{s.nome}</a></li>
+        ))}
+      </ul>
+      <p class="caption rod-copy">© {ano} Parket. Todos os direitos reservados.</p>
+    </div>
   </div>
 </footer>
 
@@ -102,7 +134,7 @@ const ano = new Date().getFullYear();
      viram uma mancha escura só e o rodapé perde o começo. */
   .rod {
     background: var(--ground); color: var(--on-dark);
-    padding-block: var(--s-12) var(--s-6);
+    padding-block: var(--s-8) var(--s-4);
     border-top: 1px solid rgb(232 228 223 / .14);
   }
   /* `:not(.btn)` não é preciosismo: `.rod a` tem especificidade 0,1,1 e vence
@@ -114,27 +146,35 @@ const ano = new Date().getFullYear();
   .rod a:not(.btn):hover { color: var(--wood); }
   .rod .label { color: var(--on-dark-muted); display: block; margin-bottom: var(--s-2); }
 
-  .rod-topo {
-    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
-    gap: var(--s-8); padding-bottom: var(--s-8);
+  /* Quatro colunas numa faixa só. A marca é a mais larga porque carrega
+     tudo o que é da empresa — a frase, o botão, os contatos e a assinatura
+     da newsletter; as duas de link são as mais estreitas porque só têm
+     palavras curtas. */
+  .rod-grade {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1.5fr) minmax(0, .8fr) minmax(0, .8fr) minmax(0, 1.2fr);
+    gap: var(--s-6);
+    padding-bottom: var(--s-6);
     border-bottom: 1px solid rgb(232 228 223 / .14);
   }
   .rod-marca .marca {
     font-size: 1.125rem; font-weight: 300; letter-spacing: .34em;
     text-transform: uppercase; color: var(--on-dark); margin-bottom: var(--s-2);
   }
-  .rod-frase { font-size: var(--fs-small); color: var(--on-dark-muted); max-width: 36ch; line-height: 1.55; }
-  .rod-cta { margin-top: var(--s-4); }
+  .rod-frase { font-size: var(--fs-small); color: var(--on-dark-muted); max-width: 34ch; line-height: 1.55; }
+  .rod-cta { margin-top: var(--s-3); }
+  .rod-contatos { display: block; margin-top: var(--s-3); font-style: normal; }
 
-  .rod-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
-  .rod-cols li { margin-bottom: 9px; font-size: var(--fs-small); }
-
-  .rod-showrooms {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--s-6); padding-block: var(--s-8);
-  }
+  .rod-bloco li { margin-bottom: 6px; font-size: var(--fs-small); }
+  /* Os dois showrooms empilham dentro da mesma coluna: são dois endereços
+     curtos, e cada um numa coluna própria abria a faixa para sete colunas
+     estreitas demais para caber "Avenida Magalhães de Castro, 4800". */
+  .rod-shows { display: flex; flex-direction: column; gap: var(--s-4); }
   .rod-show address { font-style: normal; font-size: var(--fs-small); line-height: 1.6; color: var(--on-dark-muted); }
   .rod-show address span { display: block; }
+  .rod-contatos { font-size: var(--fs-small); line-height: 1.6; color: var(--on-dark-muted); }
+  .rod-contatos .rod-contato { display: flex; align-items: flex-start; gap: 10px; }
   /* Alinhado pelo topo com um empurrão de 3px: o glifo é uma caixa de 16px e
      o texto tem line-height 1.6 — centralizar pelo eixo deixaria o glifo
      abaixo da primeira letra. */
@@ -145,10 +185,145 @@ const ano = new Date().getFullYear();
   .rod-show address span.rod-contato { display: flex; align-items: flex-start; gap: 10px; }
   .rod-contato :global(.icone) { margin-top: 3px; }
 
-  .rod-base { color: var(--on-dark-muted); padding-top: var(--s-4); border-top: 1px solid rgb(232 228 223 / .14); }
+  /* ─── Newsletter ───
+     Fechava a faixa numa quinta coluna e agora vive no fim da coluna da
+     marca: assinar novidades é falar com a empresa, o mesmo assunto do
+     botão e dos contatos logo acima — e a faixa perdeu uma coluna, que foi
+     dar largura para as que sobraram.
 
-  @media (max-width: 900px) {
-    .rod-topo { grid-template-columns: 1fr; gap: var(--s-6); }
-    .rod-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+     Escala miúda e botão em texto: o assunto tem o peso de um dado de
+     rodapé, não o de uma seção, e um .btn de 48px aqui competiria com o
+     "Falar com um especialista" que está três linhas acima. */
+  .rod-news { margin-top: var(--s-3); padding-top: var(--s-2); border-top: 1px solid rgb(232 228 223 / .14); }
+  .rod-news-txt {
+    font-size: var(--fs-caption); line-height: 1.55;
+    color: var(--on-dark-muted); max-width: 34ch;
+  }
+
+  /* Campo e botão na mesma linha: a coluna da marca é a mais larga da faixa
+     e comporta os dois, o que poupa a altura que o empilhamento custava. */
+  .rod-news-form {
+    margin-top: var(--s-2);
+    display: flex; align-items: center; gap: var(--s-3);
+  }
+  /* Mesmo desenho dos campos do formulário — filete embaixo e nada mais —
+     mas na escala do escuro: a linha é o branco a 24%, e não a --line, que
+     sumiria no --ground. */
+  .rod-news-campo {
+    flex: 1 1 auto; min-width: 0; min-height: 40px; padding: 0 0 6px;
+    background: transparent; color: var(--on-dark);
+    border: 0; border-bottom: 1px solid rgb(232 228 223 / .24);
+    border-radius: 0; font-size: var(--fs-small);
+    transition: border-color var(--d-fast) var(--ease);
+  }
+  .rod-news-campo::placeholder { color: var(--on-dark-muted); }
+  .rod-news-campo:focus { outline: none; border-bottom-color: var(--wood); }
+  .rod-news-campo:focus-visible { outline: 2px solid var(--wood); outline-offset: 4px; }
+
+  .rod-news-btn {
+    flex: none;
+    padding: 4px 0; background: none; border: 0; cursor: pointer;
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--on-dark); border-bottom: 1px solid var(--wood);
+    transition: color var(--d-fast) var(--ease);
+  }
+  .rod-news-btn:hover { color: var(--wood); }
+
+  .rod-news-ok, .rod-news-erro { margin-top: var(--s-2); font-size: var(--fs-caption); line-height: 1.5; }
+  .rod-news-ok { color: var(--wood); }
+  .rod-news-erro { color: var(--on-dark-muted); }
+  .rod-news-erro a { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ─── Base: redes e direitos ───
+     As redes moravam numa coluna "Acompanhe" ao lado de Na página e
+     Catálogos. Desceram para cá porque não são conteúdo do site, e porque
+     repeti-las nos dois lugares seria oferecer três links como se fossem
+     seis. */
+  .rod-base {
+    display: flex; flex-direction: column; align-items: center; gap: var(--s-2);
+    color: var(--on-dark-muted); padding-top: var(--s-4);
+  }
+  .rod-sociais { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-6); }
+  .rod-sociais a {
+    font-size: var(--fs-label); font-weight: 500;
+    letter-spacing: var(--ls-label); text-transform: uppercase;
+    color: var(--on-dark-muted);
+  }
+  .rod-copy { text-align: center; }
+
+  /* A faixa vai perdendo colunas em vez de espremer as cinco. Três, e não
+     quatro: em quatro, a coluna fica com ~190px e "Avenida Magalhães de
+     Castro, 4800" quebra em duas linhas — o endereço é o que define a
+     largura mínima útil aqui. A marca continua sendo uma coluna como as
+     outras; esticá-la na linha inteira só empurrava todo o resto para baixo. */
+  @media (max-width: 1180px) {
+    .rod-grade { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
+    /* Coluna mais estreita: o campo volta a ocupar a linha inteira, com o
+       botão embaixo. */
+    .rod-news-form { flex-direction: column; align-items: flex-start; gap: var(--s-2); }
+    .rod-news-campo { width: 100%; flex: none; }
+  }
+  @media (max-width: 860px) {
+    .rod-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-6); }
+  }
+  /* No celular tudo empilhado dava um rodapé de quase mil e quinhentos
+     pixels. As duas listas de link continuam lado a lado — são palavras
+     curtas e cabem em meia largura; quem precisa da largura inteira é o
+     endereço, a frase da marca e o campo de e-mail. */
+  @media (max-width: 480px) {
+    .rod-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .rod-marca, .rod-shows { grid-column: 1 / -1; }
   }
 </style>
+
+<script>
+  /* O site é estático e não existe endpoint de newsletter. Em vez de fingir
+     um cadastro — mostrar "obrigado" e jogar o e-mail fora —, a assinatura
+     sai pelo cliente de e-mail de quem preencheu e chega na mesma caixa do
+     resto do contato.
+
+     Quando houver um serviço de verdade, preencha ENDPOINT: o mesmo
+     formulário passa a fazer POST e nada mais no rodapé muda. */
+  const ENDPOINT = '';
+  const DESTINO = 'contato@parket.com.br';
+
+  const form = document.querySelector<HTMLFormElement>('[data-news]');
+  const aviso = document.querySelector<HTMLElement>('[data-news-ok]');
+  const erro = document.querySelector<HTMLElement>('[data-news-erro]');
+
+  if (form && aviso && erro) {
+    form.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      /* Valida com o próprio navegador: a mensagem de "e-mail inválido" sai
+         no idioma do sistema e ancorada no campo, de graça. */
+      if (!form.reportValidity()) return;
+
+      const email = String(new FormData(form).get('email') ?? '');
+      erro.hidden = true;
+
+      if (ENDPOINT) {
+        try {
+          const resposta = await fetch(ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          if (!resposta.ok) throw new Error(String(resposta.status));
+        } catch {
+          /* Falhou de verdade: quem preencheu precisa saber, e não receber um
+             agradecimento por um cadastro que não aconteceu. */
+          erro.hidden = false;
+          return;
+        }
+      } else {
+        const assunto = encodeURIComponent('Newsletter Parket');
+        const corpo = encodeURIComponent(`Quero receber as novidades da Parket.\n\nE-mail: ${email}`);
+        window.location.href = `mailto:${DESTINO}?subject=${assunto}&body=${corpo}`;
+      }
+
+      form.hidden = true;
+      aviso.hidden = false;
+    });
+  }
+</script>
