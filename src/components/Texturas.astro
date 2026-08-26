@@ -272,8 +272,31 @@ const total = String(especies.length).padStart(2, '0');
   .tex-palco.is-usado .tex-dica { opacity: 0; transition: opacity var(--d-base) var(--ease); }
 
   @media (max-width: 900px) {
-    .tex-palco-geral { grid-template-columns: 1fr; gap: var(--s-6); }
-    .tex-copy { text-align: center; }
+    /* ─── No estreito a régua sobe para debaixo do título ───
+       Empilhado, o texto vinha todo antes da imagem: quem rolava lia o nome
+       da espécie, a descrição e o botão sem nunca ter visto a madeira, e só
+       encontrava a amostra depois. O contador "01 / 19" pior ainda — anuncia
+       uma série que ainda não apareceu.
+
+       Aqui a ordem passa a ser a de quem olha: assunto, amostra, e então o
+       que ela é. O `display: contents` dissolve a .tex-copy para que os
+       filhos dela virem itens do mesmo grid da régua e possam ser ordenados
+       um a um; é um div sem semântica, então nada se perde na árvore de
+       acessibilidade.
+
+       O gap vai a zero de propósito: cada peça já traz a própria margem
+       superior, e o gap somaria em cima delas. */
+    .tex-palco-geral { grid-template-columns: 1fr; gap: 0; }
+    .tex-copy { display: contents; }
+    .tex-cab    { order: 1; margin-bottom: var(--s-6); text-align: center; }
+    .tex-palco  { order: 2; }
+    .tex-contador { order: 3; margin-top: var(--s-6); }
+    .tex-trilha { order: 4; }
+    .tex-nome   { order: 5; }
+    .tex-desc   { order: 6; }
+    .tex-cta    { order: 7; justify-self: center; }
+
+    .tex-contador, .tex-nome, .tex-desc { text-align: center; }
     .tex-desc { margin-inline: auto; }
     .tex-trilha { margin-inline: auto; }
     .tex-nome, .tex-desc { min-height: auto; }

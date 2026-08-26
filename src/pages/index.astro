@@ -578,7 +578,27 @@ const schema = {
 
 <style>
   /* ─── Hero ─── */
-  .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; padding-bottom: var(--s-12); }
+  /* ─── A altura do hero é a da tela, seja ela qual for ───
+     Era 100svh — a menor viewport, a de quando o navegador mostra todas as
+     barras. Parece o valor certo para o primeiro quadro, e é no iOS. No
+     Chrome do Android não: ali o `svh` desconta também a barra de baixo, que
+     em boa parte dos aparelhos não existe, e o hero abria mais curto que a
+     tela, deixando um naco da faixa de números aparecendo no rodapé.
+
+     O `dvh` é a viewport que o navegador está mostrando neste instante, então
+     o hero preenche exatamente o que se vê — em qualquer navegador e em
+     qualquer estado das barras. O custo é o hero mudar de altura quando as
+     barras recolhem no scroll; como o conteúdo está ancorado embaixo e isso
+     só acontece quando a pessoa já está saindo do hero, é o troco barato.
+
+     A linha de 100vh fica na frente como reserva: navegador que não conhece
+     `dvh` ignora a segunda declaração e cai nela. */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex; align-items: flex-end; padding-bottom: var(--s-12);
+  }
   /* Três camadas, porque o quadro do vídeo muda e não dá para confiar na foto:
      base plana garante o mínimo, e cada gradiente protege uma zona de texto —
      o topo para o cabeçalho, o rodapé para o título. */
@@ -876,17 +896,34 @@ const schema = {
      Vem depois do bloco de 900px de propósito: precisa desfazer o
      grid-template-columns de duas colunas que ele define. */
   @media (max-width: 640px) {
-    /* A seção corta o transbordo; o palco é a esteira que corre por dentro. */
-    .provas { overflow: hidden; }
+    /* ─── A seção corta o transbordo, mas não com tesoura ───
+       Recorte seco nas bordas é o que fazia a faixa parecer um GIF em loop:
+       o número aparecia e sumia fatiado numa linha invisível, e essa linha é
+       a moldura que denuncia a animação. Com a máscara ele nasce e morre em
+       transparência, e a faixa deixa de ter começo e fim visíveis.
+
+       O -webkit- fica: Safari só passou a aceitar `mask` sem prefixo há
+       pouco, e é justamente o navegador da maioria de quem abre isto. */
+    .provas {
+      overflow: hidden;
+      --esfumado: linear-gradient(90deg,
+        transparent 0, #000 12%, #000 88%, transparent 100%);
+      -webkit-mask-image: var(--esfumado);
+              mask-image: var(--esfumado);
+    }
     .numeros-palco {
       display: flex; width: max-content;
       padding-block: var(--s-6);
       /* Sem isto o dedo que arrasta a página na diagonal engancha na faixa. */
       touch-action: pan-y;
-      /* 16s para percorrer os 889px de uma lista dá ~55px/s: um número passa
-         a cada três segundos. Em 26s, com a largura corrigida, a faixa
-         arrastava e parecia travada. */
-      animation: esteira 16s linear infinite;
+      /* 26s para os 889px de uma lista dá ~34px/s. A 55px/s o mesmo número
+         voltava à mesma posição a cada 16 segundos e o olho pegava o ciclo —
+         parte do que fazia a faixa parecer um GIF curto. Na deriva lenta o
+         retorno demora quase o dobro e a leitura é de banda contínua, não de
+         animação que reinicia. */
+      animation: esteira 26s linear infinite;
+      /* Promove a camada uma vez, em vez de a cada quadro. */
+      will-change: transform;
     }
     .numeros {
       display: flex; flex: none;
@@ -905,7 +942,22 @@ const schema = {
       padding-inline: 0 var(--s-6);
     }
     .numeros--eco { display: flex; }
-    .numeros > li { flex: none; }
+
+    /* Um losango de madeira no meio de cada vão, inclusive o da emenda entre
+       as duas cópias. É o que transforma quatro cartões numa fita: sem marca,
+       o olho agrupa "50+ ... 100%" e reconhece o conjunto voltando; com ela,
+       a sequência não tem onde começar. Mesmo glifo do .badge, na diagonal.
+
+       Absoluto e centrado no vão de 48px: assim a marca depois do último item
+       de uma cópia cai exatamente onde caem as de dentro — o padding-inline
+       direito da lista vale os mesmos 48px do gap. */
+    .numeros > li { flex: none; position: relative; }
+    .numeros > li::after {
+      content: ''; position: absolute;
+      top: 50%; right: -26px;
+      width: 4px; height: 4px; margin-top: -2px;
+      background: var(--wood); transform: rotate(45deg);
+    }
 
     /* Meia volta do palco é exatamente uma lista — são duas idênticas lado a
        lado. No fim do ciclo o quadro é pixel a pixel igual ao do começo, e o
@@ -919,7 +971,11 @@ const schema = {
        menos movimento pede para desligar. Sem ela, a faixa para e volta a ser
        uma lista que se arrasta com o dedo. */
     @media (prefers-reduced-motion: reduce) {
+      /* Sem esteira não há borda correndo, e o esfumado só apagaria o
+         primeiro e o último número de quem rola com o dedo. */
+      .provas { -webkit-mask-image: none; mask-image: none; }
       .numeros-palco { animation: none; width: auto; display: block; }
+      .numeros > li::after { content: none; }
       .numeros {
         overflow-x: auto;
         scroll-snap-type: x mandatory;

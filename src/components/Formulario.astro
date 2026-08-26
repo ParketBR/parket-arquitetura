@@ -480,9 +480,20 @@ const PASSOS = 5;
     .form-lado { grid-template-columns: 1fr; gap: var(--s-4); }
   }
   @media (max-width: 640px) {
-    /* Recuo do painel (20px de gutter) mais o padding interno já comem 52px
-       de cada lado num aparelho de 375 — a linha de texto encurta demais. */
-    .form-in { padding: var(--s-6) var(--s-3); }
+    /* ─── No celular o painel sangra ───
+       Recuado, ele comia 52px de cada lado — 20 de gutter mais 32 de padding
+       interno — e sobravam 271px de linha num aparelho de 375. O recuo é um
+       gesto de tela larga: ali a moldura de papel em volta se lê como um
+       bloco pousado na página. Em 375px ela não se lê como nada, só aperta.
+
+       A margem negativa cancela o gutter do .wrap e o padding devolve
+       exatamente o mesmo valor por dentro — então o texto do formulário
+       alinha com o das seções de cima e de baixo, e a faixa areia atravessa
+       a tela como as outras faixas de tom fazem. A linha ganha 32px. */
+    .form-in {
+      margin-inline: calc(var(--gutter) * -1);
+      padding: var(--s-6) var(--gutter);
+    }
     .passo { grid-template-columns: 1fr; }
     .cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cartoes--duplo { grid-template-columns: 1fr; }
