@@ -1,0 +1,77 @@
+---
+/**
+ * Cartão de post — o mesmo no índice do blog e na faixa da home.
+ *
+ * Vive aqui, e não copiado nas duas páginas, porque o estilo escopado do Astro
+ * não atravessa arquivos: duas cópias divergiriam no primeiro ajuste de
+ * entrelinha. Quem usa passa só o tamanho da foto pedido ao navegador.
+ */
+import type { CollectionEntry } from 'astro:content';
+import Foto from './Foto.astro';
+import { caminho } from '../lib/url';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  /** O sizes do <img>: só quem monta a grade sabe a largura da coluna. */
+  sizes?: string;
+  eager?: boolean;
+  /** Sem o resumo o cartão fica só com título e data — para grades estreitas. */
+  resumo?: boolean;
+}
+
+const {
+  post,
+  sizes = '(max-width: 700px) 100vw, 31vw',
+  eager = false,
+  resumo = true,
+} = Astro.props;
+
+const { titulo, resumo: texto, data, leitura, capa, capaAlt } = post.data;
+
+/* O pt-BR abreviado do Intl devolve "06 de abr. de 2026" — três palavras de
+   ligação num rótulo de duas informações. Aqui a data é dado, não frase. */
+const dataCurta = data
+  .toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  .replace(/ de /g, ' ')
+  .replace('.', '');
+---
+
+<article class="cartao">
+  <a href={caminho(`/blog/${post.id}`)}>
+    <div class="cartao-media">
+      {capa && <Foto src={capa} alt={capaAlt} ratio="4/3" {sizes} {eager} />}
+    </div>
+
+    <p class="caption cartao-meta">
+      <time datetime={data.toISOString().slice(0, 10)}>{dataCurta}</time>
+      <span class="cartao-sep">·</span>
+      <span>{leitura} min</span>
+    </p>
+
+    <h3 class="cartao-tit">{titulo}</h3>
+    {resumo && <p class="cartao-resumo">{texto}</p>}
+  </a>
+</article>
+
+<style>
+  .cartao a { display: block; }
+
+  .cartao-media { overflow: hidden; background: var(--surface); margin-bottom: var(--s-3); }
+  /* O zoom mora na foto, não no cartão: mexer no cartão inteiro arrastaria
+     junto o texto, e título que se move sob o cursor é difícil de ler. */
+  .cartao-media :global(.foto) { transition: transform var(--d-slow) var(--ease); }
+  .cartao a:hover .cartao-media :global(.foto) { transform: scale(1.03); }
+
+  .cartao-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem; color: var(--muted); }
+  .cartao-sep { color: var(--line); }
+
+  .cartao-tit {
+    margin-top: var(--s-1);
+    font-size: 1.1875rem; font-weight: 400; line-height: 1.35;
+    letter-spacing: -.005em; color: var(--ink);
+    transition: color var(--d-fast) var(--ease);
+  }
+  .cartao a:hover .cartao-tit { color: var(--wood-text); }
+
+  .cartao-resumo { margin-top: var(--s-2); font-size: var(--fs-small); line-height: 1.65; color: var(--muted); }
+</style>

@@ -21,6 +21,7 @@ const naPagina = [
   { nome: 'Superfícies', href: caminho('/#superficies') },
   { nome: 'Madeiras',    href: caminho('/#madeiras') },
   { nome: 'Acervo',      href: caminho('/#acervo') },
+  { nome: 'Blog',        href: caminho('/blog') },
   { nome: 'Contato',     href: caminho('/contato') },
 ];
 
@@ -257,6 +258,24 @@ const ano = new Date().getFullYear();
      Castro, 4800" quebra em duas linhas — o endereço é o que define a
      largura mínima útil aqui. A marca continua sendo uma coluna como as
      outras; esticá-la na linha inteira só empurrava todo o resto para baixo. */
+  /* ─── Alvos de toque no rodapé ───
+     Link de lista com 20px de altura e 6px de respiro entre um e outro é
+     difícil de acertar e fácil de errar para o vizinho. Vira bloco com
+     padding, e a margem some para a coluna não crescer o dobro: cada item
+     passa de 26px para 34px, +8px, e não +14px. */
+  @media (max-width: 640px) {
+    .rod-bloco li { margin-bottom: 0; }
+    .rod-bloco li a { display: block; padding-block: 9px; }
+    /* O padding vai no <a>, não no <span> que embrulha glifo e link: quem
+       toca acerta o link, e é a altura dele que conta. */
+    .rod-contatos { gap: 0; }
+    .rod-contatos a { display: block; padding-block: 8px; }
+    .rod-contatos .rod-contato { align-items: center; }
+    .rod-sociais { gap: var(--s-2) var(--s-6); }
+    .rod-sociais a { display: block; padding-block: 12px; }
+    .rod-news-btn { padding-block: 12px; }
+  }
+
   @media (max-width: 1180px) {
     .rod-grade { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
     /* Coluna mais estreita: o campo volta a ocupar a linha inteira, com o

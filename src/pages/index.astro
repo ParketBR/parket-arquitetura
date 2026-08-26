@@ -21,6 +21,8 @@ import Icone from '../components/Icone.astro';
 import HeroVideo from '../components/HeroVideo.astro';
 import Texturas from '../components/Texturas.astro';
 import Formulario from '../components/Formulario.astro';
+import CartaoPost from '../components/CartaoPost.astro';
+import { getCollection } from 'astro:content';
 import {
   categoriasOrdenadas, especiesPublicadas, referenciasDaCategoria,
   capaCategoria, referencias,
@@ -120,6 +122,12 @@ const acervo = [
   { titulo: 'Amostra física',                texto: 'A peça real no escritório, para ver o veio na luz do projeto.' },
 ];
 
+/* Os quatro posts mais recentes para a faixa do fim da home. A lista inteira
+   mora em /blog; aqui é chamada, não índice. */
+const posts = (await getCollection('blog', ({ data }) => !data.rascunho))
+  .sort((a, b) => b.data.data.getTime() - a.data.data.getTime())
+  .slice(0, 4);
+
 const titulo = 'Parket — Madeira para Arquitetura | Pisos, Decks, Forros e Painéis';
 const descricao = `Superfícies em madeira nobre para projetos de arquitetura. ${referencias.length} referências, ${especiesPublicadas.length} espécies, catálogo técnico e amostra física para arquitetos. Showrooms em São Paulo e Brasília.`;
 
@@ -153,19 +161,38 @@ const schema = {
 
   <!-- ─── Prova, antes de qualquer argumento ─── -->
   <section class="provas tom-papel">
-    <ul class="wrap numeros">
-      {numeros.map((n) => (
-        <li>
-          <span class="num-valor num">{n.valor}</span>
-          <span class="label num-rot">{n.rotulo}</span>
-        </li>
-      ))}
-    </ul>
+    {/* A faixa é grade de quatro colunas no desktop e esteira rolante no
+        celular. A esteira precisa de duas cópias da lista para o laço não ter
+        emenda: quando a primeira termina de sair pela esquerda, a segunda está
+        exatamente onde a primeira começou, e a animação reinicia sem salto.
+
+        A cópia é aria-hidden e inerte: para quem usa leitor de tela ou
+        teclado ela não existe, senão os quatro números seriam anunciados duas
+        vezes. No desktop ela some com display:none. */}
+    <div class="numeros-palco">
+      <ul class="wrap numeros">
+        {numeros.map((n) => (
+          <li>
+            <span class="num-valor num">{n.valor}</span>
+            <span class="label num-rot">{n.rotulo}</span>
+          </li>
+        ))}
+      </ul>
+      <ul class="wrap numeros numeros--eco" aria-hidden="true" inert>
+        {numeros.map((n) => (
+          <li>
+            <span class="num-valor num">{n.valor}</span>
+            <span class="label num-rot">{n.rotulo}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   </section>
 
   <!-- ─── Manifesto ─── -->
   <section class="manifesto tom-escuro">
-    <div class="wrap">
+    <div class="wrap mani-in">
+      <div class="mani-copy">
       <p class="mani-badge"><span class="badge">Manifesto</span></p>
       {/* h2, e não parágrafo: é o segundo maior tipo da página e o argumento
           central do site. Como <p> ele não entrava no sumário do documento —
@@ -181,6 +208,20 @@ const schema = {
         O que sustenta um grande projeto nunca é apenas o material, é o cuidado
         invisível em cada detalhe.
       </p>
+      </div>
+
+      {/* A única seção da home que era só texto. Uma obra ao lado prova a
+          frase: a madeira habitada, e não a tábua em close — esse recorte a
+          régua de Madeiras já faz logo abaixo.
+
+          Ao lado, e não numa faixa embaixo: uma foto 3:2 na largura inteira
+          somaria mais de mil pixels a uma página que já pede treze telas no
+          celular. Na coluna ela cabe na altura que o texto já ocupava. */}
+      <div class="mani-foto">
+        <Foto src="colecoes/eternos/05.webp"
+              alt="Estar residencial com parede em painéis de madeira maciça do piso ao teto, iluminada por luz rasante"
+              ratio="3/2" sizes="(max-width: 900px) 100vw, 44vw" />
+      </div>
     </div>
   </section>
 
@@ -237,7 +278,7 @@ const schema = {
 
       <div class="cats">
         {cats.map((c, n) => (
-          <article class="cat" style={`--span:${c.span}`}>
+          <article class="cat" style={`--span:${c.span}; --corte:${c.ratio}`}>
             {/* A foto vira o mesmo alvo do link de baixo: quem clica na imagem
                 espera abrir o catálogo, e antes não abria nada.
 
@@ -253,7 +294,7 @@ const schema = {
                                sizes={c.span >= 4 ? '(max-width: 900px) 100vw, 92vw'
                                     : c.span === 3 ? '(max-width: 900px) 100vw, 46vw'
                                                    : '(max-width: 900px) 50vw, 31vw'}
-                               ratio={c.ratio} eager={n === 0} />}
+                               eager={n === 0} />}
             </a>
             <div class="cat-corpo">
               <div>
@@ -380,6 +421,31 @@ const schema = {
           </button>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ─── Blog · o argumento técnico da marca ───
+       Depois das falas de cliente e antes do rodapé: quem chegou até aqui já
+       leu a prova social e ou vai embora, ou quer saber se a Parket entende do
+       assunto. São quatro chamadas, não um índice — a lista inteira é o /blog.
+
+       Tom areia porque contato e depoimentos, logo acima, são papel: sem o
+       degrau a página termina com três blocos claros colados. -->
+  <section id="blog" class="blog-faixa section tom-areia reveal">
+    <div class="wrap">
+      <header class="sec-cab">
+        <div>
+          <span class="badge">Blog</span>
+          <h2 class="h2 sec-tit">Leituras que inspiram.</h2>
+        </div>
+        <a class="link-action" href={caminho("/blog")}>Ler todas</a>
+      </header>
+
+      <ul class="blog-faixa-lista">
+        {posts.map((p) => (
+          <li><CartaoPost post={p} sizes="(max-width: 640px) 72vw, (max-width: 1100px) 46vw, 23vw" /></li>
+        ))}
+      </ul>
     </div>
   </section>
 
@@ -547,8 +613,16 @@ const schema = {
      lia como puxada para a esquerda. Numa linha só, o resto cai para 47px. */
   .num-rot { display: block; margin-top: var(--s-1); }
 
+  /* No desktop a segunda lista não existe: a grade de quatro colunas já cabe
+     inteira e a cópia só serviria para duplicar altura. */
+  .numeros--eco { display: none; }
+
   /* ─── Manifesto ─── */
   .manifesto { padding-block: var(--section); }
+  .mani-in {
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: var(--s-6) var(--s-8); align-items: center;
+  }
   .mani-badge { margin-bottom: var(--s-4); }
   .mani-txt {
     font-size: clamp(1.75rem, 3.6vw, 3rem); font-weight: 200;
@@ -556,6 +630,9 @@ const schema = {
     max-width: 22ch;
   }
   .mani-sub { color: var(--on-dark-muted); margin-top: var(--s-4); font-size: var(--fs-small); }
+  /* Fundo --surface enquanto a foto não chega: sobre o preto do manifesto um
+     retângulo vazio claro é mais discreto que o buraco. */
+  .mani-foto { overflow: hidden; background: var(--surface); }
 
   /* O acervo agora vem depois do formulário, que tem fundo próprio. Sem isto
      o `.section + .section` do tokens.css zera o topo dele e o badge "Para
@@ -623,7 +700,14 @@ const schema = {
   /* ─── Superfícies · composição editorial, não grade de cards iguais ─── */
   .cats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--s-6) var(--s-3); }
   .cat { grid-column: span var(--span, 2); }
-  .cat-media { display: block; overflow: hidden; background: var(--surface); border-radius: var(--radius-media); }
+  /* O recorte mora aqui, e não no <img>. O Foto escreve aspect-ratio no
+     style inline da imagem, e style inline não se sobrescreve com CSS — com
+     ele no contêiner o celular pode reenquadrar o cartão sem !important. */
+  .cat-media {
+    display: block; overflow: hidden; background: var(--surface);
+    border-radius: var(--radius-media);
+    aspect-ratio: var(--corte, 3/4);
+  }
   .cat-media :global(.foto) { transition: transform 1.1s var(--ease); }
   .cat:hover .cat-media :global(.foto) { transform: scale(1.03); }
   .cat-corpo {
@@ -718,6 +802,9 @@ const schema = {
     .depos-pt[data-depos-ir="1"]:hover { transform: translateX(3px); }
   }
 
+  /* ─── Faixa do blog ─── */
+  .blog-faixa-lista { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-6); }
+
   /* ─── Acervo ─── */
   /* No escuro o tokens.css já cuida do h2, do h3, da .badge e do .btn pela
      classe .tom-escuro; aqui ficam os textos e o filete que esta seção pinta
@@ -745,8 +832,21 @@ const schema = {
     transition: color var(--d-fast) var(--ease);
   }
   .contato-direto a:hover { color: var(--ink); }
+  /* 25px de altura num telefone e num e-mail — os dois atalhos de quem não
+     quer preencher o formulário. Viram 41px sem mexer no espaçamento visível:
+     o gap da coluna encolhe no que o padding cresce. */
+  @media (max-width: 640px) {
+    .contato-direto { gap: 0; }
+    .contato-direto a { padding-block: 8px; }
+  }
 
+  @media (max-width: 1100px) {
+    .blog-faixa-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-6) var(--s-4); }
+  }
   @media (max-width: 900px) {
+    /* Empilhado, a foto vai para baixo do texto: a frase é o assunto e quem
+       rola precisa dela antes da ilustração. */
+    .mani-in { grid-template-columns: 1fr; gap: var(--s-6); }
     .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .cat { grid-column: span 1; }
     .cat:last-child { grid-column: span 2; }
@@ -762,38 +862,88 @@ const schema = {
     .sobre-corpo { padding-top: 0; }
     .sobre-foto { margin-top: var(--s-8); }
   }
-  /* ─── Números viram carrossel no celular ───
+  /* ─── Os números viram esteira rolante no celular ───
      Em duas colunas de ~156px o rótulo mais longo ("Cadeia produtiva própria
-     com FSC") quebrava em duas linhas e a faixa ficava apertada. Um por vez,
-     em 62% da largura, cada número respira e a borda do seguinte avisa que há
-     mais — mesma lógica de affordance da régua de texturas.
+     com FSC") quebrava em duas linhas e a faixa ficava apertada. Rolando, cada
+     número passa inteiro, um de cada vez, e a faixa vira o que ela é: uma
+     credencial que se lê de passagem, não uma tabela para estudar.
 
      Vem depois do bloco de 900px de propósito: precisa desfazer o
      grid-template-columns de duas colunas que ele define. */
   @media (max-width: 640px) {
-    .numeros {
-      grid-template-columns: none;
-      grid-auto-flow: column;
-      grid-auto-columns: 62%;
-      gap: var(--s-3);
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      overscroll-behavior-x: contain;
-      scrollbar-width: none;
-      /* Sangra até a borda da tela. O scroll-padding é obrigatório: sem ele o
-         snap encosta o item na borda do content box, rola o padding para fora,
-         e o primeiro número desalinha da margem do resto da página. */
-      margin-inline: calc(var(--gutter) * -1);
-      padding-inline: var(--gutter);
-      scroll-padding-inline: var(--gutter);
+    /* A seção corta o transbordo; o palco é a esteira que corre por dentro. */
+    .provas { overflow: hidden; }
+    .numeros-palco {
+      display: flex; width: max-content;
+      padding-block: var(--s-6);
+      /* Sem isto o dedo que arrasta a página na diagonal engancha na faixa. */
+      touch-action: pan-y;
+      animation: esteira 26s linear infinite;
     }
-    .numeros::-webkit-scrollbar { display: none; }
-    .numeros > li { scroll-snap-align: start; min-width: 0; }
-    .num-rot { max-width: none; }
+    .numeros {
+      display: flex; flex: none;
+      gap: var(--s-6);
+      padding-block: 0;
+      /* O .wrap centraliza e limita a 1440px; aqui a lista precisa correr
+         livre, então os dois saem. O padding à direita é o respiro entre as
+         duas cópias, para o último rótulo não colar no primeiro do ciclo
+         seguinte. */
+      max-width: none; margin-inline: 0;
+      padding-inline: 0 var(--s-6);
+    }
+    .numeros--eco { display: flex; }
+    .numeros > li { flex: none; }
+
+    /* Meia volta do palco é exatamente uma lista — são duas idênticas lado a
+       lado. No fim do ciclo o quadro é pixel a pixel igual ao do começo, e o
+       laço reinicia sem emenda. */
+    @keyframes esteira {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* Movimento contínuo e involuntário é exatamente o que a preferência por
+       menos movimento pede para desligar. Sem ela, a faixa para e volta a ser
+       uma lista que se arrasta com o dedo. */
+    @media (prefers-reduced-motion: reduce) {
+      .numeros-palco { animation: none; width: auto; display: block; }
+      .numeros {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        width: auto;
+        padding-inline: var(--gutter);
+        scroll-padding-inline: var(--gutter);
+      }
+      .numeros::-webkit-scrollbar { display: none; }
+      .numeros > li { scroll-snap-align: start; }
+      .numeros--eco { display: none; }
+    }
   }
 
+  /* ─── Superfícies em duas colunas no celular ───
+     Empilhada, esta seção media 3.163px — quatro telas de celular, 28% da
+     página, para seis cartões. O peso vinha dos três retratos 3/4: em largura
+     cheia cada um dava 447px só de foto.
+
+     Aqui Pisos abre em largura cheia porque é o carro-chefe, Portas fecha na
+     faixa 21/8 que a seção já usava, e os quatro do meio entram em 2×2 com
+     recorte 4/3. Mesmo conteúdo, mesma ordem, cerca de duas telas a menos. */
   @media (max-width: 560px) {
-    .cats { grid-template-columns: 1fr; }
-    .cat, .cat:last-child { grid-column: span 1; }
+    .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-3); }
+    .cat { grid-column: span 1; }
+    .cat:first-child, .cat:last-child { grid-column: span 2; }
+    .cat-media { aspect-ratio: 4/3; }
+    .cat:last-child .cat-media { aspect-ratio: 21/8; }
+
+    /* Em meia largura o nome e o "Catálogo ↗" não cabem lado a lado: a linha
+       vira coluna e o nome desce um degrau de tamanho. Os dois de largura
+       cheia continuam como no desktop. */
+    .cat:not(:first-child):not(:last-child) .cat-corpo {
+      flex-direction: column; align-items: flex-start; gap: 0;
+    }
+    .cat:not(:first-child):not(:last-child) .cat-nome { font-size: 1.125rem; }
+    .cat:not(:first-child):not(:last-child) .cat-acao { padding-block: 10px; }
   }
 </style>

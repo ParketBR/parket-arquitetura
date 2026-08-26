@@ -5,8 +5,11 @@
  */
 import type { ImageMetadata } from 'astro';
 
+/* Duas pastas, e não uma glob de src/assets inteira: as texturas têm o
+   próprio caminho de importação no Texturas.astro, e varrer tudo aqui faria o
+   Astro carregar as 22 em qualquer página que use uma foto de coleção. */
 const locais = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/colecoes/**/*.webp',
+  ['/src/assets/colecoes/**/*.webp', '/src/assets/blog/**/*.webp'],
   { eager: true },
 );
 

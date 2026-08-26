@@ -1,0 +1,138 @@
+---
+/**
+ * Índice do blog.
+ *
+ * Os textos são o argumento técnico da marca: quem especifica madeira chega
+ * aqui pela busca, com uma dúvida concreta, e não pelo menu. Por isso o índice
+ * mostra o resumo inteiro de cada post e o tempo de leitura — quem está com
+ * pressa precisa decidir se vale abrir antes de abrir.
+ */
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Foto from '../../components/Foto.astro';
+import CartaoPost from '../../components/CartaoPost.astro';
+import { caminho } from '../../lib/url';
+
+const posts = (await getCollection('blog', ({ data }) => !data.rascunho))
+  .sort((a, b) => b.data.data.getTime() - a.data.data.getTime());
+
+const titulo = 'Blog — Especificação de Madeira para Arquitetura | Parket';
+const descricao =
+  `Textos técnicos sobre especificação de madeira: espécies, paginação, instalação, ` +
+  `certificação e durabilidade. ${posts.length} artigos escritos para arquitetos.`;
+
+const dataLonga = (d: Date) =>
+  d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+/* O primeiro post abre a página em destaque; os demais entram na grade. */
+const [destaque, ...demais] = posts;
+
+const schema = {
+  '@type': 'Blog',
+  name: 'Blog Parket',
+  description: descricao,
+  blogPost: posts.map((p) => ({
+    '@type': 'BlogPosting',
+    headline: p.data.titulo,
+    datePublished: p.data.data.toISOString().slice(0, 10),
+    url: new URL(caminho(`/blog/${p.id}`), Astro.site ?? 'https://parket.com.br').href,
+  })),
+};
+---
+
+<Base
+  {titulo} {descricao} {schema}
+  trilha={[{ nome: 'Início', url: caminho('/') }, { nome: 'Blog', url: caminho('/blog') }]}
+>
+  <section class="blog-sec section tom-papel">
+    <div class="wrap">
+      <header class="sec-cab">
+        <div>
+          <span class="badge">Blog</span>
+          <h1 class="h2 sec-tit">Como especificar{' '}<br class="so-desk" />madeira sem errar.</h1>
+          <p class="blog-sub measure">
+            O que a equipe técnica responde todo dia, escrito por extenso: espécie,
+            paginação, instalação, certificação e o que acontece com a madeira ao
+            longo dos anos.
+          </p>
+        </div>
+        <a class="link-action" href={caminho('/contato')}>Falar com um especialista</a>
+      </header>
+
+      {destaque && (
+        <a class="blog-destaque" href={caminho(`/blog/${destaque.id}`)}>
+          <div class="blog-destaque-media">
+            {destaque.data.capa && (
+              <Foto src={destaque.data.capa} alt={destaque.data.capaAlt}
+                    ratio="16/10" sizes="(max-width: 900px) 100vw, 58vw" eager />
+            )}
+          </div>
+          <div class="blog-destaque-txt">
+            <p class="caption blog-meta">
+              <time datetime={destaque.data.data.toISOString().slice(0, 10)}>
+                {dataLonga(destaque.data.data)}
+              </time>
+              <span class="blog-sep">·</span>
+              <span>{destaque.data.leitura} min de leitura</span>
+            </p>
+            <h2 class="blog-destaque-tit">{destaque.data.titulo}</h2>
+            <p class="blog-resumo">{destaque.data.resumo}</p>
+            <span class="link-action" aria-hidden="true">Ler o artigo</span>
+          </div>
+        </a>
+      )}
+
+      <ul class="blog-lista">
+        {demais.map((p) => (
+          <li>
+            <CartaoPost post={p}
+                        sizes="(max-width: 700px) 100vw, (max-width: 1100px) 46vw, 31vw" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .blog-sub { color: var(--muted); margin-top: var(--s-3); font-size: var(--fs-small); }
+
+  /* Data e tempo de leitura sempre juntos, na mesma ordem, em índice e post. */
+  .blog-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem; color: var(--muted); }
+  .blog-sep { color: var(--line); }
+  .blog-resumo { margin-top: var(--s-2); font-size: var(--fs-small); line-height: 1.65; color: var(--muted); }
+
+  /* ─── Destaque ───
+     O post mais recente ocupa duas colunas com a foto grande. Não é hierarquia
+     inventada: num blog de onze textos, o último é o único que muda de lugar,
+     e quem já visitou identifica de relance o que é novo. */
+  .blog-destaque {
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--s-6) var(--s-8); align-items: center;
+    padding-bottom: var(--s-8); margin-bottom: var(--s-8);
+    border-bottom: 1px solid var(--line);
+  }
+  .blog-destaque-media { overflow: hidden; background: var(--surface); }
+  .blog-destaque-media :global(.foto) { transition: transform var(--d-slow) var(--ease); }
+  .blog-destaque:hover .blog-destaque-media :global(.foto) { transform: scale(1.02); }
+  .blog-destaque-tit {
+    margin-top: var(--s-2);
+    font-size: clamp(1.5rem, 2.6vw, 2.125rem); font-weight: 200;
+    line-height: 1.15; letter-spacing: -.02em; color: var(--ink);
+  }
+  .blog-destaque .link-action { margin-top: var(--s-4); }
+
+  /* ─── Grade ───
+     O cartão inteiro vem do CartaoPost.astro; aqui só a grade que o arruma. */
+  .blog-lista { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-8) var(--s-6); }
+
+  @media (max-width: 1100px) {
+    .blog-lista { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 900px) {
+    .blog-destaque { grid-template-columns: 1fr; gap: var(--s-4); }
+  }
+  @media (max-width: 700px) {
+    .blog-lista { grid-template-columns: 1fr; gap: var(--s-6); }
+  }
+</style>

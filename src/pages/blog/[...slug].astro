@@ -1,0 +1,207 @@
+---
+/**
+ * Página de um post.
+ *
+ * Coluna única na medida de leitura, sem barra lateral e sem "posts
+ * relacionados" no meio do texto: quem chegou da busca veio resolver uma
+ * dúvida e a única coisa que compete com isso é a própria página. O convite
+ * para falar com a equipe vem no fim, depois da resposta — não antes.
+ */
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Foto from '../../components/Foto.astro';
+import { caminho } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.rascunho);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { titulo, resumo, data, leitura, capa, capaAlt } = post.data;
+
+/* Três outros textos para quem terminou este. Os mais recentes, e não os
+   "relacionados": com onze posts qualquer relação seria inventada. */
+const outros = (await getCollection('blog', ({ data: d }) => !d.rascunho))
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => b.data.data.getTime() - a.data.data.getTime())
+  .slice(0, 3);
+
+const site = Astro.site ?? new URL('https://parket.com.br');
+const iso = data.toISOString().slice(0, 10);
+
+const schema = {
+  '@type': 'BlogPosting',
+  headline: titulo,
+  description: resumo,
+  datePublished: iso,
+  inLanguage: 'pt-BR',
+  mainEntityOfPage: new URL(caminho(`/blog/${post.id}`), site).href,
+  author: { '@type': 'Organization', name: 'Parket' },
+  publisher: { '@id': `${site.origin}/#organizacao` },
+};
+
+const dataLonga = data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+/* Ver a nota em blog/index.astro: o abreviado do Intl vem cheio de "de". */
+const dataCurta = (d: Date) =>
+  d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+   .replace(/ de /g, ' ').replace('.', '');
+---
+
+<Base
+  titulo={`${titulo} | Parket`}
+  descricao={resumo}
+  {schema}
+  trilha={[
+    { nome: 'Início', url: caminho('/') },
+    { nome: 'Blog', url: caminho('/blog') },
+    { nome: titulo, url: caminho(`/blog/${post.id}`) },
+  ]}
+>
+  <article class="post section tom-papel">
+    <header class="post-cab wrap">
+      <a class="post-volta caption" href={caminho('/blog')}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4 7 12l8 8" /></svg>
+        Blog
+      </a>
+      <h1 class="post-tit">{titulo}</h1>
+      <p class="caption post-meta">
+        <time datetime={iso}>{dataLonga}</time>
+        <span class="post-sep">·</span>
+        <span>{leitura} min de leitura</span>
+      </p>
+    </header>
+
+    {capa && (
+      <div class="post-capa wrap">
+        <Foto src={capa} alt={capaAlt} ratio="16/9" sizes="(max-width: 1100px) 100vw, 76vw" eager />
+      </div>
+    )}
+
+    <div class="post-corpo wrap">
+      <div class="prosa">
+        <Content />
+      </div>
+
+      <aside class="post-cta">
+        <p class="post-cta-tit">Precisa disso resolvido no seu projeto?</p>
+        <p class="post-cta-txt">
+          A equipe técnica responde com espécie, bitola, acabamento, prazo e método de
+          instalação — para a obra que você está desenhando, não em tese.
+        </p>
+        <a class="btn" href={caminho('/contato')}>Falar com um especialista</a>
+      </aside>
+    </div>
+  </article>
+
+  {outros.length > 0 && (
+    <section class="section tom-escuro leia">
+      <div class="wrap">
+        <p class="label">Continue lendo</p>
+        <ul class="leia-lista">
+          {outros.map((p) => (
+            <li>
+              <a href={caminho(`/blog/${p.id}`)}>
+                <p class="caption leia-data">{dataCurta(p.data.data)} · {p.data.leitura} min</p>
+                <h2 class="leia-tit">{p.data.titulo}</h2>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  /* ─── Cabeçalho ─── */
+  .post-cab { display: flex; flex-direction: column; align-items: flex-start; max-width: 56rem; }
+  .post-volta {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-bottom: var(--s-6);
+    transition: color var(--d-fast) var(--ease);
+  }
+  .post-volta:hover { color: var(--ink); }
+  .post-volta svg {
+    width: 14px; height: 14px; fill: none; stroke: currentColor;
+    stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .post-tit {
+    font-size: clamp(2rem, 4.2vw, 3.25rem); font-weight: 200;
+    line-height: 1.08; letter-spacing: -.022em; color: var(--ink);
+    max-width: 22ch;
+  }
+  .post-meta { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: var(--s-4); color: var(--muted); }
+  .post-sep { color: var(--line); }
+
+  .post-capa { margin-top: var(--s-8); }
+  .post-corpo { margin-top: var(--s-8); }
+
+  /* ─── Corpo ───
+     A medida manda: 68ch é o limite de linha do site e vale em dobro num texto
+     de mil palavras. O :global é obrigatório — o markdown vira HTML sem os
+     atributos de escopo do Astro, então nada aqui alcançaria os parágrafos. */
+  .prosa { max-width: var(--measure); }
+  .prosa :global(p) {
+    font-size: var(--fs-body); line-height: 1.75; color: var(--text);
+  }
+  .prosa :global(p + p) { margin-top: var(--s-3); }
+  .prosa :global(h2) {
+    margin-top: var(--s-8);
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem); font-weight: 200;
+    line-height: 1.2; letter-spacing: -.015em; color: var(--ink);
+  }
+  .prosa :global(h2 + p) { margin-top: var(--s-3); }
+  .prosa :global(strong) { font-weight: 500; color: var(--ink); }
+  .prosa :global(em) { font-style: italic; }
+  .prosa :global(a) {
+    color: var(--ink);
+    background-image: linear-gradient(var(--wood), var(--wood));
+    background-repeat: no-repeat; background-position: 0 100%; background-size: 100% 1px;
+    transition: background-size var(--d-base) var(--ease);
+  }
+  .prosa :global(a:hover) { background-size: 100% 2px; }
+  .prosa :global(ul), .prosa :global(ol) {
+    margin-top: var(--s-3); padding-left: 1.2em; list-style: revert;
+  }
+  .prosa :global(li) { font-size: var(--fs-body); line-height: 1.7; color: var(--text); }
+  .prosa :global(li + li) { margin-top: var(--s-1); }
+  /* O texto original marca as citações com aspas curvas em parágrafo próprio;
+     quando vierem como blockquote de verdade, este é o desenho. */
+  .prosa :global(blockquote) {
+    margin: var(--s-6) 0; padding-left: var(--s-3);
+    border-left: 1px solid var(--wood);
+  }
+  .prosa :global(blockquote p) { font-size: var(--fs-lead); font-weight: 300; color: var(--ink); }
+
+  /* ─── Convite, depois da resposta ─── */
+  .post-cta {
+    max-width: var(--measure);
+    margin-top: var(--s-12); padding-top: var(--s-4);
+    border-top: 1px solid var(--ink);
+    display: flex; flex-direction: column; align-items: flex-start;
+  }
+  .post-cta-tit { font-size: 1.375rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em; }
+  .post-cta-txt { margin-top: var(--s-2); font-size: var(--fs-small); color: var(--muted); }
+  .post-cta .btn { margin-top: var(--s-4); }
+
+  /* ─── Continue lendo ─── */
+  .leia .label { display: block; margin-bottom: var(--s-4); }
+  .leia-lista {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-6); border-top: 1px solid rgb(232 228 223 / .22); padding-top: var(--s-4);
+  }
+  .leia-data { color: var(--on-dark-muted); }
+  .leia-tit {
+    margin-top: var(--s-2);
+    font-size: 1.1875rem; font-weight: 300; line-height: 1.35; color: var(--on-dark);
+    transition: color var(--d-fast) var(--ease);
+  }
+  .leia a:hover .leia-tit { color: var(--wood); }
+
+  @media (max-width: 900px) {
+    .leia-lista { grid-template-columns: 1fr; gap: var(--s-4); }
+    .post-capa, .post-corpo { margin-top: var(--s-6); }
+  }
+</style>

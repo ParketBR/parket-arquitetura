@@ -74,12 +74,16 @@ const total = String(especies.length).padStart(2, '0');
       <h3 class="tex-nome" id="tex-nome" aria-live="polite">{primeira.nome}</h3>
       <p class="tex-desc" id="tex-desc" aria-live="polite">{primeira.descricao}</p>
 
-      {/* Rótulo fixo. Quando o botão dizia "Especificar Cabreúva Branca" ele
-          mudava de largura a cada troca de espécie e prometia um formulário
-          de especificação que não existe — o destino é o mesmo contato de
-          sempre. A espécie continua indo junto, no ?ref= do href. */}
+      {/* Rótulo fixo, e diferente do CTA do cabeçalho: "Falar com um
+          especialista" já aparece no topo, no hero e no rodapé, e repetido
+          aqui virava mobília — o olho para de ver. Este diz o que a próxima
+          página faz, que é abrir o pedido de orçamento com a espécie da vez
+          já preenchida (ela viaja no ?ref= do href).
+
+          Fixo, e não "Cotar Cabreúva Branca": o nome mudaria a largura do
+          botão a cada troca da régua. */}
       <a class="btn btn-ghost tex-cta" id="tex-cta" href={primeira.href}>
-        Falar com um especialista
+        Pedir orçamento desta espécie
       </a>
     </div>
 

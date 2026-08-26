@@ -73,6 +73,22 @@
   --z-bar: 150;
 }
 
+/* ─── A escala sobe no celular ───
+   --fs-small é o corpo de quase todo texto de apoio do site: descrição de
+   espécie, subtítulo de seção, item do acervo, resumo de post. Em 15px numa
+   tela de 375px, lida com o braço esticado, é letra miúda — e é a maior parte
+   do que existe para ler aqui. --fs-caption, a 13px, é pior ainda.
+
+   Sobem só no estreito, e pelo token: um degrau aqui move o site inteiro sem
+   caçar declaração de tamanho em oito componentes. Os títulos ficam de fora —
+   já usam clamp com vw e se ajustam sozinhos. */
+@media (max-width: 640px) {
+  :root {
+    --fs-small:   1rem;
+    --fs-caption: .875rem;
+  }
+}
+
 /* ═══ Reset ═══ */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -284,4 +300,19 @@ a { color: inherit; text-decoration: none; }
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ═══ Alvos de toque no celular ═══
+   O .link-action tem 30px de altura: 18px de texto e 6px de padding em cima e
+   embaixo. É o CTA secundário de meia dúzia de seções, e 30px erra o polegar.
+   44px é a régua da Apple e da WCAG 2.5.5; o padding cresce simétrico para o
+   filete de madeira não descolar do texto.
+
+   Fica no fim do arquivo de propósito: a mesma regra lá em cima, junto dos
+   tokens, perderia por ordem de cascata para a declaração do .link-action.
+
+   Só no toque — no desktop o cursor acerta 30px sem esforço, e o padding
+   extra abriria buraco entre o link e o que vem embaixo. */
+@media (max-width: 640px) {
+  .link-action { padding-block: 13px; }
 }
