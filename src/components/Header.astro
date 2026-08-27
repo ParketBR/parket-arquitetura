@@ -187,12 +187,38 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
 
      Só o `hidden` fazia o menu trocar de um quadro para o outro — nada se
      movia, a tela simplesmente era outra, e é isso que lê como corte. */
+  /* ─── O ritmo da abertura ───
+     Os quatro números vivem juntos porque é assim que se mexe neles: mudar um
+     sem os outros desmancha a sequência.
+
+     Medidos no parket.com.br e comprimidos. Lá são 600ms de painel, links
+     começando aos 400ms, 150ms de degrau e 800ms cada — 1,8s até o último
+     item assentar, que é demais para um menu: quem toca ali quer navegar.
+     Estes valores guardam o gesto e cortam o tempo pela metade.
+
+     O que dá o caráter não é a lentidão, é a sequência: os destinos ficam
+     parados em 20px até os 280ms, quando o preto já passou de 85%. O painel
+     chega primeiro; as palavras entram nele depois. Sobrepor as duas partes
+     — que era o que estava aqui, com os destinos partindo aos 90ms — funde
+     tudo num gesto rápido só. */
   .mob {
+    --mob-d: 450ms;         /* o preto */
+    --mob-espera: 280ms;    /* quando o primeiro destino se mexe */
+    --mob-passo: 90ms;      /* degrau entre um destino e o seguinte */
+    --mob-item-d: 600ms;    /* a subida de cada um */
+
     position: fixed; inset: 0; z-index: calc(var(--z-header) - 1);
     background: var(--ground);
     overflow-y: auto; overscroll-behavior: contain;
     opacity: 0;
-    transition: opacity 280ms var(--ease);
+    /* A curva não é a --ease da casa, e é de propósito. A --ease é um
+       ease-out forte: chega à metade em ~15% do tempo, ótimo para algo que
+       precisa parecer já resolvido. Aqui o efeito é o contrário — a medição
+       do parket.com.br dá um S simétrico, metade do caminho na metade do
+       tempo, que é o que faz o preto parecer descer sobre a página em vez de
+       aparecer nela. Mesma curva na ida e na volta: lá o fechamento também é
+       simétrico, ~600ms nos dois sentidos. */
+    transition: opacity var(--mob-d) cubic-bezier(.4, 0, .2, 1);
   }
   .mob.is-aberto { opacity: 1; }
   /* Fechando, o painel fica mais 280ms no DOM enquanto o preto sai. Sem isto
@@ -212,8 +238,8 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
     font-size: clamp(2rem, 8vw, 2.5rem); font-weight: 200; line-height: 1;
     color: var(--on-dark); letter-spacing: -.02em;
     transition: color var(--d-fast) var(--ease),
-                opacity var(--d-base) var(--ease),
-                transform var(--d-base) var(--ease);
+                opacity var(--mob-item-d) cubic-bezier(.4, 0, .2, 1),
+                transform var(--mob-item-d) cubic-bezier(.4, 0, .2, 1);
   }
   .mob-l:hover, .mob-l:active { color: #FFFFFF; }
   /* As transições do .btn entram na conta: esta regra tem uma classe e um
@@ -223,18 +249,18 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
     margin-top: var(--s-4); align-self: center;
     transition: background var(--d-fast) var(--ease),
                 color var(--d-fast) var(--ease),
-                opacity var(--d-base) var(--ease),
-                transform var(--d-base) var(--ease);
+                opacity var(--mob-item-d) cubic-bezier(.4, 0, .2, 1),
+                transform var(--mob-item-d) cubic-bezier(.4, 0, .2, 1);
   }
 
-  .mob-l, .mob-cta { opacity: 0; transform: translateY(16px); }
+  .mob-l, .mob-cta { opacity: 0; transform: translateY(20px); }
   /* O atraso mora no estado aberto, e não na regra de base. Ao fechar ele
      deixa de valer e os cinco saem juntos: uma saída escalonada seguraria a
      porta, e quem fechou já decidiu. */
   .mob.is-aberto .mob-l,
   .mob.is-aberto .mob-cta {
     opacity: 1; transform: none;
-    transition-delay: calc(90ms + var(--i, 0) * 55ms);
+    transition-delay: calc(var(--mob-espera) + var(--i, 0) * var(--mob-passo));
   }
 
   @media (max-width: 1080px) {
@@ -295,11 +321,14 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
        segundo plano, se um novo clique interromper a transição no meio, ou se
        o sistema estiver em movimento reduzido, onde não há transição para
        terminar. Qualquer um dos três deixaria o menu preso, invisível e por
-       cima da página. */
+       cima da página.
+
+       Os 500ms acompanham o --mob-d de 450ms do CSS: se um encolher, o outro
+       encolhe junto, senão o painel volta a piscar no fim da saída. */
     clearTimeout(relogioDeFechar);
     relogioDeFechar = window.setTimeout(() => {
       if (mob && !mob.classList.contains('is-aberto')) mob.hidden = true;
-    }, calmo.matches ? 0 : 320);
+    }, calmo.matches ? 0 : 500);
   }
 
   menuBtn?.addEventListener('click', () => {
