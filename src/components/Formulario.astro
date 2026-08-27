@@ -480,6 +480,23 @@ const PASSOS = 5;
     .form-lado { grid-template-columns: 1fr; gap: var(--s-4); }
   }
   @media (max-width: 640px) {
+    /* ─── E encosta no que vem antes ───
+       Com o painel sangrando de ponta a ponta ele deixou de ser um bloco
+       pousado no papel e virou faixa de tom, como o manifesto ou o acervo. Só
+       que os 64px de padding da seção continuavam ali: entre a faixa escura do
+       acervo e a faixa areia do formulário sobrava uma tira de papel de 64px
+       que não separava assunto nenhum — lia como falha de montagem, não como
+       respiro.
+
+       Some no topo. Embaixo fica: ali o papel é o campo dos depoimentos, que
+       são outro assunto, e a tira faz o trabalho de separar.
+
+       `.form-sec.section` e não só `.form-sec` porque as duas regras do
+       tokens.css que abrem esse padding — `.section.tom-papel` e
+       `.tom-escuro + .section` — têm a mesma especificidade de uma classe só,
+       e empatar aqui é depender da ordem dos arquivos. */
+    .form-sec.section { padding-top: 0; }
+
     /* ─── No celular o painel sangra ───
        Recuado, ele comia 52px de cada lado — 20 de gutter mais 32 de padding
        interno — e sobravam 271px de linha num aparelho de 375. O recuo é um

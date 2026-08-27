@@ -468,6 +468,12 @@ const schema = {
     const saidaAtual = navDepos.querySelector<HTMLElement>('[data-depos-atual]')!;
     const saidaTotal = navDepos.querySelector<HTMLElement>('[data-depos-total]')!;
     const calmo = matchMedia('(prefers-reduced-motion: reduce)');
+    /* Numa coluna só, a reserva de altura é a do maior dos nove depoimentos —
+       e o mais curto abre um buraco de mais de cem pixels embaixo do nome.
+       No estreito a reserva sai e o rodízio deixa de andar sozinho: a altura
+       só muda quando a pessoa toca a seta, que é quando ela espera que mude.
+       De quebra, some o texto que se trocava sozinho debaixo do polegar. */
+    const estreito = matchMedia('(max-width: 640px)');
 
     let porPagina = 1;
     let pagina = 0;
@@ -497,7 +503,7 @@ const schema = {
       parar();
       /* Sem rodízio automático para quem pediu menos movimento, e nenhum
          timer rodando quando não há segunda página. */
-      if (paginas() < 2 || calmo.matches) return;
+      if (paginas() < 2 || calmo.matches || estreito.matches) return;
       relogio = setInterval(() => irPara(pagina + 1), 7000);
     };
 
@@ -508,6 +514,7 @@ const schema = {
        seguida: é o único jeito de saber a altura de quem está com hidden. */
     const reservarAltura = () => {
       listaDepos.style.minHeight = '';
+      if (estreito.matches) return;
       itens.forEach((li) => { li.hidden = false; });
       const alturas = itens.map((li) => li.offsetHeight);
       let maior = 0;
@@ -525,6 +532,7 @@ const schema = {
       if (porPagina !== antes) pagina = 0;
       navDepos.hidden = paginas() < 2;
       if (paginas() > 1) reservarAltura();
+      else listaDepos.style.minHeight = '';
       pintar();
       andar();
     };
@@ -546,6 +554,7 @@ const schema = {
 
     addEventListener('resize', medir);
     calmo.addEventListener('change', medir);
+    estreito.addEventListener('change', medir);
     medir();
   }
 
@@ -664,8 +673,14 @@ const schema = {
     gap: var(--s-6) var(--s-8); align-items: center;
   }
   .mani-badge { margin-bottom: var(--s-4); }
+  /* O piso do clamp é 2.125rem, e não 1.75rem como o dos títulos de seção,
+     por um motivo de hierarquia: no desktop esta frase tem 48px contra os
+     40px de um h2, mas no estreito os dois clamps batiam no mesmo piso e a
+     tese da página passava a ter exatamente o tamanho de "Leituras que
+     inspiram". A escala do celular volta a ter três degraus — 44 no hero, 34
+     aqui, 28 nas seções. */
   .mani-txt {
-    font-size: clamp(1.75rem, 3.6vw, 3rem); font-weight: 200;
+    font-size: clamp(2.125rem, 3.6vw, 3rem); font-weight: 200;
     line-height: 1.18; letter-spacing: -.02em;
     max-width: 22ch;
   }
@@ -812,6 +827,26 @@ const schema = {
     padding-top: var(--s-3); border-top: 1px solid var(--line);
   }
   .depos-esq { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem var(--s-4); }
+  /* No estreito não cabem credencial e navegação na mesma linha: sobravam
+     255px para "4,9 ★ em 125 avaliações no Google", a frase quebrava em duas
+     e o contador ia para uma terceira, desalinhado das setas.
+
+     Viram duas fileiras — a nota na largura inteira, e embaixo o contador de
+     um lado e as setas do outro. O `display: contents` dissolve o .depos-esq
+     para que nota e contador virem células do mesmo grid e possam ir para
+     áreas diferentes. */
+  @media (max-width: 640px) {
+    .depos-nav {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-areas: "nota nota" "conta setas";
+      align-items: center; row-gap: var(--s-2);
+    }
+    .depos-esq { display: contents; }
+    .depos-nota { grid-area: nota; }
+    .depos-conta { grid-area: conta; }
+    .depos-setas { grid-area: setas; justify-self: end; }
+  }
   .depos-nota {
     display: inline-flex; align-items: baseline; gap: 7px;
     font-size: var(--fs-caption); color: var(--muted);
@@ -878,6 +913,13 @@ const schema = {
   @media (max-width: 640px) {
     .contato-direto { gap: 0; }
     .contato-direto a { padding-block: 8px; }
+
+    /* Empilhados, os dois links de Superfícies somavam 120px de preâmbulo
+       antes da primeira foto — com o mesmo filete e o mesmo peso, um em cima
+       do outro, liam como itens de menu. Lado a lado voltam a ser o que são:
+       duas ações da mesma seção. */
+    .sec-acoes { gap: var(--s-4); }
+    .sec-acoes .link-action { font-size: .625rem; letter-spacing: .12em; }
   }
 
   @media (max-width: 1100px) {
