@@ -297,50 +297,64 @@ const ano = new Date().getFullYear();
 </style>
 
 <script>
-  /* O site é estático e não existe endpoint de newsletter. Em vez de fingir
-     um cadastro — mostrar "obrigado" e jogar o e-mail fora —, a assinatura
-     sai pelo cliente de e-mail de quem preencheu e chega na mesma caixa do
-     resto do contato.
+  /* ÚNICO PONTO A MEXER quando o serviço de newsletter estiver contratado:
+     cole aqui a URL de inscrição (Formspree, Buttondown, Brevo, Mailchimp via
+     proxy…). O resto do rodapé não muda.
 
-     Quando houver um serviço de verdade, preencha ENDPOINT: o mesmo
-     formulário passa a fazer POST e nada mais no rodapé muda. */
+     Enquanto estiver vazio o formulário não finge: diz que não deu para
+     enviar e oferece o e-mail da casa. Ele NÃO chama mais `mailto:`. A versão
+     anterior mandava a pessoa para o cliente de e-mail — que no celular quase
+     nunca existe —, e era isso que tirava o visitante da página. É o mesmo
+     defeito que o formulário de orçamento já tinha abandonado; ver o
+     comentário no topo do Formulario.astro. */
   const ENDPOINT = '';
-  const DESTINO = 'contato@parket.com.br';
 
   const form = document.querySelector<HTMLFormElement>('[data-news]');
   const aviso = document.querySelector<HTMLElement>('[data-news-ok]');
   const erro = document.querySelector<HTMLElement>('[data-news-erro]');
+  const botao = form?.querySelector<HTMLButtonElement>('button[type=submit]');
 
-  if (form && aviso && erro) {
+  if (form && aviso && erro && botao) {
+    const rotulo = botao.textContent;
+    let enviando = false;
+
     form.addEventListener('submit', async (evento) => {
       evento.preventDefault();
       /* Valida com o próprio navegador: a mensagem de "e-mail inválido" sai
          no idioma do sistema e ancorada no campo, de graça. */
-      if (!form.reportValidity()) return;
+      if (enviando || !form.reportValidity()) return;
 
       const email = String(new FormData(form).get('email') ?? '');
       erro.hidden = true;
 
-      if (ENDPOINT) {
-        try {
-          const resposta = await fetch(ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-          });
-          if (!resposta.ok) throw new Error(String(resposta.status));
-        } catch {
-          /* Falhou de verdade: quem preencheu precisa saber, e não receber um
-             agradecimento por um cadastro que não aconteceu. */
-          erro.hidden = false;
-          return;
-        }
-      } else {
-        const assunto = encodeURIComponent('Newsletter Parket');
-        const corpo = encodeURIComponent(`Quero receber as novidades da Parket.\n\nE-mail: ${email}`);
-        window.location.href = `mailto:${DESTINO}?subject=${assunto}&body=${corpo}`;
+      /* Sem serviço não há cadastro — e agradecer por um cadastro que não
+         aconteceu é pior do que não ter o campo. */
+      if (!ENDPOINT) { erro.hidden = false; return; }
+
+      enviando = true;
+      botao.disabled = true;
+      botao.textContent = 'Enviando…';
+
+      try {
+        const resposta = await fetch(ENDPOINT, {
+          method: 'POST',
+          /* O Accept é o que faz o Formspree responder JSON em vez de
+             redirecionar o navegador para a página de obrigado dele. */
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+        if (!resposta.ok) throw new Error(String(resposta.status));
+      } catch {
+        /* Falhou de verdade: quem preencheu precisa saber, e não receber um
+           agradecimento por um cadastro que não aconteceu. */
+        erro.hidden = false;
+        enviando = false;
+        botao.disabled = false;
+        botao.textContent = rotulo;
+        return;
       }
 
+      /* Só agora, e só depois de o serviço confirmar. */
       form.hidden = true;
       aviso.hidden = false;
     });

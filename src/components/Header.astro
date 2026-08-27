@@ -46,13 +46,24 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
     </button>
   </div>
 
-  <div class="mob" id="menu-mob" hidden>
-    <nav class="wrap mob-in" aria-label="Menu">
-      {itens.map((i) => <a class="mob-l" href={i.href}>{i.nome}</a>)}
-      <a class="btn mob-cta" href={caminho("/contato")}>Falar com um especialista</a>
-    </nav>
-  </div>
 </header>
+
+{/* Fora do <header>, e não dentro dele como antes, por um motivo que só
+    aparece em uso: a barra tem `backdrop-filter`, e um filtro de fundo faz o
+    elemento virar bloco de contenção para descendentes `position: fixed`.
+    Dentro do header, este painel se mediria pelos 64px da barra em vez da
+    tela — e pior, só quando o filtro estivesse ligado, porque sobre o hero
+    ele é `none`. Ficaria certo no topo da home e errado depois de rolar. */}
+<div class="mob" id="menu-mob" hidden>
+  <nav class="wrap mob-in" aria-label="Menu">
+    {itens.map((i) => <a class="mob-l" href={i.href}>{i.nome}</a>)}
+    {/* btn-on-dark, e não o .btn de sempre: o .btn é #1A1A1A e o painel é
+        #0D0D0D — 1,2:1, um retângulo que só se enxerga pelo texto. Invertido
+        ele fica claro sobre o preto, como o CTA do rodapé, que vive na mesma
+        situação. */}
+    <a class="btn btn-on-dark mob-cta" href={caminho("/contato")}>Falar com um especialista</a>
+  </nav>
+</div>
 
 <style>
   .cab {
@@ -139,6 +150,10 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
   /* Já está na página de contato: o botão vira lembrete, não convite. */
   .cab-cta.is-ativo { background: transparent; color: var(--cta-borda); }
 
+  /* A barra fica acima do painel de tela cheia — sem isto o X some atrás
+     dele e não há como fechar o menu a não ser pelo Esc. */
+  .cab-in { position: relative; z-index: 1; }
+
   .menu-btn {
     display: none; background: none; border: 0; cursor: pointer;
     padding-inline: 10px; min-height: 44px;
@@ -148,18 +163,46 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
   .menu-icone { display: block; width: 22px; }
   .menu-icone span {
     display: block; height: 1px; background: var(--marca-cor); margin: 5px 0;
-    transition: background var(--d-base) var(--ease);
+    transition: background var(--d-base) var(--ease), transform var(--d-base) var(--ease);
   }
+  /* Aberto, os dois traços viram X. Os 3px são metade da distância entre eles
+     — 1px de traço mais 5px de margem entre irmãos, que colapsa para 5. */
+  .menu-btn[aria-expanded="true"] .menu-icone span:first-child { transform: translateY(3px) rotate(45deg); }
+  .menu-btn[aria-expanded="true"] .menu-icone span:last-child { transform: translateY(-3px) rotate(-45deg); }
+  @media (prefers-reduced-motion: reduce) { .menu-icone span { transition: none; } }
 
-  /* ─── Mobile ─── */
-  .mob { position: absolute; inset-inline: 0; top: 100%; background: var(--paper); border-bottom: 1px solid var(--line); }
-  .mob[hidden] { display: none; }
-  .mob-in { display: flex; flex-direction: column; padding-block: var(--s-3) var(--s-6); }
-  .mob-l {
-    padding: var(--s-2) 0; border-bottom: 1px solid var(--line-soft);
-    font-size: 1.5rem; font-weight: 200; color: var(--ink); letter-spacing: -.01em;
+  /* ─── Mobile ───
+     Tela cheia, e não a gaveta clara que descia sob a barra. A gaveta
+     empilhava os itens rente à esquerda com um filete entre cada um: lia como
+     sumário de documento, e o conteúdo da página continuava aparecendo
+     embaixo dela, disputando a atenção com o menu. Agora o painel toma a tela
+     inteira no preto do site e os destinos ficam centrados no vão — enquanto
+     ele está aberto não há mais nada para ler, que é o ponto de um menu.
+
+     Um degrau abaixo da barra no z-index: o PARKET e o X continuam por cima e
+     clicáveis, como na referência. */
+  .mob {
+    position: fixed; inset: 0; z-index: calc(var(--z-header) - 1);
+    background: var(--ground);
+    overflow-y: auto; overscroll-behavior: contain;
   }
-  .mob-cta { margin-top: var(--s-4); align-self: flex-start; }
+  .mob[hidden] { display: none; }
+  /* Os 64px são a altura da barra — o mesmo valor de `.cab-in` lá embaixo.
+     Simétrico em cima e embaixo para que `justify-content: center` centre no
+     vão que sobra, e não atrás do cabeçalho. */
+  .mob-in {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: var(--s-6); min-height: 100%; padding-block: 64px;
+  }
+  .mob-l {
+    padding: 0; border: 0; text-align: center;
+    font-size: clamp(2rem, 8vw, 2.5rem); font-weight: 200; line-height: 1;
+    color: var(--on-dark); letter-spacing: -.02em;
+    transition: color var(--d-fast) var(--ease);
+  }
+  .mob-l:hover, .mob-l:active { color: #FFFFFF; }
+  .mob-cta { margin-top: var(--s-4); align-self: center; }
 
   @media (max-width: 1080px) {
     .nav, .cab-cta { display: none; }
@@ -173,25 +216,44 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
   const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu]');
   const mob = document.getElementById('menu-mob');
 
-  function fecharMenu() {
+  /* Com o painel ocupando a tela, a página atrás não pode rolar junto: sem a
+     trava, o dedo que erra o link arrasta o conteúdo escondido e a pessoa
+     fecha o menu num lugar diferente de onde abriu. */
+  function travarRolagem(travar: boolean) {
+    document.documentElement.style.overflow = travar ? 'hidden' : '';
+  }
+
+  function abrirMenu() {
+    if (!mob || !mob.hidden) return;
+    mob.hidden = false;
+    menuBtn?.setAttribute('aria-expanded', 'true');
+    travarRolagem(true);
+  }
+
+  function fecharMenu(devolverFoco = false) {
     if (!mob || mob.hidden) return;
     mob.hidden = true;
     menuBtn?.setAttribute('aria-expanded', 'false');
+    travarRolagem(false);
+    if (devolverFoco) menuBtn?.focus();
   }
 
   menuBtn?.addEventListener('click', () => {
     if (!mob) return;
-    const abrindo = mob.hidden;
-    mob.hidden = !abrindo;
-    menuBtn.setAttribute('aria-expanded', String(abrindo));
+    if (mob.hidden) abrirMenu();
+    else fecharMenu();
   });
 
   // Âncora clicada no mobile: o menu precisa sair da frente do destino.
-  mob?.querySelectorAll('a').forEach((a) => a.addEventListener('click', fecharMenu));
+  mob?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => fecharMenu()));
 
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
+  /* Esc devolve o foco ao botão; o clique no X já está sobre ele. */
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(true); });
+  /* O painel agora vive fora do <header>, então precisa entrar nesta conta —
+     sem ele, tocar em qualquer vão entre os links fecharia o menu. */
   document.addEventListener('click', (e) => {
-    if (!cab?.contains(e.target as Node)) fecharMenu();
+    const alvo = e.target as Node;
+    if (!cab?.contains(alvo) && !mob?.contains(alvo)) fecharMenu();
   });
 
   if (cab?.classList.contains('cab--transp')) {
