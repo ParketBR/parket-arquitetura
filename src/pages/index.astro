@@ -30,8 +30,6 @@ import {
 import { catalogoDaCategoria, totalDeCatalogos } from '../lib/catalogos';
 import { caminho } from '../lib/url';
 
-const HERO = 'https://parket.com.br/FOTO%20HERO.jpg';
-
 /* Composição editorial: par largo, trio em pé, faixa. Cada fileira tem vãos
    iguais entre si — larguras diferentes na mesma fileira desalinham a legenda
    de uma foto para a outra, que era o defeito da grade anterior. */
@@ -139,7 +137,7 @@ const schema = {
 };
 ---
 
-<Base {titulo} {descricao} {schema} imagem={HERO} headerTransparente>
+<Base {titulo} {descricao} {schema} headerTransparente>
   <!-- ─── Hero ─── -->
   <section class="hero">
     <HeroVideo alt="Casa contemporânea com forro e brises em madeira nobre Parket" />
@@ -147,12 +145,14 @@ const schema = {
     <div class="hero-scrim-topo" aria-hidden="true"></div>
     <div class="hero-scrim-base" aria-hidden="true"></div>
     <div class="wrap hero-in">
-      <h1 class="display hero-tit">Madeira para<br>arquitetura.</h1>
-      <p class="lead hero-sub">
+      {/* Título, linha de apoio e ações entram em cascata no carregamento —
+          ver .carga em tokens.css. */}
+      <h1 class="display hero-tit carga">Madeira para<br>arquitetura.</h1>
+      <p class="lead hero-sub carga" style="--i:1">
         Superfícies naturais desenvolvidas para projetos{' '}<br class="so-desk" />
         que atravessam o tempo.
       </p>
-      <div class="hero-acoes">
+      <div class="hero-acoes carga" style="--i:2">
         <a class="btn btn-on-dark" href={caminho("/contato")}>Falar com um especialista</a>
         <a class="link-action hero-link" href="#superficies">Ver as superfícies</a>
       </div>
@@ -160,7 +160,7 @@ const schema = {
   </section>
 
   <!-- ─── Prova, antes de qualquer argumento ─── -->
-  <section class="provas tom-papel">
+  <section class="provas tom-papel rev">
     {/* A faixa é grade de quatro colunas no desktop e esteira rolante no
         celular. A esteira precisa de duas cópias da lista para o laço não ter
         emenda: quando a primeira termina de sair pela esquerda, a segunda está
@@ -192,7 +192,7 @@ const schema = {
   <!-- ─── Manifesto ─── -->
   <section class="manifesto tom-escuro">
     <div class="wrap mani-in">
-      <div class="mani-copy">
+      <div class="mani-copy rev">
       <p class="mani-badge"><span class="badge">Manifesto</span></p>
       {/* h2, e não parágrafo: é o segundo maior tipo da página e o argumento
           central do site. Como <p> ele não entrava no sumário do documento —
@@ -217,7 +217,7 @@ const schema = {
           Ao lado, e não numa faixa embaixo: uma foto 3:2 na largura inteira
           somaria mais de mil pixels a uma página que já pede treze telas no
           celular. Na coluna ela cabe na altura que o texto já ocupava. */}
-      <div class="mani-foto">
+      <div class="mani-foto rev">
         <Foto src="colecoes/eternos/05.webp"
               alt="Estar residencial com parede em painéis de madeira maciça do piso ao teto, iluminada por luz rasante"
               ratio="3/2" sizes="(max-width: 900px) 100vw, 44vw" />
@@ -230,14 +230,14 @@ const schema = {
        promessa, e esta seção é a única prova que sustenta uma promessa dessas
        — meio século e a família que assina. A foto fecha o bloco em largura
        total, sem corte de rosto. -->
-  <section id="sobre" class="sobre section tom-escuro reveal">
+  <section id="sobre" class="sobre section tom-escuro">
     <div class="wrap">
       <div class="sobre-texto">
-        <div class="sobre-tit">
+        <div class="sobre-tit rev">
           <span class="badge">Sobre a Parket</span>
           <h2 class="h2 sobre-h2">Meio século transformando{' '}<br class="so-desk" />madeira em legado.</h2>
         </div>
-        <div class="sobre-corpo">
+        <div class="sobre-corpo rev">
           <p class="lead sobre-lead">
             A Parket nasce da convicção de que a madeira é a linguagem mais
             autêntica da arquitetura brasileira. Cada projeto que realizamos é
@@ -254,7 +254,7 @@ const schema = {
         </div>
       </div>
 
-      <figure class="sobre-foto">
+      <figure class="sobre-foto rev">
         <Foto src="https://parket.com.br/FAMILIA.png"
               alt="As três gerações da família fundadora da Parket"
               width={1280} height={711} ratio="1280/711" sizes="(max-width: 900px) 100vw, 92vw" />
@@ -263,9 +263,9 @@ const schema = {
   </section>
 
   <!-- ─── Superfícies ─── -->
-  <section id="superficies" class="superficies section tom-papel reveal">
+  <section id="superficies" class="superficies section tom-papel">
     <div class="wrap">
-      <header class="sec-cab">
+      <header class="sec-cab rev">
         <div>
           <span class="badge">Superfícies</span>
           <h2 class="h2 sec-tit">Cada superfície{' '}<br class="so-desk" />conta uma história.</h2>
@@ -278,7 +278,7 @@ const schema = {
 
       <div class="cats">
         {cats.map((c, n) => (
-          <article class="cat" style={`--span:${c.span}; --corte:${c.ratio}`}>
+          <article class="cat rev" style={`--span:${c.span}; --corte:${c.ratio}`}>
             {/* A foto vira o mesmo alvo do link de baixo: quem clica na imagem
                 espera abrir o catálogo, e antes não abria nada.
 
@@ -330,9 +330,9 @@ const schema = {
       fundo ficava preso à caixa de 1440px e o escuro não chegava às bordas da
       tela — uma faixa recuada no meio do papel, em vez da quebra de tom que
       as outras seções fazem. Enquanto era papel sobre papel ninguém via. */}
-  <section id="acervo" class="section tom-escuro reveal">
+  <section id="acervo" class="section tom-escuro">
     <div class="wrap">
-    <header class="sec-cab">
+    <header class="sec-cab rev">
       <div>
         <span class="badge">Para arquitetos</span>
         <h2 class="h2 sec-tit">Catálogos e o banco{' '}<br class="so-desk" />de texturas 3D.</h2>
@@ -346,7 +346,7 @@ const schema = {
 
     <ul class="acervo-itens">
       {acervo.map((a) => (
-        <li class="acervo-item">
+        <li class="acervo-item rev">
           <h3 class="acervo-item-tit">{a.titulo}</h3>
           <p class="acervo-item-txt">{a.texto}</p>
         </li>
@@ -431,9 +431,9 @@ const schema = {
 
        Tom areia porque contato e depoimentos, logo acima, são papel: sem o
        degrau a página termina com três blocos claros colados. -->
-  <section id="blog" class="blog-faixa section tom-areia reveal">
+  <section id="blog" class="blog-faixa section tom-areia">
     <div class="wrap">
-      <header class="sec-cab">
+      <header class="sec-cab rev">
         <div>
           <span class="badge">Blog</span>
           <h2 class="h2 sec-tit">Leituras que inspiram.</h2>
@@ -441,7 +441,7 @@ const schema = {
         <a class="link-action" href={caminho("/blog")}>Ler todas</a>
       </header>
 
-      <ul class="blog-faixa-lista">
+      <ul class="blog-faixa-lista rev">
         {posts.map((p) => (
           <li><CartaoPost post={p} sizes="(max-width: 640px) 72vw, (max-width: 1100px) 46vw, 23vw" /></li>
         ))}

@@ -86,7 +86,7 @@ const dataCurta = (d: Date) =>
         <Content />
       </div>
 
-      <aside class="post-cta">
+      <aside class="post-cta rev">
         <p class="post-cta-tit">Precisa disso resolvido no seu projeto?</p>
         <p class="post-cta-txt">
           A equipe técnica responde com espécie, bitola, acabamento, prazo e método de
@@ -103,7 +103,7 @@ const dataCurta = (d: Date) =>
         <p class="label">Continue lendo</p>
         <ul class="leia-lista">
           {outros.map((p) => (
-            <li>
+            <li class="rev">
               <a href={caminho(`/blog/${p.id}`)}>
                 <p class="caption leia-data">{dataCurta(p.data.data)} · {p.data.leitura} min</p>
                 <h2 class="leia-tit">{p.data.titulo}</h2>

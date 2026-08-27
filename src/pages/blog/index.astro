@@ -46,7 +46,7 @@ const schema = {
 >
   <section class="blog-sec section tom-papel">
     <div class="wrap">
-      <header class="sec-cab">
+      <header class="sec-cab rev">
         <div>
           <span class="badge">Blog</span>
           <h1 class="h2 sec-tit">Como especificar{' '}<br class="so-desk" />madeira sem errar.</h1>
@@ -60,7 +60,7 @@ const schema = {
       </header>
 
       {destaque && (
-        <a class="blog-destaque" href={caminho(`/blog/${destaque.id}`)}>
+        <a class="blog-destaque rev" href={caminho(`/blog/${destaque.id}`)}>
           <div class="blog-destaque-media">
             {destaque.data.capa && (
               <Foto src={destaque.data.capa} alt={destaque.data.capaAlt}
@@ -84,7 +84,7 @@ const schema = {
 
       <ul class="blog-lista">
         {demais.map((p) => (
-          <li>
+          <li class="rev">
             <CartaoPost post={p}
                         sizes="(max-width: 700px) 100vw, (max-width: 1100px) 46vw, 31vw" />
           </li>

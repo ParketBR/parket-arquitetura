@@ -151,28 +151,62 @@ const grafo = [
     <BotaoWhatsApp />
 
     <script>
-      // Reveal na entrada da seção. Rede de segurança para nunca deixar
-      // conteúdo invisível se o observer falhar.
-      const alvos = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+      /* ─── Reveal na entrada ───
+         Dois tipos de alvo: a seção (.reveal) e o bloco (.rev). Ver a nota
+         em tokens.css sobre por que o bloco existe. */
+      const alvos = Array.from(document.querySelectorAll<HTMLElement>('.reveal, .rev'));
       const mostrarTudo = () => alvos.forEach((e) => e.classList.add('is-in'));
 
       if (!('IntersectionObserver' in window) ||
           window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         mostrarTudo();
       } else {
+        let respondeu = false;
+
         const obs = new IntersectionObserver(
           (entradas) => {
-            for (const e of entradas) {
-              if (e.isIntersecting) {
-                e.target.classList.add('is-in');
-                obs.unobserve(e.target);
-              }
-            }
+            respondeu = true;
+
+            /* Escalonamento por leva. O atraso de cada bloco é a posição dele
+               na tela entre os que entraram nesta mesma chamada — os quatro
+               cartões de uma fileira sobem em cascata, e o bloco que entra
+               sozinho não espera nada.
+
+               O teto de 5 existe para o último de uma lista longa não ficar
+               meio segundo atrás do primeiro. */
+            const chegando = entradas
+              .filter((e) => e.isIntersecting)
+              .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+            chegando.forEach((e, i) => {
+              const alvo = e.target as HTMLElement;
+              alvo.style.setProperty('--i', String(Math.min(i, 5)));
+              alvo.classList.add('is-in');
+              obs.unobserve(alvo);
+            });
           },
-          { rootMargin: '240px 0px 240px 0px', threshold: 0 },
+          {
+            /* Margem negativa embaixo, e não os +240px de antes. Com a margem
+               positiva o bloco acendia fora da tela: no celular, onde quase
+               toda seção é mais alta que a janela, isso queria dizer que o
+               site abria pronto. Agora ele acende ao cruzar a borda de baixo,
+               com uma folga de 8% para o movimento começar antes de o bloco
+               estar todo à vista. */
+            rootMargin: '0px 0px -8% 0px',
+            threshold: 0,
+          },
         );
         alvos.forEach((e) => obs.observe(e));
-        setTimeout(mostrarTudo, 4000);
+
+        /* Rede de segurança para nunca deixar conteúdo invisível.
+
+           A anterior revelava tudo depois de 4s, o que no celular acendia as
+           treze telas da home antes de o dedo chegar na segunda seção — ela
+           sozinha já anulava o efeito. Esta pergunta outra coisa: o observer
+           deu sinal de vida? Ele chama o callback logo na primeira volta,
+           para todos os alvos, mesmo os que estão longe da tela. Se em 3s não
+           chamou nenhuma vez, não vai chamar — aí sim mostra tudo. */
+        setTimeout(() => { if (!respondeu) mostrarTudo(); }, 3000);
       }
     </script>
   </body>

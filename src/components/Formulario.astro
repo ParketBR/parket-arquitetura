@@ -74,7 +74,7 @@ const PASSOS = 5;
 <section class="form-sec section tom-papel" id={ancora}>
   <div class="wrap">
     <div class="form-in">
-    <div class="form-lado">
+    <div class="form-lado rev">
       <div class="form-copy">
         <p class="label">{rotulo}</p>
         <Titulo class:list={[comoH1 ? 'h1' : 'h2', 'form-tit']}>{titulo}</Titulo>
@@ -94,7 +94,7 @@ const PASSOS = 5;
       </div>
     </div>
 
-    <form class="form" novalidate data-form data-acao={acao} data-zap={WHATSAPP}>
+    <form class="form rev" novalidate data-form data-acao={acao} data-zap={WHATSAPP}>
       <!-- Progresso. Nasce escondido: sem JS não há passos, e anunciar
            "passo 1 de 5" numa página que mostra os cinco seria mentira. -->
       <div class="pr" data-progresso hidden>

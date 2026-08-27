@@ -280,13 +280,55 @@ a { color: inherit; text-decoration: none; }
   }
 }
 
-/* ═══ Motion ═══ */
-.reveal { opacity: 0; transform: translateY(14px); transition: opacity var(--d-slow) var(--ease), transform var(--d-slow) var(--ease); }
-.reveal.is-in { opacity: 1; transform: none; }
+/* ═══ Motion ═══
+
+   O reveal tem dois níveis: a seção (.reveal) e o bloco dentro dela (.rev).
+
+   Só a seção não funcionava no celular. Uma seção da home mede entre 800 e
+   1500px e a tela do celular tem 812: a seção acendia inteira de uma vez, e
+   240px antes de entrar — quando o dedo chegava no conteúdo a transição tinha
+   acabado fazia tempo. Na prática o site abria pronto e nada aparecia.
+
+   O bloco é a unidade que cabe na tela, então é ele que aparece. A seção
+   continua marcada onde o conjunto entra junto (uma faixa curta, uma lista
+   que rola de lado) e não faz sentido quebrar em partes. */
+.reveal, .rev {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity var(--d-slow) var(--ease), transform var(--d-slow) var(--ease);
+}
+.reveal.is-in, .rev.is-in { opacity: 1; transform: none; }
+
+/* Escalonamento. O `--i` é escrito pelo script na hora em que o bloco entra,
+   e vale a posição dele dentro da leva que entrou junto: quem chega sozinho
+   não espera nada. 70ms lê como sequência sem virar fila de espera. */
+.rev { transition-delay: calc(var(--i, 0) * 70ms); }
+
+/* No celular o percurso é um pouco maior: a tela é estreita, o bloco ocupa a
+   largura inteira e 14px de subida somem no meio do movimento da rolagem. */
+@media (max-width: 700px) {
+  .reveal, .rev { transform: translateY(22px); }
+}
+
+/* Entrada do hero. Não é rolagem: o hero já está na tela quando a página
+   abre, então quem dispara é o carregamento. É o primeiro "vai aparecendo"
+   que o visitante vê, e o único que acontece sem ele fazer nada.
+
+   O atraso é curto de propósito: o h1 do hero é o LCP da home, e o navegador
+   só o contabiliza quando ele pinta com opacidade acima de zero. */
+.carga {
+  opacity: 0;
+  animation: carga-entra var(--d-slow) var(--ease) forwards;
+  animation-delay: calc(80ms + var(--i, 0) * 110ms);
+}
+@keyframes carga-entra {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal, .rev { opacity: 1; transform: none; transition: none; }
+  .carga { opacity: 1; animation: none; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
