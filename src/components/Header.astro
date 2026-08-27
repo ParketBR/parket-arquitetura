@@ -56,12 +56,12 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
     ele é `none`. Ficaria certo no topo da home e errado depois de rolar. */}
 <div class="mob" id="menu-mob" hidden>
   <nav class="wrap mob-in" aria-label="Menu">
-    {itens.map((i) => <a class="mob-l" href={i.href}>{i.nome}</a>)}
+    {itens.map((i, n) => <a class="mob-l" href={i.href} style={`--i:${n}`}>{i.nome}</a>)}
     {/* btn-on-dark, e não o .btn de sempre: o .btn é #1A1A1A e o painel é
         #0D0D0D — 1,2:1, um retângulo que só se enxerga pelo texto. Invertido
         ele fica claro sobre o preto, como o CTA do rodapé, que vive na mesma
         situação. */}
-    <a class="btn btn-on-dark mob-cta" href={caminho("/contato")}>Falar com um especialista</a>
+    <a class="btn btn-on-dark mob-cta" href={caminho("/contato")} style={`--i:${itens.length}`}>Falar com um especialista</a>
   </nav>
 </div>
 
@@ -169,7 +169,9 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
      — 1px de traço mais 5px de margem entre irmãos, que colapsa para 5. */
   .menu-btn[aria-expanded="true"] .menu-icone span:first-child { transform: translateY(3px) rotate(45deg); }
   .menu-btn[aria-expanded="true"] .menu-icone span:last-child { transform: translateY(-3px) rotate(-45deg); }
-  @media (prefers-reduced-motion: reduce) { .menu-icone span { transition: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .menu-icone span, .mob, .mob-l, .mob-cta { transition: none; }
+  }
 
   /* ─── Mobile ───
      Tela cheia, e não a gaveta clara que descia sob a barra. A gaveta
@@ -181,11 +183,21 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
 
      Um degrau abaixo da barra no z-index: o PARKET e o X continuam por cima e
      clicáveis, como na referência. */
+  /* A abertura tem duas partes: o preto chega, e as palavras assentam nele.
+
+     Só o `hidden` fazia o menu trocar de um quadro para o outro — nada se
+     movia, a tela simplesmente era outra, e é isso que lê como corte. */
   .mob {
     position: fixed; inset: 0; z-index: calc(var(--z-header) - 1);
     background: var(--ground);
     overflow-y: auto; overscroll-behavior: contain;
+    opacity: 0;
+    transition: opacity 280ms var(--ease);
   }
+  .mob.is-aberto { opacity: 1; }
+  /* Fechando, o painel fica mais 280ms no DOM enquanto o preto sai. Sem isto
+     o dedo que solta o X acerta um link que já não se vê. */
+  .mob:not(.is-aberto) { pointer-events: none; }
   .mob[hidden] { display: none; }
   /* Os 64px são a altura da barra — o mesmo valor de `.cab-in` lá embaixo.
      Simétrico em cima e embaixo para que `justify-content: center` centre no
@@ -199,10 +211,31 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
     padding: 0; border: 0; text-align: center;
     font-size: clamp(2rem, 8vw, 2.5rem); font-weight: 200; line-height: 1;
     color: var(--on-dark); letter-spacing: -.02em;
-    transition: color var(--d-fast) var(--ease);
+    transition: color var(--d-fast) var(--ease),
+                opacity var(--d-base) var(--ease),
+                transform var(--d-base) var(--ease);
   }
   .mob-l:hover, .mob-l:active { color: #FFFFFF; }
-  .mob-cta { margin-top: var(--s-4); align-self: center; }
+  /* As transições do .btn entram na conta: esta regra tem uma classe e um
+     atributo de escopo, então ela substitui a do tokens.css inteira — sem
+     `background` aqui, o CTA perderia o próprio hover. */
+  .mob-cta {
+    margin-top: var(--s-4); align-self: center;
+    transition: background var(--d-fast) var(--ease),
+                color var(--d-fast) var(--ease),
+                opacity var(--d-base) var(--ease),
+                transform var(--d-base) var(--ease);
+  }
+
+  .mob-l, .mob-cta { opacity: 0; transform: translateY(16px); }
+  /* O atraso mora no estado aberto, e não na regra de base. Ao fechar ele
+     deixa de valer e os cinco saem juntos: uma saída escalonada seguraria a
+     porta, e quem fechou já decidiu. */
+  .mob.is-aberto .mob-l,
+  .mob.is-aberto .mob-cta {
+    opacity: 1; transform: none;
+    transition-delay: calc(90ms + var(--i, 0) * 55ms);
+  }
 
   @media (max-width: 1080px) {
     .nav, .cab-cta { display: none; }
@@ -223,25 +256,59 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
     document.documentElement.style.overflow = travar ? 'hidden' : '';
   }
 
+  const calmo = matchMedia('(prefers-reduced-motion: reduce)');
+  let relogioDeFechar: number | undefined;
+
   function abrirMenu() {
-    if (!mob || !mob.hidden) return;
+    /* A classe, e não o `hidden`: no meio da saída o painel ainda não tem o
+       atributo, e ler por ele fazia este clique voltar sem fazer nada — o
+       menu ficava impossível de reabrir até o fade terminar. Pela classe, o
+       clique no meio da saída reverte a transição de onde ela está. */
+    if (!mob || mob.classList.contains('is-aberto')) return;
+    clearTimeout(relogioDeFechar);
     mob.hidden = false;
+
+    /* Um reflow entre tirar o `hidden` e pôr a classe. Sem ele o navegador vê
+       as duas mudanças no mesmo quadro, conclui que a opacidade sempre foi 1
+       e não roda transição nenhuma — o menu voltaria a aparecer de um golpe.
+       É a leitura de offsetWidth que força o cálculo no meio. */
+    void mob.offsetWidth;
+
+    mob.classList.add('is-aberto');
     menuBtn?.setAttribute('aria-expanded', 'true');
     travarRolagem(true);
   }
 
   function fecharMenu(devolverFoco = false) {
-    if (!mob || mob.hidden) return;
-    mob.hidden = true;
+    /* Idem: se a classe já saiu, o fechamento está em curso e o relógio dele
+       termina o serviço — não há o que refazer aqui. */
+    if (!mob || !mob.classList.contains('is-aberto')) return;
+    mob.classList.remove('is-aberto');
     menuBtn?.setAttribute('aria-expanded', 'false');
     travarRolagem(false);
     if (devolverFoco) menuBtn?.focus();
+
+    /* O `hidden` só entra quando o preto terminou de sair — até lá o painel
+       fica no DOM, invisível e sem pointer-events.
+
+       Relógio, e não `transitionend`: o evento não vem se a aba estiver em
+       segundo plano, se um novo clique interromper a transição no meio, ou se
+       o sistema estiver em movimento reduzido, onde não há transição para
+       terminar. Qualquer um dos três deixaria o menu preso, invisível e por
+       cima da página. */
+    clearTimeout(relogioDeFechar);
+    relogioDeFechar = window.setTimeout(() => {
+      if (mob && !mob.classList.contains('is-aberto')) mob.hidden = true;
+    }, calmo.matches ? 0 : 320);
   }
 
   menuBtn?.addEventListener('click', () => {
     if (!mob) return;
-    if (mob.hidden) abrirMenu();
-    else fecharMenu();
+    /* A classe, e não o `hidden`: durante os 280ms de saída o painel ainda
+       está no DOM sem `hidden`, e ler o atributo faria este clique tentar
+       fechar de novo o que já está fechando — o menu não reabriria. */
+    if (mob.classList.contains('is-aberto')) fecharMenu();
+    else abrirMenu();
   });
 
   // Âncora clicada no mobile: o menu precisa sair da frente do destino.
