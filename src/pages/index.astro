@@ -301,12 +301,33 @@ const schema = {
                 <h3 class="cat-nome">{c.nome}</h3>
                 <p class="caption cat-qtd num">{c.qtd} referências</p>
               </div>
+              {/* As setas são SVG, e não os caracteres ↗ e →.
+
+                  O U+2197 está no conjunto emoji do Unicode. A DM Sans não
+                  traz o glifo, então o celular cai na fonte seguinte que
+                  trouxer — no iOS e no Android é a de emoji colorido, e a
+                  seta vira um adesivo no meio de uma linha de 11px em caixa
+                  alta. Mesmo onde não vira emoji o glifo vem de outra fonte:
+                  media 12,8px de largura num texto de 11px, que é o tamanho
+                  do que não é DM Sans.
+
+                  Desenhadas na malha de 24 e no peso de traço do Icone.astro
+                  e das setas da régua de texturas — o mesmo alfabeto de
+                  ícone do resto da casa. */}
               {c.catalogo
                 ? <a class="cat-acao" href={c.catalogo} rel="noopener noreferrer" target="_blank">
-                    Catálogo<span class="cat-seta" aria-hidden="true">↗</span>
+                    Catálogo
+                    <svg class="cat-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path d="M7 17 17 7M9.5 7H17v7.5" />
+                    </svg>
                     <span class="sr-only">— abre em outra aba</span>
                   </a>
-                : <a class="cat-acao" href={caminho("/contato")}>Especificar<span class="cat-seta" aria-hidden="true">→</span></a>}
+                : <a class="cat-acao" href={caminho("/contato")}>
+                    Especificar
+                    <svg class="cat-seta cat-seta--reta" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      <path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5" />
+                    </svg>
+                  </a>}
             </div>
           </article>
         ))}
@@ -783,8 +804,18 @@ const schema = {
   }
   .cat:hover .cat-acao,
   .cat-acao:hover { color: var(--wood-text); }
-  .cat-seta { transition: transform var(--d-base) var(--ease); }
+  .cat-seta {
+    flex: none; width: 13px; height: 13px;
+    fill: none; stroke: currentColor; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: transform var(--d-base) var(--ease);
+  }
+  /* 1,7 na malha de 24 desenhado a 13px dá 0,92px de traço — o mesmo que os
+     1,4 a 16px do Icone.astro. O peso do alfabeto é o traço na tela, não o
+     número no atributo. */
   .cat-acao:hover .cat-seta { transform: translate(2px, -2px); }
+  /* A reta anda só na direção para onde aponta. */
+  .cat-acao:hover .cat-seta--reta { transform: translateX(3px); }
 
   /* ─── Depoimentos ─── */
   /* Sem cabeçalho: o bloco não tem mais badge nem título, então o vão de
