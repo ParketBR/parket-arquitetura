@@ -657,6 +657,28 @@ const schema = {
   .hero-scrim-base {
     background: linear-gradient(to top, rgb(13 13 13 / .62) 0%, rgb(13 13 13 / .28) 38%, rgb(13 13 13 / 0) 62%);
   }
+  /* No estreito o scrim de baixo é mais fundo, e a razão é o vídeo.
+
+     Com `object-fit: cover` numa tela em pé, o quadro 16:9 é cortado numa
+     tira central estreita — o visitante vê ~30% da largura original, e essa
+     tira passa por partes do quadro que o pôster, escuro, nunca mostrou. Aos
+     4s e aos 8s o título ficava em 1,9:1 sobre o que estava atrás: abaixo dos
+     3:1 que a WCAG pede até para texto grande.
+
+     A conta que define as paradas: com o scrim plano de 34%, o gradiente
+     precisa de 0,364 de alfa para o composto chegar aos 0,57 que devolvem
+     4,5:1 no pior quadro. Daí 0,52 em 42% e 0,34 em 62% — a faixa onde o
+     título e a linha de apoio vivem em 375x812. Acima disso ele solta, e o
+     forro de madeira do topo continua à vista. */
+  @media (max-width: 767px) {
+    .hero-scrim-base {
+      background: linear-gradient(to top,
+        rgb(13 13 13 / .72) 0%,
+        rgb(13 13 13 / .52) 42%,
+        rgb(13 13 13 / .34) 62%,
+        rgb(13 13 13 / 0) 86%);
+    }
+  }
   .hero-in { position: relative; color: var(--on-dark); }
   .hero-tit { color: var(--on-dark); }
   .hero-sub { color: rgb(232 228 223 / .82); margin: var(--s-3) 0 var(--s-6); }

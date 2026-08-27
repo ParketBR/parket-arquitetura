@@ -58,9 +58,19 @@ const { src = caminho('/video/hero.mp4'), alt } = Astro.props;
   function podeTocar(): boolean {
     if (!video || !fonte) return false;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-    // 3,9 MB é 8,6x o resto da home. Enquanto não houver corte vertical, o
-    // celular fica no pôster — que já é o LCP e mostra o mesmo enquadramento.
-    if (window.matchMedia('(max-width: 767px)').matches) return false;
+
+    /* O celular tocava só o pôster, por causa dos 3,73 MB do arquivo. Agora
+       toca: o enquadramento do pôster já provava que o corte em retrato
+       funciona, e o peso não chega de uma vez — o MP4 tem o `moov` antes do
+       `mdat`, então o vídeo transmite progressivamente em vez de baixar
+       inteiro antes do primeiro quadro. Some-se a isso que ele só começa
+       depois do `load`, com o pôster (o LCP) já pintado.
+
+       O que resta de risco é a franquia de dados, e é por isso que as duas
+       guardas abaixo continuam. Vale saber que o Safari não implementa
+       `navigator.connection`: no iPhone nenhuma das duas tem efeito, e o
+       vídeo carrega mesmo no 4G. Um arquivo mais leve resolveria de vez —
+       precisa de ffmpeg, que esta máquina não tem. */
     const con = (navigator as any).connection;
     if (con?.saveData) return false;
     if (con?.effectiveType && !/4g/.test(con.effectiveType)) return false;
