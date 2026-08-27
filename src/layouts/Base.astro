@@ -9,6 +9,8 @@ interface Props {
   descricao: string;
   /** Caminho da imagem social. Cada página tem a sua — nunca a mesma para todas. */
   imagem?: string;
+  /** Descreve a imagem social. Sem ela, o alt é o título da página. */
+  imagemAlt?: string;
   /** JSON-LD adicional da página (Product, Article, CollectionPage…). */
   schema?: Record<string, unknown> | Record<string, unknown>[];
   /** Trilha de navegação: [{ nome, url }] — vira BreadcrumbList. */
@@ -17,15 +19,46 @@ interface Props {
 }
 
 const {
-  titulo, descricao, imagem,
+  titulo, descricao, imagem, imagemAlt,
   schema, trilha = [], headerTransparente = false,
 } = Astro.props;
 
+import { getImage } from 'astro:assets';
 import { caminho } from '../lib/url';
+import { assetLocal, ehRemota } from '../lib/imagens';
 
 const site = Astro.site ?? new URL('https://parket.com.br');
 const canonica = new URL(Astro.url.pathname, site).href;
-const ogImagem = imagem ? new URL(imagem, site).href : new URL(caminho('/og-parket.jpg'), site).href;
+
+/* ─── Imagem da prévia do link ───
+   1200×630 é a proporção 1,91:1 que Facebook, WhatsApp, LinkedIn e Telegram
+   recortam. Fora dela o card vira miniatura quadrada ao lado do texto.
+
+   O peso importa tanto quanto a medida: o WhatsApp desiste de baixar a prévia
+   por volta de 300 KB e mostra só o título. Era o caso — o `og:image` da home
+   apontava para a FOTO HERO do WordPress, 1,18 MB, e nenhum link compartilhado
+   abria com imagem. Toda foto local passa pelo pipeline do Astro e sai em
+   JPEG recortado; o padrão é public/og-parket.jpg, gerado por scripts/og.mjs.
+
+   JPEG, e não o AVIF/WebP do resto do site: os robôs de prévia do WhatsApp e
+   do LinkedIn ainda não leem os dois. */
+const OG_L = 1200, OG_A = 630;
+
+const assetSocial = imagem && !ehRemota(imagem) ? assetLocal(imagem) : null;
+
+const ogImagem = assetSocial
+  ? new URL(
+      (await getImage({
+        src: assetSocial, width: OG_L, height: OG_A,
+        fit: 'cover', format: 'jpeg', quality: 78,
+      })).src,
+      site,
+    ).href
+  : imagem && ehRemota(imagem)
+    ? imagem
+    : new URL(caminho('/og-parket.jpg'), site).href;
+
+const ogAlt = imagemAlt ?? titulo;
 
 const organizacao = {
   '@type': 'Organization',
@@ -78,7 +111,19 @@ const grafo = [
     <meta property="og:description" content={descricao} />
     <meta property="og:url" content={canonica} />
     <meta property="og:image" content={ogImagem} />
+    <meta property="og:image:width" content={String(OG_L)} />
+    <meta property="og:image:height" content={String(OG_A)} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content={ogAlt} />
+
+    {/* O card do Twitter/X não herda as og:*. E o WhatsApp, quando as duas
+        famílias existem, lê a que vier com medida declarada — por isso as
+        larguras acima ficam antes. */}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titulo} />
+    <meta name="twitter:description" content={descricao} />
+    <meta name="twitter:image" content={ogImagem} />
+    <meta name="twitter:image:alt" content={ogAlt} />
 
     <link rel="icon" href={caminho("/favicon.ico")} sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href={caminho("/favicon-32x32.png")} />
