@@ -66,7 +66,13 @@ const lista = ORDEM_TOM.map((id) => {
   {/* A régua sangra para fora do .wrap de propósito: uma lista horizontal que
       termina exatamente na margem parece cortada por engano. Assim ela
       continua para fora da tela, que é o que convida a arrastar. */}
-  <ul class="regua reveal" data-regua tabindex="0" role="group" aria-label="Espécies de madeira, da mais clara à mais escura">
+  {/* `role="list"`, e não o `role="group"` que estava aqui: o group apagava o
+      papel de lista do <ul> e deixava as dezenove <li> órfãs — o leitor de tela
+      anunciava um bloco sem contagem, e a auditoria acusava item de lista fora
+      de lista. O rótulo continua sendo lido; a lista volta a se contar. Escrito
+      à mão porque o `display: flex` abaixo também tira a semântica de lista no
+      Safari com VoiceOver, e o atributo é a correção conhecida dos dois casos. */}
+  <ul class="regua reveal" data-regua tabindex="0" role="list" aria-label="Espécies de madeira, da mais clara à mais escura">
     {lista.map((e) => (
       <li class="esp">
         <Image

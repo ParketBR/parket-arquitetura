@@ -286,8 +286,11 @@ const PASSOS = 5;
         <p class="form-ok-tit">Abrimos o WhatsApp com o seu pedido escrito.</p>
         <p class="form-ok-txt">
           Falta só apertar enviar lá dentro — a mensagem já está pronta, com tudo
-          o que você preencheu. Se o WhatsApp não abriu,
-          <a data-zap-link href={`https://wa.me/${WHATSAPP}`} rel="noopener noreferrer" target="_blank">clique aqui</a>,
+          o que você preencheu. Se ele não abriu,
+          {/* O texto era "clique aqui". Link só diz para onde vai quando lido
+              fora da frase — é assim que o leitor de tela lista os links da
+              página, e é o que a auditoria de SEO cobra. */}
+          <a data-zap-link href={`https://wa.me/${WHATSAPP}`} rel="noopener noreferrer" target="_blank">abra a conversa no WhatsApp</a>,
           ou escreva para <a href="mailto:contato@parket.com.br">contato@parket.com.br</a>.
         </p>
       </div>
