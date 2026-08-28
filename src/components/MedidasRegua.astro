@@ -1,0 +1,225 @@
+---
+/**
+ * As larguras de régua da linha nacional — uma por vez, passando sozinhas.
+ *
+ * ─── De onde vêm os números e o desenho ───
+ * Do catálogo Brazil publicado pela própria Parket
+ * (parketbr.github.io/Catalogo_de_pisos_Brasil): 10, 12,5, 15, 19, 30 e 40 cm
+ * de largura, todas com comprimento de 1 a 3 m.
+ *
+ * A geometria é a mesma de lá, medida no original e não recriada de memória:
+ * viewBox de 500×244, peça de x=70 a x=470, topo em y=46 e **3,4 px por
+ * centímetro**. É por isso que a régua de 40 aparece exatamente quatro vezes
+ * mais larga que a de 10 — a escala é real, não é um número escolhido a olho.
+ * Mexer em `src/data/reguas.json` move o desenho junto e a proporção continua
+ * honesta.
+ *
+ * ─── O carrossel ───
+ * No catálogo os seis slides são arrastados à mão, com `scroll-snap`. Aqui
+ * eles também passam sozinhos, porque a seção é de contemplação e ninguém vai
+ * arrastar um diagrama no meio da página.
+ *
+ * Autoplay tem regra na casa, e ela é seguida: o laço **para no ponteiro, no
+ * foco e quando a seção sai da tela**, e não começa se o visitante pediu menos
+ * movimento. Carrossel automático sem pausa é item proibido do design system.
+ * O arrasto manual continua funcionando, e a posição arrastada é reaproveitada
+ * quando o laço volta — ele não salta de volta para o começo.
+ */
+import reguas from '../data/reguas.json';
+
+/* A escala do catálogo, medida no SVG original: 34px de altura para 10 cm. */
+const PX_POR_CM = 3.4;
+
+const VB_L = 500, VB_A = 244;   // viewBox, igual para as seis
+const X_INI = 70, X_FIM = 470;  // extremos da peça
+const Y_TOPO = 46;
+const X_COTA = 44;              // eixo da cota de largura, à esquerda da peça
+
+const slides = reguas.map((r) => {
+  const altura = r.cm * PX_POR_CM;
+  const base = Y_TOPO + altura;
+  return {
+    ...r,
+    altura,
+    base,
+    meio: Y_TOPO + altura / 2,
+    yComp: base + 22,   // a cota de comprimento acompanha a peça
+  };
+});
+
+const SEGUNDOS = 3.2;   // quanto cada régua fica na tela
+---
+
+<div class="med">
+  <div
+    class="med-trilho"
+    data-trilho
+    data-intervalo={SEGUNDOS * 1000}
+    tabindex="0"
+    role="group"
+    aria-label="Larguras de régua da linha nacional, uma por vez"
+  >
+    {slides.map((s) => (
+      <div class="med-slide">
+        <svg
+          class="med-svg"
+          viewBox={`0 0 ${VB_L} ${VB_A}`}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          role="img"
+          aria-label={`Régua de ${s.rotulo} cm de largura por 1 a 3 m de comprimento`}
+        >
+          {/* A peça */}
+          <rect
+            x={X_INI} y={Y_TOPO}
+            width={X_FIM - X_INI} height={s.altura}
+            class="med-peca"
+          />
+
+          {/* Cota de largura: eixo vertical fechado por duas setas, à esquerda
+              da peça — o mesmo desenho de cota do catálogo. */}
+          <line x1={X_COTA} y1={Y_TOPO} x2={X_COTA} y2={s.base} class="med-cota" />
+          <path d={`M${X_COTA} ${Y_TOPO - 5} L${X_COTA - 4} ${Y_TOPO + 5} H${X_COTA + 4} Z`} class="med-ponta" />
+          <path d={`M${X_COTA} ${s.base + 5} L${X_COTA - 4} ${s.base - 5} H${X_COTA + 4} Z`} class="med-ponta" />
+
+          {/* O número deitado, como no catálogo. Gira em torno do próprio meio
+              para acompanhar a altura da peça sem sair do eixo da cota. */}
+          <text
+            x={X_COTA - 22} y={s.meio}
+            class="med-num" text-anchor="middle" dominant-baseline="middle"
+            transform={`rotate(-90 ${X_COTA - 22} ${s.meio})`}
+          >
+            {s.rotulo}<tspan class="med-unidade"> cm</tspan>
+          </text>
+
+          {/* Cota de comprimento — igual nas seis, porque o comprimento não muda. */}
+          <line x1={X_INI + 8} y1={s.yComp} x2={X_FIM - 8} y2={s.yComp} class="med-cota" />
+          <path d={`M${X_INI} ${s.yComp} L${X_INI + 11} ${s.yComp - 4.5} V${s.yComp + 4.5} Z`} class="med-ponta" />
+          <path d={`M${X_FIM} ${s.yComp} L${X_FIM - 11} ${s.yComp - 4.5} V${s.yComp + 4.5} Z`} class="med-ponta" />
+          <text x={(X_INI + X_FIM) / 2} y={s.yComp + 22} class="med-comp" text-anchor="middle">
+            COMP. 1 A 3 M
+          </text>
+        </svg>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .med { width: 100%; max-width: 380px; }
+
+  .med-trilho {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* A barra de rolagem some: quem conduz é o laço, e um filete cinza embaixo
+       do desenho quebraria o silêncio da seção. O arrasto continua valendo. */
+    scrollbar-width: none;
+  }
+  .med-trilho::-webkit-scrollbar { display: none; }
+  .med-trilho:focus-visible { outline: 2px solid var(--wood-quente); outline-offset: 6px; }
+
+  .med-slide { flex: 0 0 100%; scroll-snap-align: start; }
+  .med-svg { width: 100%; height: auto; display: block; }
+
+  /* ─── O dourado da marca ───
+     `--wood-quente` é o tom que passa em WCAG AA sobre o fundo escuro
+     (4,93:1). O `--wood` do tema claro reprovaria aqui. */
+  .med-peca {
+    stroke: var(--wood-quente);
+    stroke-width: 1.5;
+    fill: rgb(164 119 77 / .16);
+  }
+  .med-cota  { stroke: var(--wood-quente); stroke-width: 1; }
+  .med-ponta { fill: var(--wood-quente); }
+
+  .med-num {
+    fill: var(--on-dark);
+    font-family: var(--sans);
+    font-size: 13px; font-weight: 400;
+    letter-spacing: .2em;
+    font-variant-numeric: tabular-nums;
+  }
+  .med-unidade { font-size: 10px; fill: var(--on-dark-muted); letter-spacing: .05em; }
+  .med-comp {
+    fill: var(--on-dark-muted);
+    font-family: var(--sans);
+    font-size: 11px; font-weight: 500;
+    letter-spacing: .34em;
+  }
+
+  /* O componente hoje só vive no escuro. As regras abaixo existem para o dia
+     em que não viver: no claro o dourado dá 3,53:1, que serve para traço e
+     não para texto. */
+  :global(.tom-papel) .med-num,
+  :global(.tom-areia) .med-num { fill: var(--ink); }
+  :global(.tom-papel) .med-unidade, :global(.tom-papel) .med-comp,
+  :global(.tom-areia) .med-unidade, :global(.tom-areia) .med-comp { fill: var(--muted); }
+</style>
+
+<script>
+  const trilho = document.querySelector<HTMLElement>('[data-trilho]');
+
+  if (trilho) {
+    const intervalo = Number(trilho.dataset.intervalo) || 3200;
+    const total = trilho.children.length;
+    const menosMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let relogio: ReturnType<typeof setInterval> | null = null;
+
+    /* Quatro motivos independentes para parar, cada um com a própria variável.
+       Um `toggle` direto faria o seguinte desfazer o anterior: sair do hover
+       não pode religar o laço se a seção já saiu da tela. */
+    let noPonteiro = false;
+    let noFoco = false;
+    let naTela = false;
+    let naAba = !document.hidden;
+
+    /* A posição vem do próprio trilho, e não de um contador à parte.
+       Havia um `atual` guardado em variável, e ele dessincronizava: o
+       `scrollTo` suave demora, o intervalo dispara de novo antes de ele
+       terminar, e o contador seguia adiante enquanto a rolagem ficava para
+       trás — o carrossel travava numa régua com o índice apontando para outra.
+
+       Lendo `scrollLeft` na hora, cada passo parte de onde a peça realmente
+       está. De quebra, some a necessidade de ouvir o evento de rolagem para
+       acompanhar o arrasto do dedo: quem arrastou já mudou o ponto de
+       partida. */
+    const passar = () => {
+      const largura = trilho.clientWidth;
+      if (!largura) return;
+      const agora = Math.round(trilho.scrollLeft / largura);
+      trilho.scrollTo({
+        left: ((agora + 1) % total) * largura,
+        behavior: menosMovimento.matches ? 'auto' : 'smooth',
+      });
+    };
+
+    const decidir = () => {
+      const deveRodar = naTela && naAba && !noPonteiro && !noFoco && !menosMovimento.matches;
+      if (deveRodar && !relogio) relogio = setInterval(passar, intervalo);
+      if (!deveRodar && relogio) { clearInterval(relogio); relogio = null; }
+    };
+
+    trilho.addEventListener('pointerenter', () => { noPonteiro = true;  decidir(); });
+    trilho.addEventListener('pointerleave', () => { noPonteiro = false; decidir(); });
+    trilho.addEventListener('focusin',      () => { noFoco = true;      decidir(); });
+    trilho.addEventListener('focusout',     () => { noFoco = false;     decidir(); });
+
+    document.addEventListener('visibilitychange', () => {
+      naAba = !document.hidden;
+      decidir();
+    });
+
+    // Quem muda a preferência de movimento no meio da visita também é atendido.
+    menosMovimento.addEventListener('change', decidir);
+
+    /* `threshold: 0` e não uma fração: o trilho tem 185px de altura e qualquer
+       limite maior o faz piscar entre ligado e desligado enquanto a seção
+       entra na tela — o laço parava e voltava a cada quadro da rolagem. */
+    new IntersectionObserver(
+      ([e]) => { naTela = e.isIntersecting; decidir(); },
+      { threshold: 0 },
+    ).observe(trilho);
+  }
+</script>

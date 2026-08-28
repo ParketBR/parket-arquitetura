@@ -125,7 +125,12 @@ const total = String(especies.length).padStart(2, '0');
      A regra global `.tom-papel + .section` abre um --section de padding-top
      supondo que o bloco de cima seja visualmente distinto — aqui ele não é, e
      os dois paddings somavam 258px de vão sem nenhuma costura que os
-     justificasse. É o "dobro do vão" que o tokens.css avisa para evitar. */
+     justificasse. É o "dobro do vão" que o tokens.css avisa para evitar.
+
+     Vale enquanto o vizinho de cima for de papel. O componente saiu da home
+     em favor da escala de espécies (EscalaEspecies.astro) e hoje não está em
+     página nenhuma — quem o trouxer de volta precisa conferir o tom do bloco
+     acima antes de confiar neste zero. */
   .tex-sec { padding-top: 0; }
 
   .tex-palco-geral {

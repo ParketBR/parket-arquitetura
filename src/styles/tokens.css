@@ -22,8 +22,15 @@
   --wood:       #9C8B6E;   /* 2,84:1 — filete, ícone e display. NUNCA corpo */
   --wood-text:  #6F6049;   /* 5,5:1 — a versão legível da madeira */
   --ground:     #0D0D0D;
+  /* O segundo degrau do escuro: fundo de peça dentro de uma seção escura
+     (a moldura de uma amostra enquanto a imagem ainda não chegou). Sobre
+     --ground ele aparece sem virar outra cor. */
+  --ground-2:   #171614;
   --on-dark:    #E8E4DF;
   --on-dark-muted: #9A948C;
+  /* A madeira, aquecida, para viver sobre o escuro: 4,93:1 no --ground, onde
+     o --wood daria 3,53:1 e só serviria para traço. Use este no escuro. */
+  --wood-quente: #A4774D;
 
   /* ─── Tipografia ─── */
   --sans: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;

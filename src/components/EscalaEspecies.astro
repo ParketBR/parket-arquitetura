@@ -1,0 +1,164 @@
+---
+/**
+ * A escala de espécies — as 19 madeiras lado a lado, da mais clara à mais
+ * escura, com o diagrama de larguras de régua ao lado do título.
+ *
+ * Veio do site voltado ao cliente final, onde já estava validada, e é a seção
+ * #madeiras da home. Substituiu o visualizador de uma espécie por vez
+ * (Texturas.astro, que continua no repositório): ele mostrava um nome grande
+ * de cada vez e escondia justamente o que a seção precisa provar — que existe
+ * uma faixa de tom contínua, e que dá para escolher dentro dela.
+ *
+ * ─── A ordem é por tom, e isso não é decoração ───
+ * `ORDEM_TOM` vem de L* medido nos arquivos reais de textura (ver
+ * `scripts/tons.mjs`) — não é estimativa. Tom é o único eixo que o olho lê sem
+ * legenda, e é assim que se escolhe madeira: "mais clara", "mais escura". O
+ * maior degrau da série — teca 49,9 para cumaru 29,9 — é real: o portfólio não
+ * tem espécie entre 30 e 42.
+ *
+ * ─── Dois eixos de escolha, lado a lado ───
+ * O tom, na régua abaixo do título; a largura, no diagrama à direita. Quem
+ * especifica decide as duas coisas, e uma não se explica sem a outra: uma peça
+ * de 40 cm em nogueira não é o mesmo ambiente que uma de 10 cm na mesma
+ * espécie.
+ *
+ * A régua rola de lado. Não há setas nem paginação: rolagem horizontal com
+ * scroll-snap é o gesto que o dedo já sabe fazer, e no desktop o trackpad faz
+ * o mesmo.
+ *
+ * ─── As amostras não são links, e isso é decisão ───
+ * Eram, e levavam ao pedido com `?ref=` da espécie. Dezenove links seguidos
+ * transformavam a escala num menu: o olho passa a caçar qual clicar em vez de
+ * ler a passagem de tom, que é a única coisa que esta seção existe para
+ * mostrar. Quem quiser uma espécie específica tem o catálogo, o formulário e
+ * o WhatsApp — nenhum deles a um clique a mais do que estava aqui.
+ */
+import { Image } from 'astro:assets';
+import MedidasRegua from './MedidasRegua.astro';
+import { ORDEM_TOM, texturaDaEspecie } from '../lib/texturas';
+import { especiePor } from '../lib/catalogo';
+
+const lista = ORDEM_TOM.map((id) => {
+  const especie = especiePor(id);
+  const textura = texturaDaEspecie(id);
+  if (!especie || !textura) return null;
+  return { id, nome: especie.nome, textura };
+}).filter((e) => e !== null);
+---
+
+<section id="madeiras" class="escala section tom-escuro">
+  <div class="wrap">
+    <header class="sec-cab esc-cab rev">
+      <div>
+        <span class="badge">Espécies</span>
+        <h2 class="h2 sec-tit">{lista.length} espécies,{' '}<br class="so-desk" />da mais clara à mais escura.</h2>
+        <p class="esc-sub measure">
+          Brasileiras de manejo sustentável, europeias e madeiras de
+          reaproveitamento. Arraste para percorrer a escala.
+        </p>
+      </div>
+
+      <MedidasRegua />
+    </header>
+  </div>
+
+  {/* A régua sangra para fora do .wrap de propósito: uma lista horizontal que
+      termina exatamente na margem parece cortada por engano. Assim ela
+      continua para fora da tela, que é o que convida a arrastar. */}
+  <ul class="regua reveal" tabindex="0" role="group" aria-label="Espécies de madeira, da mais clara à mais escura">
+    {lista.map((e) => (
+      <li class="esp">
+        <Image
+          class="esp-img"
+          src={e.textura}
+          alt={`Textura da madeira ${e.nome}`}
+          widths={[220, 440]}
+          sizes="(max-width: 700px) 118px, 148px"
+          format="avif"
+          quality={70}
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="esp-nome">{e.nome}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  /* #acervo, logo abaixo, também é escuro — o corte de tom que separaria as
+     duas seções não existe, e os dois --section somariam 264px de vão vazio.
+     É o "dobro do vão" que o tokens.css avisa para evitar. Quem dá o respiro
+     entre elas é o padding-top do acervo, sozinho. */
+  .escala { padding-bottom: 0; }
+
+  /* O `.sec-cab` alinha os dois blocos pela base; aqui o diagrama é alto e
+     alinhar pelo topo põe o título e a primeira régua na mesma linha, que é o
+     que faz os dois lados lerem como um par. */
+  .esc-cab { align-items: start; gap: var(--s-8); }
+  .esc-cab > div { flex: 1 1 30ch; }
+  .esc-sub { margin-top: var(--s-3); color: var(--on-dark-muted); }
+
+  .regua {
+    display: flex; gap: var(--s-2);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    /* O recuo inicial acompanha a margem do .wrap para o primeiro item nascer
+       alinhado com o título; o final dá o mesmo respiro do outro lado. */
+    padding-inline: var(--gutter);
+    padding-bottom: var(--s-3);
+    scroll-padding-inline-start: var(--gutter);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--wood) transparent;
+  }
+  .regua:focus-visible { outline: 2px solid var(--wood-quente); outline-offset: -2px; }
+
+  .regua::-webkit-scrollbar { height: 3px; }
+  .regua::-webkit-scrollbar-track { background: rgb(232 228 223 / .1); }
+  .regua::-webkit-scrollbar-thumb { background: var(--wood); }
+
+  /* ─── A escala das amostras ───
+     Amostra pequena, e não cartão. A régua tem 19 peças e o que ela precisa
+     mostrar é a passagem de tom de ponta a ponta — isso se lê melhor com
+     muitas peças à vista do que com poucas grandes, do mesmo jeito que uma
+     cartela de madeira de showroom.
+
+     O parágrafo por espécie não entra: em 148px de largura ele viraria uma
+     coluna de duas palavras por linha, e 19 colunas dessas somariam mais
+     altura que a seção inteira. A descrição de cada espécie continua no
+     catálogo e na página de contato, que é onde alguém a lê inteira.
+
+     O `display: grid` morava no <a> que embrulhava a amostra. Com o link
+     fora, ele desceu para o <li>: é ele que empilha imagem e nome com o
+     respiro de 8px entre os dois. */
+  .esp {
+    flex: none; width: 148px; scroll-snap-align: start;
+    display: grid; gap: 8px; align-content: start;
+  }
+
+  .esp-img {
+    /* `height: auto` é obrigatório, não é enfeite. O <Image> escreve
+       width="300" height="515" na tag, e atributo de medida conta como altura
+       definida: com largura e altura definidas, o navegador ignora
+       `aspect-ratio` inteiro. A amostra vinha com 148px de largura e 515 de
+       altura — uma tira, não um retângulo. */
+    width: 100%; height: auto;
+    aspect-ratio: 3 / 4; object-fit: cover;
+    background: var(--ground-2);
+  }
+
+  .esp-nome {
+    font-size: var(--fs-caption); font-weight: 400;
+    color: var(--on-dark); line-height: 1.35;
+    /* Centralizado sob a amostra: numa fileira de dezenove peças estreitas, o
+       nome alinhado à esquerda cria uma serrilha de inícios de linha que
+       compete com a própria escala de tom. Centrado, cada nome pertence
+       visivelmente à sua peça. */
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    .esp { width: 118px; }
+  }
+</style>

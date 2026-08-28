@@ -19,7 +19,7 @@ import Base from '../layouts/Base.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import HeroVideo from '../components/HeroVideo.astro';
-import Texturas from '../components/Texturas.astro';
+import EscalaEspecies from '../components/EscalaEspecies.astro';
 import Formulario from '../components/Formulario.astro';
 import CartaoPost from '../components/CartaoPost.astro';
 import { getCollection } from 'astro:content';
@@ -335,8 +335,15 @@ const schema = {
     </div>
   </section>
 
-  <!-- ─── Madeiras · id="madeiras" vive no próprio componente ─── -->
-  <Texturas />
+  <!-- ─── Madeiras · id="madeiras" vive no próprio componente ───
+       As dezenove espécies juntas, da mais clara à mais escura, com o
+       diagrama de larguras de régua ao lado. Substituiu o visualizador de uma
+       espécie por vez (Texturas.astro, ainda no repositório): ele mostrava um
+       nome de cada vez e escondia justamente o que a seção precisa provar —
+       que existe uma faixa de tom contínua, e que dá para escolher dentro
+       dela. A descrição de cada espécie continua no catálogo e na página de
+       contato, que é onde alguém a lê inteira. -->
+  <EscalaEspecies />
 
   <!-- ─── Acervo · o que remove atrito de quem especifica ───
        Vinha depois do formulário e disputava com ele: quem tinha acabado de
