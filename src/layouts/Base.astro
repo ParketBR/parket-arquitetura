@@ -35,6 +35,10 @@ const {
 } = Astro.props;
 
 import { getImage } from 'astro:assets';
+/* O Vite devolve a URL final do arquivo, já com hash e já com o `base` do
+   GitHub Pages aplicado — escrever "/fonts/…" à mão quebraria lá, que serve
+   o site em /parket-arquitetura/. */
+import fonteLatina from '../assets/fonts/dm-sans-latin.woff2';
 import { caminho } from '../lib/url';
 import { assetLocal, ehRemota } from '../lib/imagens';
 import { showroomsEmSchema } from '../lib/showrooms';
@@ -175,11 +179,21 @@ const grafo = [organizacao, breadcrumb, ...extras].filter(Boolean);
     <link rel="apple-touch-icon" sizes="180x180" href={caminho("/apple-touch-icon.png")} />
     <meta name="theme-color" content="#F5F2EC" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* A DM Sans é servida por este site — os @font-face estão no tokens.css,
+        com a nota do porquê. Aqui vai só o pedido antecipado do arquivo do
+        alfabeto latino: sem ele o navegador só descobre que precisa da fonte
+        depois de baixar e ler o CSS, e a corrente volta a ter dois degraus.
+        O `crossorigin` não é enfeite nem sobra do endereço antigo — fonte é
+        buscada em modo anônimo mesmo na própria origem, e sem o atributo o
+        preload guarda uma resposta que o @font-face não aproveita: o arquivo
+        desceria duas vezes.
+
+        O latin-ext não entra: ele só é baixado se a página tiver um caractere
+        fora do latin, o que em português quase nunca acontece — pedir os dois
+        seria adiantar 31 KB que ninguém usa. */}
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&display=swap"
+      rel="preload" as="font" type="font/woff2" crossorigin
+      href={fonteLatina}
     />
 
     <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': grafo })} />

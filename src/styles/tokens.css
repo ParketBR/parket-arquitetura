@@ -4,6 +4,48 @@
    de arquitetura em docs/redesign-parket.html
    ═══════════════════════════════════════════════════════════════ */
 
+/* ─── A DM Sans mora aqui dentro ───
+   Ela vinha do fonts.googleapis.com, e a folha de 907 bytes de lá custava
+   839ms ao celular: o navegador não pinta nada enquanto uma folha do <head>
+   não chega, e essa vinha por uma corrente de dois domínios novos — primeiro
+   o googleapis para saber o endereço do arquivo, depois o gstatic para
+   buscá-lo. Cada domínio cobra DNS, TCP e TLS antes do primeiro byte, e é
+   isso, e não o tamanho, que se pagava. O LCP da home é a palavra PARKET do
+   cabeçalho — texto, que não baixa nada e só espera o CSS liberar a pintura.
+
+   Servida daqui, ela desce pela conexão que já está aberta, e o <link
+   rel="preload"> do Base.astro a pede junto com o HTML.
+
+   ─── Um arquivo por alfabeto, e não um por peso ───
+   É uma fonte variável (eixos opsz e wght), então o mesmo arquivo desenha os
+   quatro pesos que o site usa — 200, 300, 400 e 500. O `font-weight: 200 500`
+   declara a faixa; escrever quatro @font-face para o mesmo arquivo, como faz
+   a folha do Google, só repetiria o download na cabeça de quem lê.
+
+   O `unicode-range` é o do Google, copiado: o latin-ext só é baixado se
+   aparecer na página um caractere que o latin não tem. Em português isso
+   quase nunca acontece — ã, ç, é e õ estão todos no latin —, então o segundo
+   arquivo é peso que ninguém paga.
+
+   DM Sans, de Colophon Foundry, sob a SIL Open Font License 1.1. Os arquivos
+   são os que o Google serve, sem alteração. */
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 200 500;
+  font-display: swap;
+  src: url('../assets/fonts/dm-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 200 500;
+  font-display: swap;
+  src: url('../assets/fonts/dm-sans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   /* ─── Cor ─── */
   /* O papel. Não é branco: L* 95,6 e b* 3,2 — afastado 4,4% do branco puro.
