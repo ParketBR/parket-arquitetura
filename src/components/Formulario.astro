@@ -136,7 +136,7 @@ const PASSOS = 5;
             de alinhá-lo — e como o controle nativo fica no lugar por baixo,
             nada se perde se o JS não rodar. */}
         <div class="campo campo--largo">
-          <label for="f-cidade" data-sel-rot>Cidade de execução <span class="obg">obrigatório</span></label>
+          <label id="f-cidade-rot" for="f-cidade" data-sel-rot>Cidade de execução <span class="obg">obrigatório</span></label>
           <div class="campo-select" data-sel>
             <select id="f-cidade" name="cidade" required>
               <option value="">Selecione a região</option>
@@ -715,7 +715,18 @@ const PASSOS = 5;
       selNat.setAttribute('aria-hidden', 'true');
       selBotao.hidden = false;
       selValor.setAttribute('data-vazio', '');
-      form.querySelector('[data-sel-rot]')?.setAttribute('for', selBotao.id);
+      /* O `for` acompanha a troca, para o clique no rótulo abrir a lista.
+         Só que `for` não nomeia um <button>: pela especificação, o nome
+         acessível de um botão sai do próprio conteúdo dele. O leitor de tela
+         anunciava "Selecione a região, botão" — sem nunca dizer que aquilo é
+         a cidade.
+
+         O `aria-labelledby` com os dois ids resolve: rótulo primeiro, valor
+         depois, e sai "Cidade de execução, Selecione a região". É o mesmo
+         par que um <select> nativo entrega. */
+      const rotulo = form.querySelector<HTMLLabelElement>('[data-sel-rot]');
+      rotulo?.setAttribute('for', selBotao.id);
+      if (rotulo?.id) selBotao.setAttribute('aria-labelledby', `${rotulo.id} ${selBotao.id}`);
 
       const aberto = () => selBotao.getAttribute('aria-expanded') === 'true';
 

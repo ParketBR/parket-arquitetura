@@ -28,7 +28,20 @@ import { caminho } from '../lib/url';
 import { assetLocal, ehRemota } from '../lib/imagens';
 
 const site = Astro.site ?? new URL('https://parket.com.br');
-const canonica = new URL(Astro.url.pathname, site).href;
+
+/* ─── A canônica precisa ser o endereço que o site divulga ───
+   `build.format: 'file'` grava contato.html, e no build o `Astro.url.pathname`
+   vem com essa extensão. A canônica saía "/contato.html" enquanto o sitemap
+   publicava "/contato" e todo link interno apontava para "/contato" — três
+   endereços para a mesma página, com a canônica votando na única forma que
+   ninguém usa. É ela que decide qual URL o buscador indexa, então era a versão
+   com extensão que ganhava.
+
+   Aqui o sufixo cai, e a home volta a ser "/" em vez de "/index". */
+const semExtensao = Astro.url.pathname
+  .replace(/index\.html$/, '')
+  .replace(/\.html$/, '');
+const canonica = new URL(semExtensao, site).href;
 
 /* ─── Imagem da prévia do link ───
    1200×630 é a proporção 1,91:1 que Facebook, WhatsApp, LinkedIn e Telegram

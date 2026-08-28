@@ -42,7 +42,7 @@ const sociais = [
 const ano = new Date().getFullYear();
 ---
 
-<footer class="rod">
+<footer class="rod tom-escuro">
   <div class="wrap">
     {/* Uma faixa só. Eram duas — marca+navegação em cima, endereços embaixo —
         e cada uma trazia o próprio padding de --s-8: o rodapé passava de 900px
@@ -133,8 +133,16 @@ const ano = new Date().getFullYear();
 <style>
   /* O bloco de pedido que vem antes também é --ground: sem o filete os dois
      viram uma mancha escura só e o rodapé perde o começo. */
+  /* Fundo e cor de texto vêm do `.tom-escuro` na tag, e não daqui.
+     Repetidos neste bloco, o rodapé ficava escuro sem se declarar escuro — e
+     as correções que o tokens.css aplica em `.tom-escuro` (caption, label,
+     badge, títulos) passavam longe. O copyright herdava o `--muted`, que é
+     calibrado para papel: 3,53:1 sobre o preto do rodapé, abaixo do mínimo de
+     4,5:1 para texto. Com a classe, ele passa a usar `--on-dark-muted`.
+
+     `.tom-escuro .btn` e `.btn-on-dark` declaram exatamente as mesmas cores,
+     então o botão do rodapé não muda. */
   .rod {
-    background: var(--ground); color: var(--on-dark);
     padding-block: var(--s-8) var(--s-4);
     border-top: 1px solid rgb(232 228 223 / .14);
   }
