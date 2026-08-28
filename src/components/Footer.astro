@@ -95,23 +95,37 @@ const ano = new Date().getFullYear();
           landmarks, e o `display: contents` que seria preciso para achatar um
           <nav> pai em colunas do grid não é confiável na árvore de
           acessibilidade. */}
+      {/* ─── As listas nascem abertas ───
+          <details open> no HTML, e é o script que as fecha no celular. Sem
+          JS o rodapé continua sendo a lista inteira — que é o que o buscador
+          lê e a versão honesta da página. É a mesma divisão de trabalho dos
+          depoimentos, lá em cima: o conteúdo todo no HTML, a dobra no script.
+
+          No desktop nada disso acontece: o script não fecha nada acima de
+          640px, e o <summary> volta a ser o rótulo que sempre foi. */}
       <nav class="rod-bloco" aria-label="Na página">
-        <p class="label">Na página</p>
-        <ul>{naPagina.map((l) => <li><a href={l.href}>{l.nome}</a></li>)}</ul>
+        <details class="rod-dobra" data-rod-dobra open>
+          <summary class="label">Na página</summary>
+          <ul>{naPagina.map((l) => <li><a href={l.href}>{l.nome}</a></li>)}</ul>
+        </details>
       </nav>
 
       <nav class="rod-bloco" aria-label="Catálogos">
-        <p class="label">Catálogos</p>
-        <ul>{catalogos.map((c) => (
-          <li><a href={c.href} rel="noopener noreferrer" target="_blank">{c.nome}</a></li>
-        ))}</ul>
+        <details class="rod-dobra" data-rod-dobra open>
+          <summary class="label">Catálogos</summary>
+          <ul>{catalogos.map((c) => (
+            <li><a href={c.href} rel="noopener noreferrer" target="_blank">{c.nome}</a></li>
+          ))}</ul>
+        </details>
       </nav>
 
       <div class="rod-bloco rod-shows">
         {showrooms.map((s) => (
           <div class="rod-show">
-            <p class="label">Showroom {s.cidade}</p>
-            <address>{s.linhas.map((l) => <span>{l}</span>)}</address>
+            <details class="rod-dobra" data-rod-dobra open>
+              <summary class="label">Showroom {s.cidade}</summary>
+              <address>{s.linhas.map((l) => <span>{l}</span>)}</address>
+            </details>
           </div>
         ))}
       </div>
@@ -270,7 +284,48 @@ const ano = new Date().getFullYear();
      difícil de acertar e fácil de errar para o vizinho. Vira bloco com
      padding, e a margem some para a coluna não crescer o dobro: cada item
      passa de 26px para 34px, +8px, e não +14px. */
+  /* ─── A dobra ───
+     O <summary> é o mesmo rótulo de antes; o que muda no celular é que ele
+     ganha um alvo de 44px, uma seta e a companhia da lista que ele abre.
+     `list-style: none` para o Firefox e o ::-webkit-details-marker para o
+     Safari: cada um desenha o triângulo padrão do seu jeito. */
+  .rod-dobra > summary { list-style: none; }
+  .rod-dobra > summary::-webkit-details-marker { display: none; }
+
+  @media (min-width: 641px) {
+    /* Acima de 640 o script não fecha nada, e sem isto uma pessoa no mouse
+       poderia dobrar uma coluna que nunca foi feita para dobrar. */
+    .rod-dobra > summary { pointer-events: none; }
+  }
+
   @media (max-width: 640px) {
+    /* ─── Por que dobrar ───
+       Empilhado, o rodapé media 1383px num iPhone: 1,7 tela para dizer o que
+       o topo diz em cinco colunas. Quem chegou ao fim da página não está
+       lendo os sete catálogos — está procurando um telefone, um endereço ou
+       o caminho de volta. Esses três continuam à vista; o resto passou a
+       caber numa linha cada, a um toque de distância. */
+    /* `.rod` na frente por especificidade, e não por hábito: escopadas, as
+       regras ganham o atributo do Astro, e `.rod .label` vira três classes
+       contra as duas de `.rod-dobra > summary`. Sem o prefixo era o
+       `display: block` do rótulo que valia, e a seta colava no texto em vez
+       de ir para a borda. Mesmo tropeço anotado lá em cima, no endereço. */
+    .rod .rod-dobra > summary {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: var(--s-2); margin-bottom: 0; padding-block: 13px;
+      cursor: pointer;
+    }
+    /* Meia moldura girada 45°: a mesma seta em traço fino das outras do site,
+       sem precisar de um segundo SVG só para o rodapé. */
+    .rod .rod-dobra > summary::after {
+      content: ''; flex: none; width: 8px; height: 8px;
+      border-right: 1px solid currentColor; border-bottom: 1px solid currentColor;
+      transform: translateY(-2px) rotate(45deg);
+      transition: transform var(--d-base) var(--ease);
+    }
+    .rod .rod-dobra[open] > summary::after { transform: translateY(2px) rotate(225deg); }
+    .rod-dobra[open] > ul, .rod-dobra[open] > address { padding-bottom: var(--s-3); }
+
     .rod-bloco li { margin-bottom: 0; }
     .rod-bloco li a { display: block; padding-block: 9px; }
     /* O padding vai no <a>, não no <span> que embrulha glifo e link: quem
@@ -293,13 +348,18 @@ const ano = new Date().getFullYear();
   @media (max-width: 860px) {
     .rod-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-4) var(--s-6); }
   }
-  /* No celular tudo empilhado dava um rodapé de quase mil e quinhentos
-     pixels. As duas listas de link continuam lado a lado — são palavras
-     curtas e cabem em meia largura; quem precisa da largura inteira é o
-     endereço, a frase da marca e o campo de e-mail. */
-  @media (max-width: 480px) {
-    .rod-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .rod-marca, .rod-shows { grid-column: 1 / -1; }
+  /* Uma coluna só, e depois do bloco de 860: as duas regras têm a mesma
+     especificidade, então quem vem por último é quem manda. Foi por isso que
+     a de 480px, que morava aqui, existia.
+
+     Dobradas, as listas são linhas de 44px — e duas linhas dessas lado a lado
+     só apertariam o rótulo sem economizar altura nenhuma. */
+  @media (max-width: 640px) {
+    .rod-grade { grid-template-columns: 1fr; gap: 0; padding-bottom: var(--s-4); }
+    .rod-marca { padding-bottom: var(--s-4); }
+    .rod-bloco { border-top: 1px solid rgb(232 228 223 / .14); }
+    .rod-shows { gap: 0; }
+    .rod-show + .rod-show { border-top: 1px solid rgb(232 228 223 / .14); }
   }
 </style>
 
@@ -314,6 +374,24 @@ const ano = new Date().getFullYear();
      nunca existe —, e era isso que tirava o visitante da página. É o mesmo
      defeito que o formulário de orçamento já tinha abandonado; ver o
      comentário no topo do Formulario.astro. */
+  /* ─── As dobras do rodapé ───
+     Nascem abertas no HTML e é aqui que elas fecham, e só no celular. A
+     ordem importa: quem chega sem JS — ou antes de ele rodar — recebe o
+     rodapé inteiro, com os doze links e os dois endereços no HTML. Fechar é
+     enfeite; abrir seria o conteúdo.
+
+     O `change` do matchMedia cuida do giro do aparelho. Ele reabre o que a
+     pessoa tinha aberto, o que é aceitável: girar o telefone é um gesto que
+     redesenha a página toda, e não um que precise preservar estado de um
+     rodapé. */
+  const CELULAR = window.matchMedia('(max-width: 640px)');
+  const dobras = document.querySelectorAll<HTMLDetailsElement>('[data-rod-dobra]');
+  if (dobras.length) {
+    const ajustar = () => dobras.forEach((d) => { d.open = !CELULAR.matches; });
+    ajustar();
+    CELULAR.addEventListener('change', ajustar);
+  }
+
   const ENDPOINT = '';
 
   const form = document.querySelector<HTMLFormElement>('[data-news]');
