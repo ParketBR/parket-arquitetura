@@ -576,6 +576,52 @@ const schema = {
       });
     });
 
+    /* ─── Arrastar para o lado, no dedo ───
+       No estreito aparece um depoimento por vez e a única forma de passar
+       para o próximo era a seta. Arrastar é o gesto que a pessoa tenta
+       primeiro, e ele não fazia nada.
+
+       Só para ponteiro de toque: no mouse existem as setas, e no trackpad um
+       gesto horizontal já significa outra coisa no navegador.
+
+       Nada de `preventDefault` e nada de capturar o ponteiro. A lista ocupa a
+       largura toda da tela no estreito, e sequestrar o ponteiro ali tomaria
+       da pessoa a rolagem vertical da página — que é o gesto muito mais
+       usado. O navegador decide primeiro: se ele entender que o movimento é
+       de rolar, dispara `pointercancel` e a intenção de arrastar morre
+       sozinha, sem disputa.
+
+       Por isso a leitura acontece só no fim do gesto, e com duas condições: a
+       distância precisa passar de 44px — abaixo disso é tremor de dedo, não
+       intenção — e o movimento horizontal precisa ser maior que o vertical,
+       senão uma rolagem meio torta viraria troca de depoimento. */
+    const LIMIAR = 44;
+    let xToque = 0;
+    let yToque = 0;
+    let arrastando = false;
+
+    listaDepos.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch' || paginas() < 2) return;
+      xToque = e.clientX;
+      yToque = e.clientY;
+      arrastando = true;
+    });
+
+    listaDepos.addEventListener('pointercancel', () => { arrastando = false; });
+
+    listaDepos.addEventListener('pointerup', (e) => {
+      if (!arrastando) return;
+      arrastando = false;
+
+      const dx = e.clientX - xToque;
+      const dy = e.clientY - yToque;
+      if (Math.abs(dx) < LIMIAR || Math.abs(dx) <= Math.abs(dy)) return;
+
+      /* Puxar para a esquerda traz o próximo, como numa pilha de cartas. */
+      irPara(pagina + (dx < 0 ? 1 : -1));
+      andar();
+    });
+
     /* Ler um depoimento leva mais de 7s. Enquanto o ponteiro ou o teclado
        estiverem dentro da lista, nada se move. */
     listaDepos.addEventListener('pointerenter', parar);
@@ -856,7 +902,13 @@ const schema = {
      ficava sobrando em cima de três falas soltas. Aqui ele é a metade — o
      bastante para não colar no painel de contato, sem o buraco. */
   .depos-sec { padding-top: clamp(32px, 4vw, 64px); }
-  .depos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6); }
+  .depos {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-6);
+    /* O arrasto lê o gesto no fim, sem capturar o ponteiro — mas o navegador
+       pode transformar um movimento horizontal em "voltar página" antes
+       disso. `pan-y` devolve a rolagem vertical e cala o resto. */
+    touch-action: pan-y;
+  }
   /* As três avaliações têm comprimentos bem diferentes e o texto é literal —
      não dá para apará-lo até emparelhar. Então a assinatura desce para a base
      da coluna: os nomes alinham entre si, e a diferença sobra no meio, onde
