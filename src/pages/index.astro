@@ -437,7 +437,21 @@ const schema = {
               uma linha e não recria o título que saiu. */}
           <p class="depos-nota">
             <span class="depos-nota-num num">4,9</span>
-            <span class="depos-nota-estrela" aria-hidden="true">★</span>
+            {/* A estrela era o caractere ★. A DM Sans não tem esse glifo, então
+                quem desenhava era a fonte de reserva do sistema — uma estrela
+                gorda e baixa no Mac, outra no Windows, e nenhuma parecida com o
+                resto do site. Desenhada aqui, ela nasce na mesma malha de 24 dos
+                outros ícones e é igual em toda máquina.
+
+                Cheia, e não de traço como as setas: estrela vazada é a que
+                marca nota que ninguém deu. O contorno em `stroke-linejoin:
+                round`, da mesma cor do preenchimento, só tira o fio da ponta —
+                a 13px a ponta viva vira serrilha. */}
+            <span class="depos-nota-estrela" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M12 2.96 14.64 9.32 21.5 9.87 16.27 14.34 17.87 21.04 12 17.45 6.13 21.04 7.73 14.34 2.5 9.87 9.36 9.32Z" />
+              </svg>
+            </span>
             em 125 avaliações no Google
           </p>
           <p class="caption num depos-conta" aria-live="polite">
@@ -968,7 +982,16 @@ const schema = {
     font-size: var(--fs-caption); color: var(--muted);
   }
   .depos-nota-num { font-size: 1.0625rem; font-weight: 300; color: var(--ink); letter-spacing: -.01em; }
+  /* O tamanho acompanha o número ao lado, não o texto miúdo do fim da linha:
+     0,8125rem é a altura de caixa alta do "4,9". E como o <svg> é bloco, a
+     borda de baixo dele é o que o `align-items: baseline` do pai alinha — a
+     estrela pousa na linha do número, como faria um glifo. */
   .depos-nota-estrela { color: var(--wood); }
+  .depos-nota-estrela svg {
+    display: block; width: .8125rem; height: .8125rem;
+    fill: currentColor; stroke: currentColor;
+    stroke-width: .9; stroke-linejoin: round;
+  }
   .depos-conta { color: var(--muted); letter-spacing: .04em; }
   .depos-conta [data-depos-atual] { color: var(--ink); }
   .depos-sep { margin: 0 6px; color: var(--line); }
