@@ -11,6 +11,11 @@
  */
 const BASE = 'https://parket.com.br/catalogo';
 
+/* O hub, com os catálogos todos numa página só. É para onde vai quem ainda
+   não escolheu categoria — os links por categoria, abaixo, atendem quem já
+   escolheu. */
+export const HUB_CATALOGOS = `${BASE}/`;
+
 const POR_CATEGORIA: Record<string, string> = {
   pisos:   `${BASE}/pisos/`,
   decks:   `${BASE}/decks/`,

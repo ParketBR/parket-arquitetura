@@ -24,7 +24,8 @@
  *
  * A régua rola de lado. Não há setas nem paginação: rolagem horizontal com
  * scroll-snap é o gesto que o dedo já sabe fazer, e no desktop o trackpad faz
- * o mesmo.
+ * o mesmo. Quem está no mouse arrasta a própria régua, sem descer até a barra
+ * de rolagem — ver o <script> no fim do arquivo.
  *
  * ─── As amostras não são links, e isso é decisão ───
  * Eram, e levavam ao pedido com `?ref=` da espécie. Dezenove links seguidos
@@ -65,7 +66,7 @@ const lista = ORDEM_TOM.map((id) => {
   {/* A régua sangra para fora do .wrap de propósito: uma lista horizontal que
       termina exatamente na margem parece cortada por engano. Assim ela
       continua para fora da tela, que é o que convida a arrastar. */}
-  <ul class="regua reveal" tabindex="0" role="group" aria-label="Espécies de madeira, da mais clara à mais escura">
+  <ul class="regua reveal" data-regua tabindex="0" role="group" aria-label="Espécies de madeira, da mais clara à mais escura">
     {lista.map((e) => (
       <li class="esp">
         <Image
@@ -114,6 +115,18 @@ const lista = ORDEM_TOM.map((id) => {
   }
   .regua:focus-visible { outline: 2px solid var(--wood-quente); outline-offset: -2px; }
 
+  /* A mão só aparece quando o script está de pé: sem ele o cursor prometeria
+     um arrasto que não acontece. Quem chega pelo dedo ou pelo trackpad nunca
+     vê nenhum dos dois. */
+  .regua.pode-arrastar { cursor: grab; }
+  .regua.arrastando {
+    cursor: grabbing;
+    /* Durante o arrasto o snap sai do caminho: com ele ligado, o navegador
+       puxa a régua de volta para a peça mais próxima a cada quadro e o
+       movimento fica emborrachado. Volta ao soltar. */
+    scroll-snap-type: none;
+    user-select: none;
+  }
   .regua::-webkit-scrollbar { height: 3px; }
   .regua::-webkit-scrollbar-track { background: rgb(232 228 223 / .1); }
   .regua::-webkit-scrollbar-thumb { background: var(--wood); }
@@ -146,6 +159,9 @@ const lista = ORDEM_TOM.map((id) => {
     width: 100%; height: auto;
     aspect-ratio: 3 / 4; object-fit: cover;
     background: var(--ground-2);
+    /* Sem isto o navegador inicia o arrasto nativo de imagem: o fantasma da
+       textura gruda no cursor e o movimento da régua morre no primeiro pixel. */
+    -webkit-user-drag: none; user-select: none;
   }
 
   .esp-nome {
@@ -162,3 +178,64 @@ const lista = ORDEM_TOM.map((id) => {
     .esp { width: 118px; }
   }
 </style>
+
+<script>
+  /**
+   * Arrastar a régua com o mouse, sem descer até a barra de rolagem.
+   *
+   * O dedo e o trackpad já rolavam sozinhos — quem não tinha gesto nenhum era
+   * o mouse, que só podia empurrar o filete de 3px lá embaixo. Daí o arrasto.
+   *
+   * Só entra para ponteiro de mouse. No toque, `overflow-x` já resolve, e
+   * capturar o ponteiro ali quebraria a inércia nativa da rolagem, que é
+   * melhor do que qualquer coisa reescrita à mão.
+   *
+   * A classe `pode-arrastar` é posta pelo script, e não escrita no HTML: se o
+   * JS não rodar, o cursor não vira mãozinha prometendo um gesto que não
+   * existe. A régua continua rolável pela barra e pelo teclado.
+   *
+   * O `setPointerCapture` é o que faz o arrasto sobreviver a sair da lista no
+   * meio do movimento — sem ele, puxar rápido para fora da seção larga a
+   * régua no meio do caminho. Era seguro aqui porque não há link nenhum
+   * dentro da régua: foi exatamente esse `setPointerCapture` que, no
+   * visualizador antigo, engolia o clique dos cartões-link.
+   */
+  const regua = document.querySelector<HTMLElement>('[data-regua]');
+
+  if (regua) {
+    regua.classList.add('pode-arrastar');
+
+    let xInicial = 0;
+    let rolagemInicial = 0;
+
+    regua.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+
+      xInicial = e.clientX;
+      rolagemInicial = regua.scrollLeft;
+      regua.setPointerCapture(e.pointerId);
+      regua.classList.add('arrastando');
+
+      /* Segura a seleção de texto: sem isto, puxar por cima dos nomes pinta
+         dezenove legendas de azul enquanto a régua anda. */
+      e.preventDefault();
+    });
+
+    regua.addEventListener('pointermove', (e) => {
+      if (!regua.classList.contains('arrastando')) return;
+      regua.scrollLeft = rolagemInicial - (e.clientX - xInicial);
+    });
+
+    /* `scroll-snap-type` volta junto com a classe. O navegador reassenta a
+       régua na peça mais próxima assim que ela reaparece — é o encaixe de
+       sempre, só que depois do gesto e não durante. */
+    const soltar = (e: PointerEvent) => {
+      if (!regua.classList.contains('arrastando')) return;
+      regua.classList.remove('arrastando');
+      if (regua.hasPointerCapture(e.pointerId)) regua.releasePointerCapture(e.pointerId);
+    };
+
+    regua.addEventListener('pointerup', soltar);
+    regua.addEventListener('pointercancel', soltar);
+  }
+</script>

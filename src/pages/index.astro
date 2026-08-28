@@ -27,7 +27,7 @@ import {
   categoriasOrdenadas, especiesPublicadas, referenciasDaCategoria,
   capaCategoria, referencias,
 } from '../lib/catalogo';
-import { catalogoDaCategoria, totalDeCatalogos } from '../lib/catalogos';
+import { catalogoDaCategoria, totalDeCatalogos, HUB_CATALOGOS } from '../lib/catalogos';
 import { caminho } from '../lib/url';
 
 /* Composição editorial: par largo, trio em pé, faixa. Cada fileira tem vãos
@@ -271,7 +271,11 @@ const schema = {
           <h2 class="h2 sec-tit">Cada superfície{' '}<br class="so-desk" />conta uma história.</h2>
         </div>
         <div class="sec-acoes">
-          <a class="link-action" href="#acervo">Abrir os catálogos</a>
+          {/* Vai direto ao hub de catálogos, e não à âncora #acervo: quem
+              clica aqui quer o catálogo, não a seção que fala dele. Externo
+              porque os catálogos ainda vivem fora deste site — ver o
+              cabeçalho de `src/lib/catalogos.ts`. */}
+          <a class="link-action" href={HUB_CATALOGOS} rel="noopener noreferrer" target="_blank">Abrir os catálogos</a>
           <a class="link-action" href={caminho("/contato")}>Falar com um especialista</a>
         </div>
       </header>
