@@ -24,6 +24,12 @@ const itens = [
 /* Com base (GitHub Pages) o pathname vem prefixado, então a comparação
    também precisa passar pelo helper. */
 const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
+
+/* Blog é o único item do menu que é página, e não âncora — o observador de
+   seções lá embaixo não tem o que observar fora da home, e o link ficava
+   apagado justamente em cima do blog. Quem marca é o endereço. O startsWith
+   cobre os posts: dentro de /blog/um-post o item continua aceso. */
+const naBlog = Astro.url.pathname.startsWith(caminho('/blog'));
 ---
 
 <header class:list={['cab', { 'cab--transp': transparente }]} data-cab>
@@ -32,7 +38,7 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
 
     <nav class="nav" aria-label="Principal">
       {itens.map((i) => (
-        <a class="nav-l" href={i.href} data-secao={i.id}>{i.nome}</a>
+        <a class:list={['nav-l', { 'is-ativo': naBlog && i.id === 'blog' }]} href={i.href} data-secao={i.id}>{i.nome}</a>
       ))}
     </nav>
 
@@ -361,9 +367,13 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
   /* Seção corrente. A faixa de leitura é o terço superior da tela: medir pelo
      meio acende a próxima seção antes de o visitante chegar nela. */
   const elos = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-secao]'));
+  /* Ordenado pela posição na página, e não pela ordem do menu. As duas
+     coincidem hoje; se um dia deixarem de coincidir, o desempate abaixo
+     precisa continuar significando "mais abaixo na página". */
   const secoes = elos
     .map((a) => document.getElementById(a.dataset.secao!))
-    .filter((s): s is HTMLElement => Boolean(s));
+    .filter((s): s is HTMLElement => Boolean(s))
+    .sort((a, b) => a.offsetTop - b.offsetTop);
 
   if (secoes.length) {
     const visiveis = new Set<string>();
@@ -373,7 +383,19 @@ const naContato = Astro.url.pathname.startsWith(caminho('/contato'));
           if (e.isIntersecting) visiveis.add(e.target.id);
           else visiveis.delete(e.target.id);
         }
-        const corrente = secoes.find((s) => visiveis.has(s.id))?.id ?? null;
+
+        /* ─── Empate na faixa: ganha a de baixo ───
+           Duas seções vizinhas aparecem juntas na faixa toda vez que a
+           emenda entre elas passa por ali — e sempre na chegada de uma
+           âncora clicada: `scroll-padding-top: 92px` põe o topo do destino a
+           92px, a faixa começa em 76px, e sobram 16px da seção anterior
+           dentro dela. Escolhendo a primeira, o menu acendia a seção que
+           acabou de sair: clicar em Madeiras deixava Superfícies aceso.
+
+           A de baixo é a certa em qualquer dos dois casos. Ela só entra na
+           faixa quando seu topo cruza o terço da tela — dali para baixo, dois
+           terços do que se vê já são dela. */
+        const corrente = secoes.filter((s) => visiveis.has(s.id)).at(-1)?.id ?? null;
         for (const a of elos) a.classList.toggle('is-ativo', a.dataset.secao === corrente);
       },
       { rootMargin: '-76px 0px -67% 0px', threshold: 0 },
