@@ -15,17 +15,29 @@ interface Props {
   schema?: Record<string, unknown> | Record<string, unknown>[];
   /** Trilha de navegação: [{ nome, url }] — vira BreadcrumbList. */
   trilha?: { nome: string; url: string }[];
+  /**
+   * `og:type`. Página comum é 'website'; texto assinado e datado é 'article'.
+   * A diferença não é cosmética: no 'article' o Facebook, o LinkedIn e o
+   * Google Discover passam a ler `article:published_time` e a tratar a página
+   * como conteúdo editorial, com data, em vez de página institucional.
+   */
+  tipo?: 'website' | 'article';
+  /** Só para tipo 'article', em ISO. A de modificação cai na de publicação. */
+  publicadoEm?: string;
+  modificadoEm?: string;
   headerTransparente?: boolean;
 }
 
 const {
   titulo, descricao, imagem, imagemAlt,
   schema, trilha = [], headerTransparente = false,
+  tipo = 'website', publicadoEm, modificadoEm,
 } = Astro.props;
 
 import { getImage } from 'astro:assets';
 import { caminho } from '../lib/url';
 import { assetLocal, ehRemota } from '../lib/imagens';
+import { showroomsEmSchema } from '../lib/showrooms';
 
 const site = Astro.site ?? new URL('https://parket.com.br');
 
@@ -86,6 +98,9 @@ const organizacao = {
     'https://www.youtube.com/@Parketoficial',
     'https://br.pinterest.com/parketpisosrevestimentos/',
   ],
+  /* Os dois showrooms. Estavam escritos no rodapé e em lugar nenhum que uma
+     máquina lesse — para o buscador, a Parket não tinha endereço. */
+  location: showroomsEmSchema,
 };
 
 const breadcrumb = trilha.length
@@ -100,11 +115,21 @@ const breadcrumb = trilha.length
     }
   : null;
 
-const grafo = [
-  organizacao,
-  breadcrumb,
-  ...(Array.isArray(schema) ? schema : schema ? [schema] : []),
-].filter(Boolean);
+/* ─── A imagem do artigo é a mesma da prévia do link ───
+   O Google pede uma imagem no Article/BlogPosting e a quer com pelo menos
+   1200px de largura — exatamente o que o `ogImagem` acima já produziu, com
+   URL absoluta. Preencher aqui, e não em cada página, evita o caso clássico
+   de a prévia do link e o dado estruturado apontarem para fotos diferentes
+   depois que alguém troca a capa de um post.
+
+   Só entra quem não trouxe `image` próprio: a página continua podendo mandar
+   na sua, e este bloco nunca sobrescreve o que foi declarado. */
+const ARTIGOS = ['Article', 'BlogPosting', 'NewsArticle'];
+const extras = (Array.isArray(schema) ? schema : schema ? [schema] : []).map((no) =>
+  ARTIGOS.includes(String(no['@type'])) && !no.image ? { ...no, image: ogImagem } : no,
+);
+
+const grafo = [organizacao, breadcrumb, ...extras].filter(Boolean);
 ---
 
 <!doctype html>
@@ -117,7 +142,13 @@ const grafo = [
     <meta name="description" content={descricao} />
     <link rel="canonical" href={canonica} />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={tipo} />
+    {tipo === 'article' && publicadoEm && (
+      <meta property="article:published_time" content={publicadoEm} />
+    )}
+    {tipo === 'article' && (
+      <meta property="article:modified_time" content={modificadoEm ?? publicadoEm} />
+    )}
     <meta property="og:site_name" content="Parket" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:title" content={titulo} />

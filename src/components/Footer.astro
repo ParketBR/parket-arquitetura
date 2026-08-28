@@ -11,11 +11,10 @@ import Icone from './Icone.astro';
 import { categoriasOrdenadas } from '../lib/catalogo';
 import { catalogoDaCategoria, CATALOGOS_AVULSOS } from '../lib/catalogos';
 import { caminho } from '../lib/url';
-
-const showrooms = [
-  { cidade: 'São Paulo', linhas: ['Avenida Magalhães de Castro, 4800', 'Torre 1, Edifício Capital · Cj. 201', 'Jardim Panorama — São Paulo · SP'] },
-  { cidade: 'Brasília',  linhas: ['SHIS QI 21 BL B, Ed. IAS 06/58', 'Lago Sul — Brasília · DF'] },
-];
+/* Os endereços saíram daqui: o dado estruturado da Organization também os
+   declara, e dois lugares com o mesmo endereço divergem na primeira mudança
+   de sala. Ver src/lib/showrooms.ts. */
+import { SHOWROOMS as showrooms } from '../lib/showrooms';
 
 const naPagina = [
   { nome: 'Superfícies', href: caminho('/#superficies') },

@@ -19,6 +19,13 @@ const blog = defineCollection({
     /** Aparece no índice e vira a meta description do post. */
     resumo: z.string(),
     data: z.date(),
+    /**
+     * Quando o texto foi revisado. Opcional: sem ela, o site diz que a última
+     * modificação é a própria publicação, que é a verdade para quem nunca
+     * mexeu no post. Preencher só quando o conteúdo mudar de fato — data de
+     * revisão inflada é sinal ruim para o buscador, não bom.
+     */
+    atualizado: z.date().optional(),
     /** Minutos de leitura, calculados na importação a 200 palavras/minuto. */
     leitura: z.number().int().positive(),
     /** Caminho dentro de src/assets — o mesmo formato que o Foto.astro aceita. */
